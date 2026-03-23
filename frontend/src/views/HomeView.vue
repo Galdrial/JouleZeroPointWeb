@@ -30,6 +30,19 @@ const resetChat = () => {
   ];
 };
 
+const formatMessage = (text: string) => {
+  if (!text) return "";
+  // Converte \n in <br/> e gestisce i punti seguiti da spazio per andare a capo (se non sono abbreviazioni comuni)
+  let html = text.replace(/\n/g, "<br/>");
+  // Aggiunge un a capo dopo i punti se seguiti da spazio e lettera maiuscola (opzionale, ma richiesto dall'utente)
+  html = html.replace(/\. ([A-Z])/g, ".<br/><br/>$1");
+  // Supporto Markdown Base: Grassetto
+  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+  // Supporto Liste (Semplice: trattino all'inizio riga)
+  html = html.replace(/(?:^|<br\/>)\s*-\s+(.*?)(?=<br\/>|$)/g, "<br/>• $1");
+  return html;
+};
+
 const sendMessage = async () => {
   if (!inputMessage.value.trim()) return;
 
@@ -89,7 +102,7 @@ const sendMessage = async () => {
           >
           <div
             class="message-content"
-            v-html="msg.text.replace(/\\n/g, '<br/>')"
+            v-html="formatMessage(msg.text)"
           ></div>
         </div>
 
@@ -217,9 +230,18 @@ const sendMessage = async () => {
 }
 
 /* Formattazione speciale per i messaggi del bot che contengono markdown base */
+.message-content {
+  white-space: pre-wrap; /* Mantiene gli a capo naturali */
+  line-height: 1.6;
+}
 .message-content strong {
-  color: var(--text-main);
-  text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+  color: var(--accent-cyan);
+  text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
+}
+.message-content br {
+  margin-bottom: 0.5rem;
+  display: block;
+  content: "";
 }
 
 .sync-btn {
