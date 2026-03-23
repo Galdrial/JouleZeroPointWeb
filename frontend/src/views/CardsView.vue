@@ -1,16 +1,38 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 
 const cards = ref<any[]>([]);
 const loading = ref(true);
 const error = ref('');
 
+// Filtri Reattivi
+const searchQuery = ref('');
+const selectedType = ref('');
+const filterEt = ref(10);
+const filterPep = ref(10);
+const filterRp = ref(10);
+
 const handleImgError = (e: Event) => {
   const target = e.target as HTMLImageElement;
   target.style.display = 'none';
   target.parentElement?.classList.add('missing-image');
 };
+
+const filteredCards = computed(() => {
+  return cards.value.filter(card => {
+    const nameMatch = card.name.toLowerCase().includes(searchQuery.value.toLowerCase());
+    const typeMatch = !selectedType.value || card.type === selectedType.value;
+    
+    // Tutti filtri MASSIMI per coerenza visiva (barre a destra = mostrano tutto)
+    // Se il filtro è attivo (< 10), mostriamo solo le carte che HANNO il valore e rientrano nel limite
+    const etMatch = filterEt.value >= 10 || (card.cost_et !== null && card.cost_et <= filterEt.value);
+    const pepMatch = filterPep.value >= 10 || (card.pep !== null && card.pep <= filterPep.value);
+    const rpMatch = filterRp.value >= 10 || (card.rp !== null && card.rp <= filterRp.value);
+    
+    return nameMatch && typeMatch && etMatch && pepMatch && rpMatch;
+  });
+});
 
 onMounted(async () => {
   try {
@@ -30,6 +52,48 @@ onMounted(async () => {
     <h2>Matrice Frammenti (Live)</h2>
     <p class="subtitle">Sincronizzato in tempo reale con le direttive Google Sheets.</p>
     
+    <!-- Pannello Filtri -->
+    <div class="glass-panel filter-panel">
+      <div class="filter-group">
+        <label>Ricerca Nome</label>
+        <input v-model="searchQuery" type="text" placeholder="Es: Nucleo..." class="glass-input small" />
+      </div>
+      
+      <div class="filter-group">
+        <label>Tipo</label>
+        <select v-model="selectedType" class="glass-select">
+          <option value="">Tutti</option>
+          <option value="Solido">Solido</option>
+          <option value="Liquido">Liquido</option>
+          <option value="Gas">Gas</option>
+          <option value="Plasma">Plasma</option>
+          <option value="Materia Oscura">Materia Oscura</option>
+          <option value="Evento">Evento</option>
+          <option value="Anomalia">Anomalia</option>
+          <option value="Costruttore">Costruttore</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Max ET: {{ filterEt >= 10 ? '∞' : filterEt }}</label>
+        <input v-model.number="filterEt" type="range" min="0" max="10" step="1" class="glass-range" />
+      </div>
+
+      <div class="filter-group">
+        <label>Max PEP: {{ filterPep >= 10 ? '10+' : filterPep }}</label>
+        <input v-model.number="filterPep" type="range" min="0" max="10" step="1" class="glass-range" />
+      </div>
+
+      <div class="filter-group">
+        <label>Max RP: {{ filterRp >= 10 ? '10+' : filterRp }}</label>
+        <input v-model.number="filterRp" type="range" min="0" max="10" step="1" class="glass-range" />
+      </div>
+
+      <div class="filter-group">
+        <button @click="searchQuery = ''; selectedType = ''; filterEt = 10; filterPep = 10; filterRp = 10;" class="btn-clear">RESET</button>
+      </div>
+    </div>
+    
     <div v-if="loading" class="glass-panel main-panel text-center">
       <h3>Sincronizzazione in corso...</h3>
       <div class="loader"></div>
@@ -41,7 +105,7 @@ onMounted(async () => {
     </div>
 
     <div v-else class="cards-grid">
-      <div v-for="card in cards" :key="card.id" class="glass-panel card-item">
+      <div v-for="card in filteredCards" :key="card.id" class="glass-panel card-item">
         <div class="card-header">
           <h3>{{ card.name }}</h3>
           <span class="badge" :class="card.type?.toLowerCase()">{{ card.type }} <!-- {{ card.status }} --></span>
@@ -104,6 +168,79 @@ onMounted(async () => {
   color: var(--text-main);
   text-shadow: 0 0 5px rgba(255,255,255,0.2);
 }
+
+/* Filtri Styles */
+.filter-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  background: rgba(0, 0, 0, 0.4);
+  align-items: flex-end;
+}
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 150px;
+}
+.filter-group label {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.glass-input.small {
+  padding: 0.5rem;
+  margin-bottom: 0;
+}
+.glass-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  padding: 0.5rem;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  outline: none;
+}
+.glass-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  outline: none;
+}
+.glass-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  background: var(--accent-cyan);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+.btn-clear {
+  background: transparent;
+  border: 1px solid var(--accent-magenta);
+  color: var(--accent-magenta);
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+.btn-clear:hover {
+  background: var(--accent-magenta);
+  color: white;
+}
+
 .badge {
   font-size: 0.75rem;
   padding: 0.3rem 0.6rem;

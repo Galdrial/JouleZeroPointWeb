@@ -50,7 +50,7 @@ function parseCSV(fileContent) {
       rarity: data['Rarità'],
       effect: data['Effetto'],
       role: data['Ruolo'],
-      image_url: `/assets/cards/${String(id).padStart(3, '0')}_${(data['Nome'] || '').replace(/ /g, '_')}.png`
+      image_url: `/assets/cards/${String(id).padStart(3, '0')}_${(data['Nome'] || '').replace(/,/g, '').replace(/ /g, '_')}.png`
     };
     
     if (data['Nome']) {

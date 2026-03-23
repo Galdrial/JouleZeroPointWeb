@@ -20,6 +20,16 @@ const scrollToBottom = async () => {
   }
 };
 
+const resetChat = () => {
+  threadId.value = null;
+  messages.value = [
+    {
+      role: "ai",
+      text: "Sincronizzazione completata. Protocollo Terminale resettato. Inserisci la tua direttiva, Costruttore.",
+    },
+  ];
+};
+
 const sendMessage = async () => {
   if (!inputMessage.value.trim()) return;
 
@@ -56,6 +66,9 @@ const sendMessage = async () => {
     <div class="header-section">
       <h1 class="glitch-text" data-text="PUNTO ZERO">PUNTO ZERO</h1>
       <p class="subtitle">Interfaccia Oracolo AI Attiva...</p>
+      <button @click="resetChat" class="btn-secondary sync-btn" :disabled="loading">
+        SINCRONIZZA TERMINALE
+      </button>
     </div>
 
     <div class="glass-panel main-panel chat-container">
@@ -207,5 +220,29 @@ const sendMessage = async () => {
 .message-content strong {
   color: var(--text-main);
   text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.sync-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+}
+
+.sync-btn:hover:not(:disabled) {
+  background: var(--accent-cyan);
+  color: var(--bg-main);
+  box-shadow: 0 0 15px var(--accent-cyan);
+}
+
+.sync-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 </style>
