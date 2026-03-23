@@ -64,8 +64,8 @@ const sendMessage = async () => {
 <template>
   <div class="home-view fade-in">
     <div class="header-section">
-      <h1 class="glitch-text" data-text="PUNTO ZERO">PUNTO ZERO</h1>
-      <p class="subtitle">Interfaccia Oracolo AI Attiva...</p>
+      <h1 class="glitch-text" data-text="TERMINALE DEL PUNTO ZERO">TERMINALE DEL PUNTO ZERO</h1>
+      <p class="subtitle">Interfaccia Terminale Attiva...</p>
       <button @click="resetChat" class="btn-secondary sync-btn" :disabled="loading">
         SINCRONIZZA TERMINALE
       </button>
@@ -104,7 +104,7 @@ const sendMessage = async () => {
           v-model="inputMessage"
           type="text"
           class="glass-input"
-          placeholder="Istruisci il Terminale (es: 'Come si gioca una Faglia?' o 'Quanto costa Nucleo di Basalto?')"
+          placeholder="Istruisci il Terminale (es: 'Come si gioca un Frammento?' o 'Quanto costa Nucleo di Basalto?')"
           :disabled="loading"
         />
         <button
