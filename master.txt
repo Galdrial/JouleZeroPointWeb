@@ -1,0 +1,97 @@
+Progetto
+🎯 Crea un'applicazione web che consenta agli utenti di registrarsi, accedere e disconnettersi, interagendo con delle API RESTful sviluppate da te.
+
+La web-app può essere una single-page application o una multi-page application.
+
+Dopo aver implementato il sistema di autenticazione, aggiungi funzionalità extra alle tue API, a tua scelta.
+
+Questo progetto ti permetterà di mettere in pratica le tue competenze, dalla creazione delle API alla costruzione di un'interfaccia interattiva, passando per la gestione delle autenticazioni e l'integrazione tra front end e back end.
+
+Cliente
+L'obiettivo di questo progetto è creare una web-app per un cliente a tua scelta.
+
+💡Puoi scegliere il tuo cliente, per esempio, tra:
+
+Un'azienda che ti interessa particolarmente.
+Un cliente per cui hai lavorato o per cui vorresti lavorare.
+Un tuo progetto personale che vorresti sviluppare.
+Definisci il cliente che preferisci per iniziare a costruire la tua app.
+
+Sviluppo
+Segui questi passaggi per completare il tuo progetto.
+
+Scegli il tipo di applicazione
+Decidi se la tua applicazione sarà una single-page application (SPA) o una multi-page application (MPA).
+
+SPA: tutte le interazioni avvengono su una singola pagina, aggiornando i contenuti senza ricaricare l'intera pagina.
+MPA: l'app ha diverse pagine, con ciascuna pagina che si ricarica quando l'utente naviga da una sezione all'altra.
+Sviluppa le API RESTful
+Implementa delle API per la gestione degli utenti, che includano:
+
+Registrazione: endpoint per creare un nuovo account utente.
+Login: endpoint per autenticare l'utente.
+Logout: endpoint per terminare la sessione dell'utente.
+Puoi usare qualsiasi linguaggio back end studiato durante il Master.
+
+Implementa il front end
+Scegli un framework front end tra quelli studiati.
+
+Crea le pagine e le interfacce necessarie per:
+
+Registrare un nuovo utente.
+Effettuare il login.
+Gestire la sessione utente: mostrare un messaggio di benvenuto e un pulsante per il logout.
+Assicurati che l'interfaccia sia intuitiva e piacevole da usare.
+
+Collega il front end alle API
+Configura il tuo codice JavaScript per effettuare chiamate alle API che hai creato, utilizzando strumenti come Fetch API o Axios.
+
+Gestisci le risposte delle API per fornire feedback all'utente, per esempio, visualizzare un messaggio di errore se il login non riesce.
+
+Aggiungi funzionalità extra alle API
+Scegli delle funzionalità aggiuntive da implementare per arricchire la tua applicazione.
+
+Alcune idee potrebbero essere:
+
+Gestione dei profili utente: permettere agli utenti di aggiornare le proprie informazioni.
+Bacheca con post o messaggi: consentire agli utenti di pubblicare contenuti o commentare.
+Sistema di notifiche: inviare notifiche agli utenti quando avvengono determinate azioni.
+Implementa queste nuove funzionalità nelle tue API e aggiorna il front end per supportarle.
+
+Testa l'applicazione
+Assicurati che tutte le funzionalità funzionino correttamente.
+
+Verifica che l'autenticazione sia sicura e che le chiamate alle API gestiscano correttamente errori e successi.
+
+Linguaggi e strumenti
+Scegli un linguaggio back end (per esempio, Node.js, PHP, Java) e un framework front (per esempio, React, Angular, Vue.js) end tra quelli studiati nel Master.
+
+Tool AI per il progetto
+Se vuoi, durante la realizzazione del progetto puoi utilizzare i tool basati sull’intelligenza artificiale che hai approfondito nei Corsi del Master.
+
+Tuttavia, è essenziale adottare un approccio che mantenga vivo il tuo spirito critico e la tua capacità di giudizio. L’AI non deve diventare un sostituto del tuo lavoro, ma un’alleata capace di farti crescere ulteriormente aiutandoti a rifinire e a verificare le tue proposte.
+
+Ricorda: l’AI è un mezzo per ampliare la tua visione e arricchire la tua capacità di analisi, non una soluzione “pronta all’uso”.
+
+Usare l’AI per ispirarti e approfondire ti può aiutare a migliorare la capacità di analisi, perché ti abitua a confrontarti con punti di vista differenti e a rendere la tua ricerca più completa e sfaccettata: immagina di avere un “partner” che ti porta prospettive nuove e aumenta la possibilità di individuare aspetti prima trascurati, costruendo così un progetto più robusto.
+
+Trattare l’AI come un “partner” e non come un sostituto ti permette di:
+
+Valorizzare le tue idee: l’AI può fornire analisi, suggerimenti e spunti creativi, ma la scelta finale spetta a te. La tua capacità di giudizio è insostituibile, perché integra le tue competenze e la comprensione approfondita del contesto del progetto.
+Ridurre il rischio di dipendenza: affidarsi totalmente alle soluzioni generate dall’AI senza verificarle può ostacolare la crescita delle tue competenze e portare a una riduzione di autonomia. L’obiettivo è invece sfruttare lo strumento per sviluppare il tuo spirito critico.
+Mantenere la responsabilità intellettuale: in un progetto di studio o professionale, devi poter sostenere e motivare ogni parte del tuo lavoro, dalle ipotesi iniziali alle conclusioni. Se una parte del progetto fosse delegata interamente all’AI, non saresti in grado di rispondere in modo convincente e autorevole a domande o obiezioni.
+Come integrare l’AI in modo consapevole
+Per sfruttare al meglio gli strumenti di intelligenza artificiale, segui questi consigli:
+
+Definisci chiaramente i tuoi obiettivi: prima di coinvolgere strumenti AI, è necessario avere già un’idea precisa del progetto che stai realizzando: quali sono le domande di ricerca, le ipotesi da verificare o gli obiettivi di analisi? L’AI può aiutarti a perfezionare o ampliare la tua visione, ma non può sostituirsi al tuo lavoro iniziale.
+Usala per il brainstorming e l’approfondimento: l’AI può fungere da “sparring partner” per esplorare nuovi spunti o testare ipotesi alternative. Per esempio, puoi chiedere all’AI di suggerirti scenari o punti di vista differenti, ma spetta a te valutare la rilevanza di queste idee per il tuo progetto.
+Fai un controllo incrociato con fonti autorevoli: se l’AI ti suggerisce dati, statistiche o interpretazioni, verifica sempre la bontà di queste informazioni mediante altre fonti (siti ufficiali, articoli accademici, libri, report autorevoli). In questo modo, ti assicuri che il suo contributo sia effettivamente pertinente e corretto.
+Analizza criticamente le proposte: anche quando l’AI genera qualcosa di apparentemente valido, poniti sempre le domande: è in linea con il mio progetto? Ci sono evidenze concrete che supportano questa interpretazione? È coerente con i dati che ho raccolto? Un atteggiamento di questo tipo ti consente di mantenere il controllo e arricchire il tuo progetto, anziché semplificarlo in modo superficiale.
+Come impostare un workflow
+Prova a seguire questi passaggi per integrare l’AI nel flusso di lavoro del tuo progetto:
+
+Ideazione: parti dal tuo lavoro o da una tua idea che vuoi approfondire. Formula la tua “domanda di ricerca” in modo chiaro e strutturato.
+Coinvolgimento dell’IA come partner: sottoponi all’AI le tue ipotesi o i tuoi dati iniziali, chiedendo eventuali alternative o possibili spunti. Raccogli i suggerimenti e verifica se ci sono elementi che avevi sottovalutato.
+Valutazione: applica le tue competenze, l’analisi critica e il confronto con altre fonti per vagliare le proposte dell’AI. Scarta quelle inadeguate o incongruenti, conserva e approfondisci solo ciò che appare rilevante.
+Sintesi e conclusioni: integra gli spunti validi nella struttura del tuo progetto, assicurandoti che ogni elemento sia coerente e dimostrabile.
+

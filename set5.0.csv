@@ -1,0 +1,121 @@
+ID	Nome	Tipo	Stato	Costo_ET	PEP	RP	Rarità	Effetto	Ruolo
+1	Nucleo di Basalto	Solido	Freddo	4	1	5	Stabile	Questo Frammento non può essere spostato da effetti e non cambia colonna durante le Inversioni Temporali.	ancora difensiva, anti-Gas
+2	Faglia Primaria	Solido	Freddo	4	1	6	Stabile	Durante la Collisione, quando vengono determinati i danni IT che dovresti subire, puoi distruggere questo Frammento. Se lo fai, riduci quei danni IT fino a 2.	scudo sacrificale
+3	Residuo Cristallizzato	Solido	Freddo	3	1	4	Stabile	Se non subisci danni IT durante la Collisione, questo Frammento non slitta durante il prossimo Slittamento.	setup TP
+4	Flusso Ricorrente	Liquido	Freddo	4	2	3	Stabile	Alla fine della Collisione, se questo Frammento si trova nel Presente, puoi spostarlo nel Futuro coperto prima dello Slittamento.	evasione
+5	Abisso Termico	Liquido	Freddo	4	2	4	Stabile	Quando entra nel Presente, riduci la TP di 1. Se possiede 🔵 durante la Collisione, applica Assorbimento una volta addizionale (max 1).	controllo + difesa
+6	Il Mercuriale	Liquido	Caldo	3	3	2	Stabile	Una volta per Round, durante la tua Fase Azione, puoi spostare questo Frammento dal Presente al Futuro.	pressione elastica
+8	Sciame Termico	Gas	Caldo	4	4	1	Stabile	Quando entra nel Presente: TP +1.	pressione pura
+9	Soffio di Saturazione	Gas	Caldo	4	5	1	Stabile	Se durante la Collisione possiede 🔴 e infligge danni IT ne infligge 1 addizionale.	finisher leggero
+11	Espansione Entropica	Gas	Caldo	5	6	1	Stabile	Durante la Collisione, se possiede 🔴, infligge 1 IT addizionale.	pressione + instabilità
+12	Impulso Ionico	Plasma	Caldo	4	5	1	Stabile	Quando entra nel Presente, se la TP è pari o superiore a +1, aumenta di 1 la TP. Poi, alla fine del turno, il suo controllore perde 1 IT.	colpo secco
+13	Arco di Fusione	Plasma	Caldo	5	6	1	Stabile	Quando entra nel Presente: TP +1. Alla fine del Round, se possiede 🔴, pesca 1 carta e subisci 1 danno IT	plasma classico
+15	Fulmine Residuo	Plasma	Caldo	3	4	0	Stabile	Quando entra nel Presente, infligge 1 danno IT al giocatore avversario. Durante la Collisione, questo Frammento ottiene +1 PEP.	danno postumo
+17	Vuoto Reattivo	Materia Oscura	Neutro	5	5	3	Stabile	All’inizio della Collisione, se TP uguale a 0, infligge 1 danno IT a entrambi i giocatori.	controllo instabile
+18	Massa Inversa	Materia Oscura	Neutro	6	6	4	Instabile	Quando avviene un’Inversione Temporale, distruggi un Frammento nel Presente.	deterrente TP
+19	Shock Termico	Evento	Neutro	3			Stabile	Puoi giocare questa carta solo durante una Collisione. Scegli uno: TP +1 oppure TP -1.	reattivo universale
+20	Pilastro di Contenimento	Solido	Freddo	3	1	4	Stabile	Se viene distrutto durante una Collisione, TP -1 all’inizio del prossimo turno..	Solido che lascia freddo
+23	Base di Presidio	Solido	Freddo	4	2	5	Stabile	Se non subisci danni IT durante la Collisione, pesca 1 carta.	Difesa vantaggio
+24	Nodo Inamovibile	Solido	Freddo	6	2	7	Instabile	Questo Frammento non slitta nel Passato. Se TP maggiore o uguale a +1, perde 1 RP (una volta per Round).	Presente permanente ma fragile
+25	La Marea Inversa	Liquido	Caldo	4	3	3	Stabile	Quando entra nel Presente: TP +1. Se TP maggiore o uguale a +1, puoi spostare questo Frammento nel Passato.	Liquido aggressivo ma elusivo
+26	Corrente di Assestamento	Liquido	Freddo	2	1	2	Stabile	Quando entra nel Presente, pesca 1 carta. Poi scarta 1 carta per ridurre di 1 il costo ET del prossimo Frammento che giochi nel Futuro.	Setup Future-deck
+27	Vortice di Recupero	Liquido	Freddo	5	3	4	Stabile	Alla fine della Collisione, puoi riprendere in mano un tuo Frammento dal Passato.	Ricorsione controllata
+28	Fendente Fluido	Liquido	Caldo	3	3	2	Stabile	Durante la Collisione, se possiede 🔴, ottiene +1 PEP.	Aggressione condizionale
+30	Espulsione Termica	Gas	Caldo	2	3	0	Stabile	Quando entra nel Presente: TP +1. Alla fine della Collisione, distruggilo.	Kamikaze
+31	Compressione Gassosa	Gas	Caldo	4	4	2	Stabile	Durante la Collisione, riduci di 1 la RP totale del Presente avversario (una sola volta).	Soft wipe difensivo
+36	Scarica a Catena	Plasma	Caldo	5	6	1	Stabile	Se infligge danni IT, infligge 1 danno IT anche al suo controllore.	Simmetria pericolosa
+38	Plasma Riflesso	Plasma	Caldo	4	4	2	Stabile	Se subisci danni IT, infliggi 1 danno IT all'avversario.	Counter offensivo
+39	Impulso Elettromagnetico	Plasma	Caldo	3	4	0	Stabile	Quando entra nel Presente, puoi distruggerlo. Se lo fai, TP +1 e pesca 1 carta.	Utility Plasma
+41	Risonanza del Vuoto	Materia Oscura	Neutro	4	4	3	Stabile	Quando TP cambia segno, entrambi i giocatori scartano 1 carta.	Attrito
+42	Attrattore Negativo	Materia Oscura	Neutro	5	5	3	Stabile	Se entrambi i giocatori hanno subito danni IT in questo round, subiscono entrambi 1 danno IT aggiuntivo.	Controllo neutro
+46	Disintegrazione Istantanea	Evento	Neutro	4			Instabile	Distruggi un Frammento nel Presente.	Evento ad alto impatto
+48	Strato di Sedimentazione	Solido	Freddo	4	1	6	Stabile	Alla fine della Collisione, se non subisci danni IT, TP-1 all’inizio del prossimo Round.	Controllo lento ma costante
+50	Blocco Termico	Solido	Freddo	3	1	4	Stabile	Finché è nel Presente, la TP non può cambiare di più di 1 per turno.	Tech anti-TP
+52	Flusso di Compensazione	Liquido	Neutro	3	2	3	Stabile	Ogni volta che avviene un’Inversione Temporale, puoi spostare questo Frammento in un’altra colonna temporale.	Liquido opportunista
+53	Corrente Riflessa	Liquido	Caldo	4	3	3	Stabile	Quando entra nel Presente: TP +1. Alla fine della Collisione se sopravvive, prima dello Slittamento, puoi spostarlo nel Futuro coperto.	Hit & run
+54	Vortice di Stabilizzazione	Liquido	Freddo	5	3	4	Stabile	Ogni volta che uno o più Frammenti acquisiscono/perdono una Proprietà Universale a causa della TP, puoi pescare 1 carta. Se lo fai, scarta 1 carta.	Filtraggio
+57	Furia Termica	Gas	Caldo	3	4	0	Stabile	Alla fine della Collisione se possiede 🔴, distruggilo e subisci 1 danno IT.	Gas classico
+58	Nube Disgregata	Gas	Caldo	4	5	1	Stabile	Durante la Collisione, se possiede 🔴, riduci di 1 la RP totale del Presente avversario (una sola volta).	Pressione pura
+59	Nebbia Risonante	Gas	Caldo	5	5	2	Stabile	Quando una Inversione Temporale avviene, questo Frammento ottiene +2 PEP fino alla fine del Round.	Sinergia col caos
+63	Arco di Sovraccarico	Plasma	Caldo	6	7	1	Stabile	Quando entra nel Presente: TP +1. Alla fine della Collisione, se possiede 🔴, distruggilo.	Push finale
+64	Impulso Critico	Plasma	Caldo	3	4	0	Stabile	Se questo Frammento infligge danni IT, distruggilo alla fine della Collisione e pesca 1 carta.	Trade pulito
+66	Vuoto di Bilanciamento	Materia Oscura	Neutro	4	4	3	Instabile	Quando una Inversione Temporale avviene, entrambi i giocatori perdono 1 ET nel turno successivo.	Rallentamento globale
+67	Eco del Punto Zero	Materia Oscura	Neutro	6	6	4	Instabile	Quando una Inversione Temporale avviene, scegli: entrambi i giocatori scartano 1 carta oppure entrambi perdono 1 IT.	Decisione pesante
+74	Marea di Ridistribuzione	Liquido	Neutro	4	3	3	Stabile	Alla fine della Collisione, puoi scambiare la colonna temporale di due tuoi Frammenti (es. una nel Passato e una nel Futuro).	Skill expression
+76	Mare di Assestamento	Liquido	Neutro	6	3	5	Critica	Quando inneschi un’Inversione Temporale volontaria, puoi scegliere di non pagarne la penalità.	Liquido maestro del tempo
+77	Flusso di Rivelazione	Liquido	Freddo	4	2	4	Stabile	Quando entra nel Presente provenendo dal Futuro, pesca 1 carta. Poi, se la TP è pari a 0, ottiene +2 PEP.	Liquido maestro del tempo
+79	Vapore di Turbolenza	Gas	Caldo	3	4	1	Stabile	Quando un Frammento avversario entra nel Presente, TP +1.	Reazione passiva
+89	Eco di Frattura	Materia Oscura	Neutro	6	6	4	Stabile	Quando un Frammento viene distrutto durante la Collisione, puoi spostare un Frammento dal Passato al Presente.	Recupero pericoloso
+90	Stasi Improvvisa	Evento	Neutro	4			Stabile	Durante questo Round, i giocatori non subiscono danni IT dalla Collisione.	Reset soft
+91	Sfasamento Temporale	Evento	Neutro	3			Instabile	Scegli un Frammento: fino alla fine della Collisione, quel Frammento è considerato nel Futuro. Questa è un’Inversione Temporale.	Rimozione temporanea
+92	Ritorno Anticipato	Evento	Neutro	4			Instabile	Sposta un Frammento dal Futuro al Presente. Questa è un'Inversione Temporale.	Accelera il piano
+93	Faglia Temporale	Anomalia	Neutro	3			Critica	All'inizio di ogni Collisione, se TP diversa da 0, avviene un'Inversione Temporale. Il controllore perde 1 IT.	Caos sostenuto
+103	Marea di Assorbimento	Liquido	Neutro	3	2	3	Stabile	Se TP cambia segno, ottiene +1 RP fino a fine turno.	-
+118	Plasma Speculare	Plasma	Caldo	5	5	2	Stabile	Durante la Collisione, se possiede 🔴, puoi causare un’Inversione Temporale. Se lo fai, questo Frammento perde 2 RP.	catalizzatore temporale
+119	Fulmine di Esaurimento	Plasma	Caldo	6	6	1	Stabile	Quando viene distrutto pesca 1 carta.	-
+124	Vuoto di Equilibrio	Materia Oscura	Neutro	3	3	2	Stabile	All’inizio della Collisione, se la TP è pari o superiore a +2 o pari o inferiore a −2, imposta la TP a 0. Poi entrambi i giocatori perdono 1 IT.	-
+125	Stasi Totale	Evento	Neutro	3			Stabile	Per il resto del Round, i cambi di stato dovuti alla TP non si applicano.	-
+126	Compressione Reattiva	Evento	Neutro	2			Stabile	Un Frammento ottiene +1 RP e +1 PEP fino alla fine della Collisione.	-
+127	Deviazione Temporale	Evento	Neutro	4			Stabile	Annulla gli effetti di una carta o di un’Anomalia fino alla fine del Round.	variante unica
+128	Zona Entropica	Anomalia	Neutro	3			Stabile	All'inizio di ogni Collisione, TP +1. Il controllore perde 1 IT.	-
+130	Instabilità Cronica	Anomalia	Neutro	5			Stabile	Alla fine della Collisione, se controlli il Presente, ottieni +2 ET aggiuntivi nel prossimo Round.	-
+134	Lastra di Consolidamento	Solido	Freddo	4	1	5	Stabile	Se controlli almeno due Solidi, i tuoi Frammenti nel Presente ottengono +1 RP.	-
+138	Monolite di Frenata	Solido	Freddo	5	2	6	Instabile	Durante la Collisione, se TP uguale a 0, nessun giocatore può giocare Eventi.	-
+139	Ancora di Tempo	Solido	Freddo	7	2	8	Critica	Le Inversioni Temporali (sia spontanee che volontarie) non possono avvenire. Durante la Collisione, previeni il primo danno IT che dovresti subire.	Lock pesante
+141	Corrente di Deriva	Liquido	Caldo	4	3	3	Stabile	Alla fine della Collisione, puoi spostare un tuo Frammento dal Passato al Presente.	-
+145	Mare di Pianificazione	Liquido	Neutro	5	3	4	Stabile	Quando entra nel Presente, puoi scegliere un Frammento nel tuo Futuro e aggiungerlo alla tua mano. Se lo fai, metti un Frammento dalla tua mano nel Futuro coperto.	-
+150	Gas di Esaurimento	Gas	Caldo	2	3	0	Stabile	Se partecipa alla Collisione, l'avversario perde 1 ET nel Round successivo.	-
+153	Espulsione Catastrofica	Gas	Caldo	7	7	2	Critica	Se possiede 🔴 durante la Collisione e non subisci danni IT, infligge 2 danni IT diretti all'avversario.	Gas warning label
+156	Scarica di Sovraesposizione	Plasma	Caldo	5	7	1	Stabile	Quando entra nel Presente: TP +1. Alla fine della Collisione, se TP diversa da 0 distruggi questo Frammento.	-
+160	Plasma Rifasato	Plasma	Caldo	5	5	2	Stabile	Quando una Inversione Temporale avviene, ottiene +1 PEP fino a fine turno.	-
+162	Attrattore di Sacrificio	Materia Oscura	Neutro	5	5	3	Stabile	Durante la Collisione, puoi distruggere un tuo Frammento. Se lo fai, riduci di 2 il PEP totale avversario.	-
+165	Vuoto di Antitesi	Materia Oscura	Neutro	4	4	3	Stabile	Durante la Collisione, se TP uguale a 0, nessun giocatore può ottenere bonus PEP o RP dal Passato.	-
+166	Massa di Reazione	Materia Oscura	Neutro	6	4	3	Instabile	Quando una Inversione Temporale avviene, entrambi i giocatori perdono 1 IT e 1 ET all’inizio del prossimo Round.	-
+168	Deviazione di Fase	Evento	Neutro	3			Stabile	Un Frammento scelto non partecipa alla Collisione.	-
+169	Rottura Temporanea	Evento	Neutro	4			Stabile	Gioca in qualsiasi momento: aumenta o riduci la TP di 1.	controllo termico
+170	Compensazione Energetica	Evento	Neutro	3			Stabile	Riduci di 2 il PEP totale avversario. Se la TP è diversa da 0, fino alla fine del turno l’Anomalia attiva non ha effetto.	-
+171	Anticipo Violento	Evento	Neutro	5			Instabile	Sposta un Frammento dal Futuro al Presente e infliggi 1 danno IT. Questa è un'Inversione Temporale.	-
+172	Riflusso Critico	Evento	Neutro	4			Instabile	Inverti il segno della TP. Questa è un'Inversione Temporale.	-
+173	Accumulo Critico	Anomalia	Neutro	3			Stabile	Alla fine della Collisione, se controlli il Presente, ottieni +1 ET all’inizio del prossimo Round.	Motore lento
+175	Instabilità Crescente	Anomalia	Neutro	4			Instabile	Ogni Inversione Temporale infligge 1 danno IT a entrambi i giocatori.	-
+180	Colonna di Coerenza	Solido	Freddo	5	2	6	Stabile	La prima volta per turno che TP dovrebbe cambiare segno, annulla quel cambiamento. La TP torna a 0.	-
+181	Blocco di Ritenzione	Solido	Freddo	3	1	3	Stabile	Quando entra nel Presente, scegli un Frammento: quel Frammento non può essere distrutto durante la prossima Collisione.	-
+185	Flusso di Ribilanciamento	Liquido	Neutro	3	2	3	Stabile	Se non subisci danni IT durante la Collisione, puoi spostare questo Frammento dal Presente al Futuro invece che nel Passato durante lo Slittamento Temporale.	evasione
+190	Vapore Propulsivo	Gas	Caldo	3	4	1	Stabile	Quando entra nel Presente: TP +1. Alla fine della Collisione, se possiede 🔴, distruggilo.	rischio one-shot
+192	Nube Pressurizzata	Gas	Caldo	5	5	2	Stabile	Quando entra nel Presente: TP +1. Se questo Frammento è entrato nel Presente dal Futuro, pesca 1 carta.	setup futuro
+196	Nebbia di Esaurimento	Gas	Caldo	3	3	1	Stabile	Se viene distrutto durante la Collisione, pesca 1 carta.	-
+197	Plasma di Sovraccarico	Plasma	Caldo	5	6	1	Stabile	Quando entra nel Presente: TP +1. Durante la Collisione, se possiede 🔴, ottiene +1 PEP e perde 1 RP fino alla fine della Collisione.	burst instabile
+198	Scarica di Frattura	Plasma	Caldo	4	5	1	Stabile	Alla fine della Collisione, puoi distruggere un Frammento nel Presente. Se lo fai perdi 1 IT.	rimozione rischiosa
+203	Vuoto di Probabilità	Materia Oscura	Neutro	3	3	2	Stabile	Quando entra nel Presente guarda le prime 2 carte del tuo mazzo: se tra queste c’è un Frammento puoi metterlo nel tuo Futuro e l’altra in fondo al mazzo. (se non ci sono Frammenti metti entrambe le carte in fondo al mazzo)	setup probabilità
+205	Singolarità di Compressione	Materia Oscura	Neutro	7	6	5	Instabile	Alla fine della Collisione, se TP diversa da 0, riduci TP di 1 verso 0 (es. +2→+1, −2→−1). Se TP diventa 0, pesca 1 carta.	riporto a zero
+207	Interruzione Mirata	Evento	Neutro	2			Stabile	Un Frammento a tua scelta nel Presente perde 2 PEP fino alla fine del Round.	debuff mirato
+208	Deviazione di Flusso	Evento	Neutro	3			Stabile	Sposta un tuo Frammento dal Presente al Futuro.	evasione temporale
+209	Rottura di Fase	Evento	Neutro	2			Instabile	Distruggi un Frammento nel Presente con RP minore o uguale a 2. Questa carta causa un’Inversione Temporale.	rimozione + inversione
+210	Schermo di Compensazione	Evento	Neutro	3			Stabile	Aggiungi +2 alla tua RP totale nel Presente fino alla fine della Collisione.	difesa reattiva
+211	Anticipo Calcolato	Evento	Neutro	5			Instabile	Rivela una tua carta coperta nel Futuro e mettila nel Presente. Ottiene +1 PEP fino a fine Round. Questa è una Inversione Temporale.	sviluppo improvviso
+213	Campo di Ritorno	Anomalia	Neutro	2			Instabile	All’inizio di ogni Collisione, se TP maggiore o uguale a +2 o TP minore o uguale a  −2, imposta TP a 0.	reset termico rischioso
+215	Blocco di Contenimento	Solido	Freddo	4	1	5	Stabile	Quando entra nel Presente, riduci la TP di 1.	-
+218	Scudo di Tenuta	Solido	Freddo	3	1	4	Stabile	Durante la Collisione, se la TP è pari a 0, questo Frammento ottiene +1 RP.	-
+223	Flusso di Innesco	Liquido	Freddo	2	1	2	Stabile	Quando entra nel Presente, guarda una carta coperta nel Futuro del tuo avversario. La prossima carta che giochi nel Futuro in questo turno costa 1 ET in meno addizionale.	setup futuro
+224	Vortice di Ripristino	Liquido	Freddo	5	3	4	Stabile	Quando entra nel Presente, puoi riprendere in mano un Frammento dal tuo Orizzonte degli Eventi.	-
+231	Vapore di Interferenza	Gas	Caldo	4	4	2	Instabile	Ogni volta che avviene un’Inversione Temporale, aumenta la TP di 1.	-
+239	Tempesta di Collasso	Plasma	Caldo	7	7	2	Critica	Durante la Collisione, se possiede 🔴, riduci la RP totale avversaria della metà (arrotondando per eccesso). Alla fine della Collisione, distruggila.	-
+243	Vuoto di Neutralità	Materia Oscura	Neutro	4	4	3	Stabile	Durante la Collisione, i Frammenti avversari ignorano le Proprietà Universali acquisite tramite 🔴 o 🔵.	-
+244	Massa di Saturazione	Materia Oscura	Neutro	5	6	4	Instabile	Ogni volta che avviene un’Inversione Temporale, entrambi i giocatori perdono 1 IT.	-
+245	Stasi Minore	Evento	Neutro	2			Stabile	Fino alla fine della Collisione, annulla tutti i bonus  PEP applicati ai Frammenti nel Presente.	-
+246	Rottura Controllata	Evento	Neutro	5			Instabile	Distruggi un Frammento nel Presente. Poi innesca un’Inversione Temporale.	-
+248	Interferenza	Evento	Neutro	2			Stabile	Scegli un Frammento nel Presente: quel Frammento perde 2 RP.	-
+250	Stabilità Forzata	Anomalia	Neutro	4			Instabile	Alla fine della Fase di Slittamento Temporale, imposta immediatamente la TP a 0. All'inizio del prossimo Round, il controllore perde 1 IT.	-
+251	Campo di Entropia Finale	Anomalia	Neutro	5			Instabile	Alla fine di ogni Collisione, aumenta la TP di 1 all’inizio del Round successivo. Poi perdi 1 IT.	-
+252	Paradosso di Chiusura	Anomalia	Neutro	6			Instabile	Quando avviene un'Inversione Temporale, pesca 1 carta e l'avversario perde 1 IT.	-
+253	Nullità Assoluta	Anomalia	Neutro	7			Instabile	Durante la Collisione la TP è considerata pari a 0 e le Inversioni Temporali volontarie non possono essere innescate. I segnalini già presenti sui Frammenti restano attivi.	-
+254	Chronos, Custode del Presente	Costruttore	Neutro					Dopo la Fase di Slittamento, se controlli il Presente, ottieni +1 ET.	-
+255	Nyx, Architetta del Futuro	Costruttore	Neutro					Il primo Frammento che giochi nel Futuro ogni Round slitta immediatamente nel Presente. Alla fine della Collisione, se si trova ancora nel Presente, distruggilo.	-
+256	Vax, Martello Termico	Costruttore	Neutro					Se controlli almeno un Frammento con 🔴 nel Presente, la prima volta per Collisione che infliggi danno IT, infliggi 1 IT addizionale e perdi 1 IT.	-
+257	Ilios, Pilastro di Coerenza	Costruttore	Neutro					Se controlli almeno un Frammento con 🔵 nel Presente, ogni volta che attivi la Proprietà Universale Assorbimento, infliggi 1 danno IT all'avversario.	-
+258	Eris, Distorsione Vivente	Costruttore	Neutro					La prima Inversione Temporale volontaria che inneschi ogni Round non richiede il pagamento di una penalità.	-
+259	Khepri, Ricorsione Fluida	Costruttore	Neutro					Una volta per Round, puoi sacrificare 1 IT per spostare un tuo Frammento dal Passato al Futuro o viceversa.	-
+260	Umbra, Voce del Vuoto	Costruttore	Neutro					La prima volta per Round che avviene un’Inversione Temporale, entrambi i giocatori subiscono 1 danno IT.	-
+261	Atlas, Peso del Tempo	Costruttore	Neutro					Durante la Collisione, se TP è uguale a 0 riduci di 1 i danni IT che subisci.	-
+262	Pyros, Punto di Fusione	Costruttore	Neutro					La prima volta per Round che un Frammento entra nel Presente, aumenta la TP di 1.	-
+263	Aion, Punto Zero	Costruttore	Neutro					Dopo la Fase di Slittamento, se la TP è pari a 0, pesca 1 carta aggiuntiva.	-
