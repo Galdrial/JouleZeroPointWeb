@@ -53,7 +53,7 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
-    const response = await axios.post("http://127.0.0.1:3000/api/chat", {
+    const response = await axios.post("/api/chat", {
       message: userText,
       threadId: threadId.value,
     });

@@ -91,7 +91,7 @@ const filteredCards = computed(() => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:3000/api/cards');
+    const response = await axios.get('/api/cards');
     cards.value = response.data;
   } catch (e) {
     error.value = 'Errore critico di sincronizzazione col Nucleo (Backend Node.js offline).';
@@ -119,7 +119,7 @@ const vClickOutside = {
 
 <template>
   <div class="cards-view fade-in">
-    <h2>Matrice Frammenti (Live)</h2>
+    <h1 class="glitch-text" data-text="MATRICE FRAMMENTI">MATRICE FRAMMENTI (LIVE)</h1>
     <p class="subtitle" style="color: #fff; opacity: 0.8;">Sincronizzato in tempo reale con le direttive Google Sheets.</p>
     
     <!-- Pannello Filtri -->
@@ -263,6 +263,19 @@ const vClickOutside = {
 </template>
 
 <style scoped>
+.cards-view {
+  text-align: center; /* Centra Titolo e Sottotitolo */
+  padding: 2rem;
+}
+.cards-view h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-main);
+  text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+}
+.subtitle {
+  margin-bottom: 2rem;
+}
 .text-center {
   text-align: center;
 }
@@ -275,6 +288,7 @@ const vClickOutside = {
   gap: 1.5rem;
   width: 100%;
   max-width: 1200px;
+  margin: 0 auto 3rem auto; /* Centrato */
 }
 .card-item {
   padding: 1.5rem;
@@ -308,13 +322,15 @@ const vClickOutside = {
   flex-wrap: wrap;
   gap: 1.5rem;
   padding: 1.5rem;
-  margin-bottom: 2rem;
+  margin: 0 auto 2rem auto; /* Centrato */
+  max-width: 1200px; /* Limite larghezza per coerenza con la griglia */
   background: rgba(0, 0, 0, 0.4);
   align-items: flex-end;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   position: relative;
-  z-index: 100; /* Assicura che i menu a tendina siano SOPRA la griglia delle carte */
+  z-index: 100;
+  text-align: left; /* Mantieni contenuti dei filtri allineati a sinistra */
 }
 @media (max-width: 1024px) {
   .filter-panel {
