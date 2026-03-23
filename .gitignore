@@ -28,3 +28,8 @@ backend/users.sqlite
 *.sqlite3
 *.db
 backend/database_preview.json
+
+# File di grandi dimensioni (>100MB - limite GitHub)
+# Questi file vengono caricati direttamente su OpenAI tramite init_assistant.js
+archivio.pdf
+*.pdf
