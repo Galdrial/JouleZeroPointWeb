@@ -1,0 +1,129 @@
+[
+  {
+    "name": "Mazzo Vanguard",
+    "costruttoreId": 254,
+    "cards": [
+      {
+        "cardId": 1,
+        "count": 3
+      },
+      {
+        "cardId": 2,
+        "count": 3
+      },
+      {
+        "cardId": 3,
+        "count": 3
+      },
+      {
+        "cardId": 4,
+        "count": 3
+      },
+      {
+        "cardId": 5,
+        "count": 3
+      },
+      {
+        "cardId": 6,
+        "count": 3
+      },
+      {
+        "cardId": 8,
+        "count": 3
+      },
+      {
+        "cardId": 9,
+        "count": 3
+      },
+      {
+        "cardId": 11,
+        "count": 3
+      },
+      {
+        "cardId": 12,
+        "count": 3
+      },
+      {
+        "cardId": 13,
+        "count": 3
+      },
+      {
+        "cardId": 15,
+        "count": 3
+      },
+      {
+        "cardId": 17,
+        "count": 3
+      },
+      {
+        "cardId": 18,
+        "count": 1
+      }
+    ],
+    "id": 1774283902128
+  },
+  {
+    "name": "Mazzo Protetto",
+    "costruttoreId": 254,
+    "cards": [
+      {
+        "cardId": 1,
+        "count": 3
+      },
+      {
+        "cardId": 2,
+        "count": 3
+      },
+      {
+        "cardId": 3,
+        "count": 3
+      },
+      {
+        "cardId": 4,
+        "count": 3
+      },
+      {
+        "cardId": 5,
+        "count": 3
+      },
+      {
+        "cardId": 6,
+        "count": 3
+      },
+      {
+        "cardId": 8,
+        "count": 3
+      },
+      {
+        "cardId": 9,
+        "count": 3
+      },
+      {
+        "cardId": 11,
+        "count": 3
+      },
+      {
+        "cardId": 12,
+        "count": 3
+      },
+      {
+        "cardId": 13,
+        "count": 3
+      },
+      {
+        "cardId": 15,
+        "count": 3
+      },
+      {
+        "cardId": 17,
+        "count": 3
+      },
+      {
+        "cardId": 18,
+        "count": 1
+      }
+    ],
+    "creator": "Simone",
+    "id": 1774285018530
+  }
+]

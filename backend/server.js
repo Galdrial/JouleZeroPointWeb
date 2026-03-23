@@ -60,6 +60,10 @@ function parseCSV(fileContent) {
   return cards;
 }
 
+const fs = require('fs');
+const path = require('path');
+const DECKS_FILE = path.join(__dirname, 'decks.json');
+
 app.get('/api/cards', async (req, res) => {
   try {
     const response = await axios.get(GOOGLE_SHEETS_CSV_URL);
@@ -68,6 +72,57 @@ app.get('/api/cards', async (req, res) => {
   } catch (error) {
     console.error('Errore nel fetch delle carte da Google Sheets:', error);
     res.status(500).json({ error: 'Errore durante la lettura della Matrice Dati (Server Error)' });
+  }
+});
+
+// Gestione Mazzi
+app.get('/api/decks', (req, res) => {
+  try {
+    const creator = req.query.creator;
+    const data = fs.readFileSync(DECKS_FILE, 'utf8');
+    let decks = JSON.parse(data);
+    
+    if (creator) {
+      decks = decks.filter(d => d.creator === creator);
+    }
+    
+    res.json(decks);
+  } catch (error) {
+    res.status(500).json({ error: 'Errore caricamento mazzi' });
+  }
+});
+
+app.post('/api/decks', (req, res) => {
+  try {
+    const newDeck = req.body;
+    let decks = JSON.parse(fs.readFileSync(DECKS_FILE, 'utf8'));
+    
+    if (newDeck.id) {
+       // Aggiornamento esistente
+       decks = decks.map(d => d.id === newDeck.id ? newDeck : d);
+    } else {
+       // Nuovo mazzo
+       newDeck.id = Date.now();
+       decks.push(newDeck);
+    }
+    
+    fs.writeFileSync(DECKS_FILE, JSON.stringify(decks, null, 2));
+    res.json(newDeck);
+  } catch (error) {
+    console.error('Errore salvataggio mazzo:', error);
+    res.status(500).json({ error: 'Errore salvataggio mazzo' });
+  }
+});
+
+app.delete('/api/decks/:id', (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    let decks = JSON.parse(fs.readFileSync(DECKS_FILE, 'utf8'));
+    decks = decks.filter(d => d.id !== id);
+    fs.writeFileSync(DECKS_FILE, JSON.stringify(decks, null, 2));
+    res.json({ message: 'Mazzo eliminato' });
+  } catch (error) {
+    res.status(500).json({ error: 'Errore eliminazione mazzo' });
   }
 });
 

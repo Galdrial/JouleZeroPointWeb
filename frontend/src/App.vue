@@ -30,6 +30,7 @@ const logout = () => {
       <nav>
         <RouterLink to="/">Orizzonte</RouterLink>
         <RouterLink to="/cards">Database</RouterLink>
+        <RouterLink to="/deckbuilder">Mazzi</RouterLink>
         
         <template v-if="username">
           <span class="welcome-text">Bentornato, {{ username }}</span>
