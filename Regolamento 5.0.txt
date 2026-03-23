@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<indexing>
+ <paragraph index="9" node_type="writer">JOULE: ZERO POINT © 2026 Simone Camerano. Tutti i diritti riservati. Opera depositata su Patamu Registry, numero deposito 284864. La riproduzione non autorizzata di testi, meccaniche e grafica sarà perseguita a termini di legge.</paragraph>
+ <object alt="" name="Immagine1" object_type="graphic"/>
+ <object alt="" name="Immagine2" object_type="graphic"/>
+ <paragraph index="48" node_type="writer">JOULE: ZERO POINT – Regolamento Ufficiale (Riorganizzato)</paragraph>
+ <paragraph index="49" node_type="writer">1. Introduzione e Concetti Chiave</paragraph>
+ <paragraph index="50" node_type="writer">Filosofia del Gioco:</paragraph>
+ <paragraph index="51" node_type="writer">A seguito dell'evento noto come Punto Zero, le leggi dello spazio-tempo si sono infrante. In questo universo senza più regole si ergono i Costruttori, entità visionarie il cui scopo è ripristinare l'equilibrio. Tuttavia, ogni Costruttore possiede una visione radicalmente opposta di come debba essere questo nuovo ordine: c'è chi cerca la perfezione del gelo assoluto, chi il caos purificatore del calore e chi l'adattabilità dei fluidi. Per imporre la propria visione della realtà, i Costruttori non evocano eserciti, ma plasmano e ricompongono i Frammenti dell'universo originario (colossali reliquie geologiche, tempeste di energia, masse oscure) forzandoli nel Presente. Quando due visioni incompatibili si scontrano, la linea temporale più debole collassa. Chi riuscirà a imporre i propri Frammenti, detterà le nuove leggi della fisica.</paragraph>
+ <paragraph index="53" node_type="writer">Il campo è diviso in tre colonne condivise:</paragraph>
+ <paragraph index="54" node_type="writer">• Passato – memoria e risonanza (supporto)</paragraph>
+ <paragraph index="55" node_type="writer">• Presente – conflitto (istante di collisione)</paragraph>
+ <paragraph index="56" node_type="writer">• Futuro – pianificazione (coperto).</paragraph>
+ <paragraph index="57" node_type="writer">Componenti</paragraph>
+ <paragraph index="58" node_type="writer">• Mazzo da 40 carte + 1 Costruttore.</paragraph>
+ <paragraph index="59" node_type="writer">• Segnalini: ET (Energia Temporale), IT (Integrità Temporale/Vita), TP (Temperatura del Presente), Surriscaldamento (🔴), Congelamento (🔵).</paragraph>
+ <paragraph index="60" node_type="writer">• Indicatore Flusso (Normale/Invertito).</paragraph>
+ <paragraph index="61" node_type="writer">Valori Fondamentali</paragraph>
+ <paragraph index="62" node_type="writer">• ET: Risorsa per giocare carte.</paragraph>
+ <paragraph index="63" node_type="writer">• PEP: Pressione Energetica (attacco).</paragraph>
+ <paragraph index="64" node_type="writer">• RP: Resistenza del Presente (difesa).</paragraph>
+ <paragraph index="65" node_type="writer">• IT: Punti vita.</paragraph>
+ <paragraph index="66" node_type="writer">• TP: Stato termico globale del Presente.</paragraph>
+ <paragraph index="67" node_type="writer">Tipi di Carte Frammenti (Solido, Liquido, Gas, Plasma, Materia Oscura), Eventi, Anomalie (1 attiva alla volta, qualsiasi giocatore ne giochi un’altra quest’ultima sostituisce la precedente), Costruttori.</paragraph>
+ <paragraph index="68" node_type="writer">Zona di Attivazione dei Frammenti</paragraph>
+ <paragraph index="69" node_type="writer">Salvo diversa indicazione, un Frammento applica il proprio testo solo mentre si trova nel Presente. Se un Frammento si trova nel Passato o nel Futuro, ignora completamente il proprio testo, ad eccezione di eventuali effetti che menzionano esplicitamente quella colonna. Il Supporto del Passato è regolato esclusivamente dalla sezione “Supporto del Passato (Bonus)” e non dagli effetti stampati sulle carte.</paragraph>
+ <paragraph index="71" node_type="writer">Deckbuilding</paragraph>
+ <paragraph index="72" node_type="writer">• Max copie: Stabile (3), Instabile (2), Critica (1).</paragraph>
+ <paragraph index="73" node_type="writer">• Consigliato: Minimo 25 Frammenti, Max 15 tra Eventi e Anomalie.</paragraph>
+ <paragraph index="74" node_type="writer">-------------------------------------------------------------------------------- </paragraph>
+ <paragraph index="75" node_type="writer">2. Preparazione della Partita (Setup)</paragraph>
+ <paragraph index="76" node_type="writer">Procedura</paragraph>
+ <paragraph index="77" node_type="writer">1. Ogni giocatore sceglie un mazzo da 40 carte e 1 Costruttore.</paragraph>
+ <paragraph index="78" node_type="writer">2. Valori iniziali: IT 20, TP 0, ET 3.</paragraph>
+ <paragraph index="79" node_type="writer">3. Flusso iniziale: Normale.</paragraph>
+ <paragraph index="80" node_type="writer">4. Ogni giocatore pesca 5 carte.</paragraph>
+ <paragraph index="81" node_type="writer">5. Determinare l'Iniziativa: I giocatori tirano un dado (o usano un altro metodo casuale) per stabilire chi ha l'Iniziativa nel Round 1 della prima partita. Chi vince può scegliere se avere l’iniziativa o assegnarla all’avversario. Nelle partite successive contro lo stesso avversario (es. in un formato &quot;al meglio delle 3&quot;), il giocatore che ha perso la partita precedente decide chi avrà l'Iniziativa nel Round 1.</paragraph>
+ <paragraph index="82" node_type="writer">Mulligan Una sola volta: rimescola e pesca 1 carta in meno (4 carte).</paragraph>
+ <paragraph index="83" node_type="writer">Condizioni di Vittoria Prima di iniziare, è fondamentale sapere come si vince:</paragraph>
+ <paragraph index="84" node_type="writer">1. Vittoria per Collasso: L’IT dell’avversario scende a 0 o meno. (Se accade a entrambi contemporaneamente: Pareggio per Collasso Sincrono).</paragraph>
+ <paragraph index="85" node_type="writer">2. Vittoria per Sincronia: Un giocatore controlla almeno 1 Frammento in ogni colonna (Passato, Presente, Futuro) e tutti e 5 gli stati della materia (Se possiedi più di una Materia Oscura, UNA SOLA di esse può fungere da Jolly per sostituire un unico stato della materia mancante) prima dello slittamento. Anche in questo caso è possibile il pareggio se entrambi ottengono la Sincronia contemporaneamente. Ai fini del conteggio per la Vittoria per Sincronia, è considerata valida esclusivamente la natura originale (lo stato stampato) del Frammento. Gli eventuali stati aggiuntivi acquisiti tramite i Segnalini Termici (Transizione di Stato) vengono ignorati per questo calcolo.</paragraph>
+ <paragraph index="86" node_type="writer">-------------------------------------------------------------------------------- </paragraph>
+ <paragraph index="87" node_type="writer">3. Struttura del Round (Il Core Loop)</paragraph>
+ <paragraph index="88" node_type="writer">Ogni Round segue questa sequenza: Slittamento -&gt; Risorse -&gt; Azioni -&gt; Collisione -&gt; Fine.</paragraph>
+ <paragraph index="89" node_type="writer">Fase 1: Slittamento Temporale</paragraph>
+ <paragraph index="90" node_type="writer">All’inizio di ogni Round (escluso il primo), il tempo slitta secondo la Direzione del Flusso.</paragraph>
+ <paragraph index="91" node_type="writer">• Flusso Normale: Futuro → Presente → Passato → Orizzonte degli Eventi (scarto).</paragraph>
+ <paragraph index="92" node_type="writer">• Flusso Invertito: Passato → Presente → Futuro (coperto) → Orizzonte degli Eventi.</paragraph>
+ <paragraph index="93" node_type="writer">Dettagli Slittamento:</paragraph>
+ <paragraph index="94" node_type="writer">• Le carte entrano nel Presente simultaneamente e attivano effetti &quot;Quando entra nel Presente&quot;.</paragraph>
+ <paragraph index="95" node_type="writer">• I segnalini Termici (🔴/🔵) vengono rimossi.</paragraph>
+ <paragraph index="96" node_type="writer">• Dopo lo slittamento, si ricalcola la TP.</paragraph>
+ <paragraph index="97" node_type="writer">Se più effetti si attivano simultaneamente, il giocatore con Iniziativa sceglie l’ordine di risoluzione dei propri effetti, poi l’avversario.</paragraph>
+ <paragraph index="98" node_type="writer">Supporto del Passato (Bonus) Immediatamente dopo lo Slittamento, la colonna &quot;Passato&quot; fornisce bonus alla futura collisione:</paragraph>
+ <paragraph index="99" node_type="writer">• Ogni Frammento Caldo nel Passato: +1 PEP.</paragraph>
+ <paragraph index="100" node_type="writer">• Ogni Frammento Freddo nel Passato: +1 RP.</paragraph>
+ <paragraph index="101" node_type="writer">• Materia Oscura: +1 PEP o +1 RP a scelta.</paragraph>
+ <paragraph index="102" node_type="writer">• Limite: Max 2 bonus totali per Round per giocatore.</paragraph>
+ <paragraph index="103" node_type="writer">La scelta dei bonus (inclusa l’assegnazione della Materia Oscura) viene effettuata immediatamente dopo lo Slittamento e prima della Fase Risorse.
+I bonus così determinati restano validi per l’intero Round e non vengono ricalcolati fino al prossimo Slittamento o a un’eventuale Inversione Temporale.</paragraph>
+ <paragraph index="104" node_type="writer">Se un Frammento che ha contribuito al Supporto del Passato lascia quella colonna durante il Round, il bonus assegnato non viene riassegnato a meno che non avvenga una Inversione Temporale.</paragraph>
+ <paragraph index="105" node_type="writer">Fase 2: Risorse</paragraph>
+ <paragraph index="106" node_type="writer">1. Crescita ET: Entrambi i giocatori ottengono ET. Si inizia con 3 ET; ogni round aumenta di +1 fino a un massimo di 10 (salvo eventuali Bonus).</paragraph>
+ <paragraph index="107" node_type="writer">2. Pesca: Entrambi pescano 1 carta.</paragraph>
+ <paragraph index="108" node_type="writer">Bonus Controllo: Chi controlla il Presente (più Frammenti) può scegliere se pescare 1 carta extra oppure infliggere 1 danno IT diretto all'avversario.</paragraph>
+ <paragraph index="109" node_type="writer">Collasso Entropico: Se un giocatore deve pescare una carta (durante questa fase o per via di un qualsiasi altro effetto) ma il suo mazzo è vuoto, la sua linea temporale viene consumata dall'entropia e quel giocatore perde inesorabilmente la partita</paragraph>
+ <paragraph index="110" node_type="writer">3. Scambio: Una volta per round puoi scartare 1 carta per ottenere +1 ET.</paragraph>
+ <paragraph index="111" node_type="writer">Fase 3 &amp; 4: Azioni (Giocatori)</paragraph>
+ <paragraph index="112" node_type="writer">Il giocatore con Iniziativa agisce per primo, poi l'altro.</paragraph>
+ <paragraph index="113" node_type="writer">Tempismo di Giocata:</paragraph>
+ <paragraph index="114" node_type="writer">Frammenti e Anomalie: Possono essere giocati solo durante il proprio turno di Azione (quando si ha l'Iniziativa o quando l'avversario ha passato).</paragraph>
+ <paragraph index="115" node_type="writer">Eventi: Sono azioni rapide. Possono essere giocati in qualsiasi momento (durante il turno di Azione di qualsiasi giocatore o durante la Fase 5: Collisione), a meno che il testo della carta non specifichi una condizione precisa (es. &quot;Gioca durante una Collisione&quot;).</paragraph>
+ <paragraph index="116" node_type="writer">• Presente: Costo normale.</paragraph>
+ <paragraph index="117" node_type="writer">• Futuro: Costo -1 ET (entra coperta).</paragraph>
+ <paragraph index="118" node_type="writer">• Passato: Costo -1 ET (entra scoperta).</paragraph>
+ <paragraph index="119" node_type="writer">• Capienza: Max 4 Frammenti per colonna per giocatore:</paragraph>
+ <paragraph index="120" node_type="writer">Divieto di Giocata (Attiva): Non puoi giocare dalla mano o spostare volontariamente un Frammento in una colonna che contiene già 4 carte.</paragraph>
+ <paragraph index="121" node_type="writer">Distruzione per Slittamento (Passiva): Se durante la Fase di Slittamento Temporale un quinto Frammento viene spinto in una colonna già piena, il giocatore deve scegliere e distruggere immediatamente uno dei suoi Frammenti in quella colonna, mandandolo nell'Orizzonte degli Eventi.</paragraph>
+ <paragraph index="122" node_type="writer">PARADOSSO ENTROPICO (Azione Volontaria Mirata) Quando giochi un Frammento nell'ultima colonna prima dell'Orizzonte degli Eventi (il Passato durante il Flusso Normale, oppure il Futuro durante il Flusso Invertito), puoi innescare un &quot;Paradosso Entropico&quot; (Limite: Max 1 volta per Round per giocatore). Questa azione non causa un'Inversione Temporale globale, ma ti permette di forzare il Frammento controcorrente attraverso un sacrificio vitale.</paragraph>
+ <paragraph index="123" node_type="writer">Il Costo del Paradosso: Invece di spendere Energia Temporale (ET), devi subire un ammontare di danni diretti alla tua Integrità Temporale (IT) pari al costo della carta (applicando lo sconto standard delle colonne laterali). Il costo minimo da pagare in IT è sempre 1.</paragraph>
+ <paragraph index="124" node_type="writer">Se paghi il costo:</paragraph>
+ <paragraph index="125" node_type="writer">Stato Anomalo: Il Frammento entra nella colonna ruotato di 90 gradi. Rispetta le normali regole di visibilità: scoperto nel Passato, coperto nel Futuro.</paragraph>
+ <paragraph index="126" node_type="writer">Viaggio a Ritroso: Al successivo Slittamento Temporale, il Frammento viaggerà controcorrente ed entrerà nel Presente innescando normalmente eventuali effetti. (Mantieni la carta ruotata).</paragraph>
+ <paragraph index="127" node_type="writer">Overclock Entropico: Entrando nel Presente con un'entropia capovolta, il suo valore base di Pressione Energetica (PEP) e di Resistenza del Presente (RP) vengono scambiati tra loro per la durata della Collisione. Il Polo Termico originale e il suo effetto sulla TP rimangono inalterati.</paragraph>
+ <paragraph index="128" node_type="writer">Distruzione: Alla fine della Collisione, incapace di reggere l'anomalia fisica, il Frammento viene distrutto.</paragraph>
+ <paragraph index="130" node_type="writer">Fase 5: Collisione</paragraph>
+ <paragraph index="131" node_type="writer">Tutti i Frammenti nel Presente si scontrano.</paragraph>
+ <paragraph index="132" node_type="writer">Impatto e Rottura: Somma la PEP Totale vs la RP Totale avversaria.</paragraph>
+ <paragraph index="133" node_type="writer">2. Destino del Presente (Collasso o Sopravvivenza):</paragraph>
+ <paragraph index="134" node_type="writer">Collasso: Se la tua PEP totale supera la RP avversaria (PEP &gt; RP), lo scudo cede. Il Presente avversario collassa: tutti i suoi Frammenti nel Presente sono condannati e verranno distrutti alla fine del calcolo dei danni.</paragraph>
+ <paragraph index="135" node_type="writer">Sopravvivenza: Se la PEP è pari o inferiore alla RP avversaria, lo scudo regge. Nessun Frammento collassa e restano tutti sul campo per il prossimo slittamento. </paragraph>
+ <paragraph index="136" node_type="writer">3. Calcolo Danni IT e Assorbimento:</paragraph>
+ <paragraph index="137" node_type="writer">Se lo scudo ha ceduto, calcola la differenza tra PEP e RP. Questo è il danno base inflitto all'Integrità Temporale (IT) avversaria. A questo punto si attivano gli eventuali stati Solido (Assorbimento) per ridurre i danni all'IT. (Nota tattica: Grazie all'Assorbimento è possibile ridurre i danni IT fino a 0, proteggendo così i propri punti vita, ma questo non salva i Frammenti: se lo scudo iniziale è stato infranto al punto 2, i Frammenti collasseranno comunque nell'Orizzonte degli Eventi alla fine di questa fase).</paragraph>
+ <paragraph index="138" node_type="writer">Proprietà degli Stati (Attive solo in Collisione) Durante la collisione, gli stati attivano poteri speciali (Max 2 volte per tipo):</paragraph>
+ <paragraph index="139" node_type="writer">• 🧱 Solido (Assorbimento): Riduci di 1 il danno IT subito.</paragraph>
+ <paragraph index="140" node_type="writer">• 💧 Liquido (Persistenza): Se distrutto, puoi spostarlo nel Passato invece che scartarlo (una sola volta per Frammento)</paragraph>
+ <paragraph index="141" node_type="writer">• 🌫️ Gas (Pressione): Se al termine del calcolo dei danni nessun giocatore ha inflitto danni IT, infliggi 1 danno IT all’avversario.</paragraph>
+ <paragraph index="142" node_type="writer">• ⚡ Plasma (Scarica): Se infliggi danno IT, infliggi +1 danno extra.</paragraph>
+ <paragraph index="143" node_type="writer">Fase 6 &amp; 7: Fine Round</paragraph>
+ <paragraph index="144" node_type="writer">Verifica condizioni vittoria. L'Iniziativa passa all'altro giocatore.</paragraph>
+ <paragraph index="145" node_type="writer">-------------------------------------------------------------------------------- </paragraph>
+ <paragraph index="146" node_type="writer">4. Il Sistema della Temperatura (TP)</paragraph>
+ <paragraph index="147" node_type="writer">La Temperatura del Presente (TP) altera il campo di battaglia.</paragraph>
+ <paragraph index="148" node_type="writer">Variazione della TP</paragraph>
+ <paragraph index="149" node_type="writer">• Ogni Frammento Caldo nel Presente: +1 TP.</paragraph>
+ <paragraph index="150" node_type="writer">• Ogni Frammento Freddo nel Presente: -1 TP.</paragraph>
+ <paragraph index="151" node_type="writer">La TP non può mai superare il valore di +4 (Surriscaldamento Critico) né scendere sotto il valore di -4 (Congelamento Assoluto). Qualsiasi variazione termica in eccesso viene ignorata.</paragraph>
+ <paragraph index="152" node_type="writer">La TP viene ricalcolata ogni volta che un Frammento entra o lascia il Presente, e immediatamente dopo ogni Inversione Temporale.</paragraph>
+ <paragraph index="153" node_type="writer">Segnalini Termici Vengono assegnati in base alla TP (ricalcolata dopo slittamento o durante il round):</paragraph>
+ <paragraph index="154" node_type="writer">• TP ≥ +2: Assegna 🔴 (Surriscaldamento) a tutti i Frammenti nel Presente.</paragraph>
+ <paragraph index="155" node_type="writer">• TP ≤ -2: Assegna 🔵 (Congelamento) a tutti i Frammenti nel Presente.</paragraph>
+ <paragraph index="156" node_type="writer">• Se TP torna tra -1 e +1, i segnalini vengono rimossi.</paragraph>
+ <paragraph index="157" node_type="writer">Effetti dei Segnalini (Transizione di Stato) Ordine: Solido ↔ Liquido ↔ Gas ↔ Plasma.</paragraph>
+ <paragraph index="158" node_type="writer">• 🔴: Il Frammento acquisisce anche le proprietà dello stato superiore (es. Gas diventa Gas+Plasma).</paragraph>
+ <paragraph index="159" node_type="writer">• 🔵: Il Frammento acquisisce anche le proprietà dello stato inferiore.</paragraph>
+ <paragraph index="160" node_type="writer">• Nota: Non modifica i valori di PEP/RP stampati.</paragraph>
+ <paragraph index="161" node_type="writer">Regola d'Oro Termodinamica: Il Cambio di Segno &quot;A causa dell'estrema instabilità del Punto Zero, ai fini della risoluzione degli effetti delle carte, si considera che la TP 'cambi segno' non solo quando passa direttamente da un valore positivo a uno negativo (o viceversa), ma anche ogni volta che il suo valore raggiunge o attraversa esattamente lo 0 partendo da un valore positivo (Caldo) o negativo (Freddo).&quot;</paragraph>
+ <paragraph index="162" node_type="writer">-------------------------------------------------------------------------------- </paragraph>
+ <paragraph index="163" node_type="writer">5. Meccaniche Avanzate: Le Inversioni</paragraph>
+ <paragraph index="164" node_type="writer">Le Inversioni alterano il flusso del tempo e la struttura del campo.</paragraph>
+ <paragraph index="165" node_type="writer">Inversione Temporale: Cosa succede?</paragraph>
+ <paragraph index="166" node_type="writer">1. Inverti il Flusso (Normale ↔ Invertito).</paragraph>
+ <paragraph index="167" node_type="writer">2. Scambio Ruoli: Le colonne laterali si scambiano ruolo (Passato diventa Futuro e viceversa).</paragraph>
+ <paragraph index="168" node_type="writer">    ◦ Le carte NON si spostano fisicamente.</paragraph>
+ <paragraph index="169" node_type="writer">    ◦ Le carte nel nuovo Futuro vengono coperte.</paragraph>
+ <paragraph index="170" node_type="writer">    ◦ Le carte nel nuovo Passato vengono rivelate.</paragraph>
+ <paragraph index="171" node_type="writer">3. Ricalcolo Supporto: Il Supporto del Passato viene ricalcolato immediatamente in base alla nuova colonna Passato.</paragraph>
+ <paragraph index="172" node_type="writer">4. Nota: L'inversione non è un movimento e non attiva effetti &quot;Entrata nel Presente&quot;.</paragraph>
+ <paragraph index="173" node_type="writer">Trigger dell'Inversione Esistono due modi per causare un'Inversione:</paragraph>
+ <paragraph index="174" node_type="writer">1. Spontanea (TP): Se TP raggiunge +4 o -4, avviene un'Inversione Temporale gratuita (Max 1 per round).</paragraph>
+ <paragraph index="175" node_type="writer">2. Volontaria (Carte): Se una carta causa un'Inversione Temporale, il giocatore che la gioca subisce immediatamente 1 danno alla propria Integrità Temporale (IT).</paragraph>
+ <paragraph index="176" node_type="writer">Ruolo delle Colonne</paragraph>
+ <paragraph index="177" node_type="writer">• Flusso Normale: Sinistra = Passato (Scoperto) | Destra = Futuro (Coperto).</paragraph>
+ <paragraph index="178" node_type="writer">• Flusso Invertito: Sinistra = Futuro (Coperto) | Destra = Passato (Scoperto).</paragraph>
+ <paragraph index="179" node_type="writer">• La colonna centrale è sempre il Presente.</paragraph>
+ <paragraph index="180" node_type="writer">Note Tattiche sulle Inversioni</paragraph>
+ <paragraph index="181" node_type="writer">1. La direzione fisica delle carte non cambia mai &quot;Nota bene: sebbene le colonne si scambino di ruolo (Sinistra diventa Futuro, Destra diventa Passato), il movimento fisico delle carte sul tavolo viaggia sempre e solo da Destra verso Sinistra. Durante il Flusso Normale le carte scivolano dal Futuro(Destra) al Passato(Sinistra). Durante il Flusso Invertito scivolano dal Passato(Destra) al Futuro(Sinistra). Il nastro trasportatore non cambia mai verso, cambiano solo i nomi delle zone d'arrivo e di partenza.&quot;</paragraph>
+ <paragraph index="182" node_type="writer">2. Giocare carte durante l'Inversione (La Trappola del Futuro) &quot;Quando il flusso è invertito, fare investimenti cambia radicalmente:</paragraph>
+ <paragraph index="183" node_type="writer">Se giochi a Sinistra (nuovo Futuro): Le carte entrano coperte. Attenzione: poiché il Futuro è l'ultima tappa del Flusso Invertito, al prossimo slittamento queste carte scivoleranno direttamente nell'Orizzonte degli Eventi (scartate) senza mai entrare nel Presente.</paragraph>
+ <paragraph index="184" node_type="writer">Se giochi a Destra (nuovo Passato): Le carte entrano scoperte. Poiché entrano nella Fase Azioni, non forniranno Supporto per la Collisione in corso (il Supporto si calcola subito dopo lo Slittamento), ma al turno successivo slitteranno regolarmente nel Presente.&quot;</paragraph>
+ <paragraph index="185" node_type="writer">3. La semantica delle carte (L'esatta lettura del testo) &quot;Le abilità delle carte leggono solo il ruolo attuale della colonna, senza memoria del passato.</paragraph>
+ <paragraph index="186" node_type="writer">Esempio 1 (Nodo Inamovibile): Il suo testo recita 'Non slitta nel Passato'. Durante un'Inversione, il flusso la spinge a sinistra. Poiché la sinistra è diventata il nuovo Futuro, la carta non ha difese e slitta regolarmente.</paragraph>
+ <paragraph index="187" node_type="writer">Esempio 2 (Nyx): La sua abilità recita 'Il primo Frammento che giochi nel Futuro...'. Durante un'Inversione, Nyx considererà come Futuro la colonna di sinistra, permettendo di giocarvi carte coperte e farle saltare nel Presente.&quot;</paragraph>
+ <paragraph index="189" node_type="writer">🔎 COME LEGGERE LE CARTE</paragraph>
+ <paragraph index="190" node_type="writer">🔥 1. L'Angolo in alto a destra (Il Polo Termico)</paragraph>
+ <paragraph index="192" node_type="writer">Vedi l'icona della fiamma? Indica che questa carta è Calda. Quando entrerà nel Presente, modificherà la Temperatura (TP) di +1. (Se avesse avuto il cristallo di ghiaccio sarebbe stata Fredda, con TP -1).</paragraph>
+ <paragraph index="194" node_type="writer">📝 2. In alto a sinistra e al centro (Nome e Tipo)</paragraph>
+ <paragraph index="195" node_type="writer">Titolo: Vapore di Risonanza</paragraph>
+ <paragraph index="196" node_type="writer">Sottotitolo azzurro: Gas. Indica lo Stato della Materia del Frammento, che in fase di Collisione gli conferisce la proprietà universale &quot;Pressione&quot;.</paragraph>
+ <paragraph index="197" node_type="writer">📊 3. La Barra delle Statistiche (Sotto il titolo)</paragraph>
+ <paragraph index="198" node_type="writer">I tre numeri d'oro per le tue strategie:</paragraph>
+ <paragraph index="199" node_type="writer">ET 4: Ti costa 4 Energie Temporali per essere giocata.</paragraph>
+ <paragraph index="200" node_type="writer">PEP 4: La sua forza d'attacco (Pressione Energetica).</paragraph>
+ <paragraph index="201" node_type="writer">RP 2: La sua tenuta difensiva (Resistenza del Presente).</paragraph>
+ <paragraph index="202" node_type="writer">📖 4. Il Riquadro Centrale (Il Testo dell'Effetto)</paragraph>
+ <paragraph index="203" node_type="writer">&quot;Quando una Inversione Temporale avviene, TP +1 all'inizio del prossimo Round&quot;.</paragraph>
+ <paragraph index="204" node_type="writer">Questa è l'abilità speciale del Frammento. Ricorda: gli effetti si attivano solo mentre la carta si trova nella colonna del Presente, salvo diversa indicazione!</paragraph>
+ <paragraph index="205" node_type="writer">🗃️ 5. Il Piè di Pagina (In basso)</paragraph>
+ <paragraph index="206" node_type="writer">Zero Point • #111 • Rara. Questa stringa ti indica a quale set appartiene la carta, il suo numero di collezione e il limite massimo di copie che puoi inserire nel tuo mazzo.</paragraph>
+ <paragraph index="207" node_type="writer">🎲 GUIDA AI COMPONENTI DEL TAVOLO VIRTUALE</paragraph>
+ <paragraph index="211" node_type="writer">🟡 1. Segnalino Iniziativa (Pedina Gialla) Indica quale giocatore ha il vantaggio tattico di agire per primo durante la Fase di Azioni e di risolvere per primo gli effetti simultanei. Alla fine di ogni round, passa all'avversario!</paragraph>
+ <paragraph index="213" node_type="writer">📟 2. Contatore Digitale della TP (Termostato) Usa i tasti + e - per tracciare la Temperatura del Presente (TP) globale, condivisa da entrambi i giocatori. Ricorda: il limite massimo è +4 (Surriscaldamento Critico) e il minimo è -4 (Congelamento Assoluto).</paragraph>
+ <paragraph index="215" node_type="writer">🔄 3. Indicatore di Flusso (Al centro del Punto Zero) Il token visivo fondamentale per la navigazione temporale e la vera e propria &quot;bussola&quot; dello Spazio-Tempo. Oltre a indicare la direzione in cui scivolerà la materia, il suo anello colorato stabilisce i ruoli delle colonne: l'arco arancione punta sempre al Passato, l'arco fucsia/magenta punta sempre al Futuro. Se avviene un'Inversione (spontanea per via della TP a +4/-4 o causata da una carta), capovolgilo! La freccia continuerà a puntare a sinistra, ma i colori ai lati si scambieranno, indicando a tutti a colpo d'occhio i nuovi ruoli assunti dalle colonne fisiche sul tabellone</paragraph>
+ <paragraph index="217" node_type="writer">🔥 / ❄️ 4. Segnalini Termici (Transizioni di Stato) Quando la TP raggiunge +2 o -2, posiziona fisicamente questi dischetti sui Frammenti nel Presente. Il fuoco 🔴 aggiunge le proprietà dello stato superiore (es. Gas diventa anche Plasma), il ghiaccio 🔵 quelle dello stato inferiore.</paragraph>
+ <paragraph index="219" node_type="writer">🎯 5. Segnalino Bersaglio (Target) Uno strumento essenziale per la chiarezza al tavolo virtuale. Usalo per &quot;selezionare&quot; visivamente una carta quando giochi un Evento (es. Interferenza o Interruzione Mirata) per indicare in modo inequivocabile all'avversario quale Frammento stai colpendo.</paragraph>
+ <paragraph index="221" node_type="writer">🎲 6. Dadi Risorse (Viola e Verdi)</paragraph>
+ <paragraph index="222" node_type="writer">Dadi Viola (d20): Tengono traccia della tua Integrità Temporale (IT), ovvero i tuoi punti vita. Parti da 20: se scendono a 0 o meno, il tuo avversario vince per Collasso!</paragraph>
+ <paragraph index="223" node_type="writer">Dadi Verdi: Tracciano la tua Energia Temporale (ET). Inizi con 3 e aumenti di +1 a ogni round (fino a 10). Usali per pagare il costo delle carte.  (digitare 12 per ottenere lo 0)</paragraph>
+ <paragraph index="224" node_type="writer">🧱 7. Cubi Modificatori (+1 / -1 Rossi e Azzurri) Affiancali alle carte per segnare i bonus e malus temporanei durante le caotiche Fasi di Collisione (ad esempio, quando l'effetto di una carta conferisce +1 PEP o -1 RP per un turno).</paragraph>
+ <paragraph index="225" node_type="writer">
+</paragraph>
+</indexing>
