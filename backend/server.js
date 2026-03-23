@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -9,6 +10,10 @@ app.use(express.json());
 // Autenticazione (Gestione Costruttori)
 const authRoutes = require('./auth');
 app.use('/api/auth', authRoutes);
+
+// Terminale del Punto Zero (AI Oracolo)
+const chatbotRoutes = require('./chatbot');
+app.use('/api', chatbotRoutes);
 
 const GOOGLE_SHEETS_CSV_URL = process.env.SHEETS_URL || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4otsaVBcLkcGI4zdD8aBJn0nRah9mUrEG0BprARIMF0WdocEkPsBkK0n4v-Sdf70KnBGmI95nS7EG/pub?gid=1051449153&single=true&output=tsv';
 
@@ -67,6 +72,6 @@ app.get('/api/cards', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`[Punto Zero] Backend Server in ascolto sulla porta ${PORT}`);
 });
