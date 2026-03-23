@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue';
-import axios from 'axios';
+import axios from "axios";
+import { nextTick, ref } from "vue";
 
-const inputMessage = ref('');
-const messages = ref<{role: string, text: string}[]>([
-  { role: 'ai', text: 'Stato Operativo: Online. Sono il Terminale del Punto Zero. Puoi interrogarmi sul regolamento, sui frammenti di lore o sulle frequenze specifiche (statistiche) di ogni Carta. Inserisci la tua direttiva, Costruttore.' }
+const inputMessage = ref("");
+const messages = ref<{ role: string; text: string }[]>([
+  {
+    role: "ai",
+    text: "Stato Operativo: Online. Sono il Terminale del Punto Zero. Puoi interrogarmi sul regolamento, sui frammenti di lore o sulle frequenze specifiche (statistiche) di ogni Carta. Inserisci la tua direttiva, Costruttore.",
+  },
 ]);
 const loading = ref(false);
 const threadId = ref<string | null>(null);
@@ -19,23 +22,28 @@ const scrollToBottom = async () => {
 
 const sendMessage = async () => {
   if (!inputMessage.value.trim()) return;
-  
+
   const userText = inputMessage.value;
-  messages.value.push({ role: 'user', text: userText });
-  inputMessage.value = '';
+  messages.value.push({ role: "user", text: userText });
+  inputMessage.value = "";
   loading.value = true;
   await scrollToBottom();
 
   try {
-    const response = await axios.post('http://127.0.0.1:3000/api/chat', {
+    const response = await axios.post("http://127.0.0.1:3000/api/chat", {
       message: userText,
-      threadId: threadId.value
+      threadId: threadId.value,
     });
-    
+
     threadId.value = response.data.threadId;
-    messages.value.push({ role: 'ai', text: response.data.reply });
+    messages.value.push({ role: "ai", text: response.data.reply });
   } catch (error: any) {
-    messages.value.push({ role: 'error', text: error.response?.data?.error || 'Interferenza Quantica. Impossibile connettersi al server IA.' });
+    messages.value.push({
+      role: "error",
+      text:
+        error.response?.data?.error ||
+        "Interferenza Quantica. Impossibile connettersi al server IA.",
+    });
   } finally {
     loading.value = false;
     await scrollToBottom();
@@ -52,29 +60,47 @@ const sendMessage = async () => {
 
     <div class="glass-panel main-panel chat-container">
       <div class="chat-history" ref="chatBoxRow">
-        <div 
-          v-for="(msg, index) in messages" 
-          :key="index" 
+        <div
+          v-for="(msg, index) in messages"
+          :key="index"
           :class="['chat-bubble', msg.role]"
         >
-          <span class="sender">{{ msg.role === 'user' ? 'Costruttore' : (msg.role === 'error' ? 'Sistema' : 'Terminale') }}:</span>
-          <div class="message-content" v-html="msg.text.replace(/\\n/g, '<br/>')"></div>
+          <span class="sender"
+            >{{
+              msg.role === "user"
+                ? "Costruttore"
+                : msg.role === "error"
+                  ? "Sistema"
+                  : "Terminale"
+            }}:</span
+          >
+          <div
+            class="message-content"
+            v-html="msg.text.replace(/\\n/g, '<br/>')"
+          ></div>
         </div>
-        
+
         <div v-if="loading" class="chat-bubble ai typing">
-          <span class="sender">Terminale:</span> Elaborazione direttive... <span class="cursor">_</span>
+          <span class="sender">Terminale:</span> Elaborazione direttive...
+          <span class="cursor">_</span>
         </div>
       </div>
 
       <form class="chat-input-area" @submit.prevent="sendMessage">
-        <input 
-          v-model="inputMessage" 
-          type="text" 
-          class="glass-input" 
-          placeholder="Istruisci il Terminale (es: 'Come si gioca una Faglia?' o 'Quanto costa Nucleo di Basalto?')" 
+        <input
+          v-model="inputMessage"
+          type="text"
+          class="glass-input"
+          placeholder="Istruisci il Terminale (es: 'Come si gioca una Faglia?' o 'Quanto costa Nucleo di Basalto?')"
           :disabled="loading"
         />
-        <button type="submit" class="btn-primary" :disabled="loading || !inputMessage.trim()">INVIA</button>
+        <button
+          type="submit"
+          class="btn-primary"
+          :disabled="loading || !inputMessage.trim()"
+        >
+          INVIA
+        </button>
       </form>
     </div>
   </div>
@@ -111,7 +137,7 @@ const sendMessage = async () => {
   border-radius: 10px;
 }
 .chat-bubble {
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   padding: 1rem;
   border-radius: 8px;
   border-left: 3px solid transparent;
@@ -145,9 +171,15 @@ const sendMessage = async () => {
   margin-bottom: 0.5rem;
   letter-spacing: 1px;
 }
-.chat-bubble.user .sender { color: var(--accent-cyan); }
-.chat-bubble.ai .sender { color: var(--accent-magenta); }
-.chat-bubble.error .sender { color: #ff0000; }
+.chat-bubble.user .sender {
+  color: var(--accent-cyan);
+}
+.chat-bubble.ai .sender {
+  color: var(--accent-magenta);
+}
+.chat-bubble.error .sender {
+  color: #ff0000;
+}
 
 .chat-input-area {
   display: flex;
@@ -162,13 +194,18 @@ const sendMessage = async () => {
   animation: blink 1s infinite;
 }
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 /* Formattazione speciale per i messaggi del bot che contengono markdown base */
 .message-content strong {
   color: var(--text-main);
-  text-shadow: 0 0 2px rgba(255,255,255,0.3);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 0.3);
 }
 </style>
