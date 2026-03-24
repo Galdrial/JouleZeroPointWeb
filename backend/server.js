@@ -78,15 +78,38 @@ app.get('/api/cards', async (req, res) => {
 // Gestione Mazzi
 app.get('/api/decks', (req, res) => {
   try {
-    const creator = req.query.creator;
+    const { creator, q, costruttoreId, page = 1, limit = 12 } = req.query;
     const data = fs.readFileSync(DECKS_FILE, 'utf8');
     let decks = JSON.parse(data);
     
+    // Filtro per creatore (obbligatorio per i mazzi privati)
     if (creator) {
       decks = decks.filter(d => d.creator === creator);
     }
     
-    res.json(decks);
+    // Filtro ricerca testuale
+    if (q) {
+      const query = q.toLowerCase();
+      decks = decks.filter(d => d.name.toLowerCase().includes(query));
+    }
+    
+    // Filtro per Costruttore
+    if (costruttoreId) {
+      const cid = parseInt(costruttoreId);
+      decks = decks.filter(d => d.costruttoreId === cid);
+    }
+    
+    const total = decks.length;
+    
+    // Paginazione
+    const start = (parseInt(page) - 1) * parseInt(limit);
+    const end = start + parseInt(limit);
+    const paginatedDecks = decks.slice(start, end);
+    
+    res.json({
+      decks: paginatedDecks,
+      total: total
+    });
   } catch (error) {
     res.status(500).json({ error: 'Errore caricamento mazzi' });
   }
