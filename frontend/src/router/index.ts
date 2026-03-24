@@ -22,9 +22,25 @@ const router = createRouter({
     {
       path: '/deckbuilder',
       name: 'deckbuilder',
-      component: () => import('../views/DeckbuilderView.vue')
+      component: () => import('../views/DeckbuilderView.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/terminale-punto-zero',
+      name: 'oracle',
+      component: () => import('../views/TerminalView.vue'),
+      meta: { hideUI: true }
     }
   ]
 })
+
+router.beforeEach((to, _from, next) => {
+  const isAuthenticated = localStorage.getItem('username');
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    next({ name: 'login', query: { redirect: to.fullPath } });
+  } else {
+    next();
+  }
+});
 
 export default router

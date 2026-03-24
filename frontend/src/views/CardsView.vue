@@ -16,8 +16,13 @@ const filterRp = ref(10);
 // Stato Modal
 const selectedCard = ref<any | null>(null);
 
-// Stato Dropdown Custom
+// Stato Filtri
+const showFilters = ref(false);
 const isTypeDropdownOpen = ref(false);
+
+// Paginazione
+const currentPage = ref(1);
+const itemsPerPage = 20;
 const types = [
   { value: '', label: 'Tutti', color: 'transparent' },
   { value: 'Solido', label: 'Solido', color: '#007bff' },
@@ -89,6 +94,22 @@ const filteredCards = computed(() => {
   });
 });
 
+const totalPages = computed(() => Math.ceil(filteredCards.value.length / itemsPerPage));
+
+const paginatedCards = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  return filteredCards.value.slice(start, start + itemsPerPage);
+});
+
+// Reset pagina quando cambiano i filtri
+watch([searchQuery, selectedType, filterEt, filterPep, filterRp, sortBy], () => {
+  currentPage.value = 1;
+});
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 onMounted(async () => {
   try {
     const response = await axios.get('/api/cards');
@@ -119,83 +140,95 @@ const vClickOutside = {
 
 <template>
   <div class="cards-view fade-in">
-    <h1 class="glitch-text" data-text="MATRICE FRAMMENTI">MATRICE FRAMMENTI (LIVE)</h1>
-    <p class="subtitle" style="color: #fff; opacity: 0.8;">Sincronizzato in tempo reale con le direttive Google Sheets.</p>
+    <h1 class="glitch-text" data-text="DATABASE">DATABASE</h1>
     
-    <!-- Pannello Filtri -->
-    <div class="glass-panel filter-panel">
-      <div class="filter-group">
-        <label>Ricerca Nome</label>
-        <input v-model="searchQuery" type="text" placeholder="Es: Nucleo..." class="glass-input small" />
+    <!-- Barra di Ricerca Centrale -->
+    <div class="search-container">
+      <div class="search-box">
+        <input 
+          v-model="searchQuery" 
+          type="text" 
+          placeholder="Es: Nucleo di Basalto" 
+          class="glass-input search-input"
+          @keyup.enter="showFilters = false" 
+        />
       </div>
-      
-      <div class="filter-group">
-        <label>Tipo</label>
-        <div class="custom-dropdown" v-click-outside="() => isTypeDropdownOpen = false">
-          <div class="dropdown-trigger" @click.stop="isTypeDropdownOpen = !isTypeDropdownOpen">
-            <span class="dot" :style="{ backgroundColor: types.find(t => t.value === selectedType)?.color || 'transparent', opacity: selectedType ? 1 : 0 }"></span>
-            {{ types.find(t => t.value === selectedType)?.label || 'Tutti' }}
-            <span class="arrow" :class="{ open: isTypeDropdownOpen }">▼</span>
-          </div>
-          <Transition name="slide-up">
-            <div v-if="isTypeDropdownOpen" class="dropdown-menu glass-panel">
-              <div 
-                v-for="t in types" 
-                :key="t.value" 
-                class="dropdown-item" 
-                :class="{ active: selectedType === t.value }"
-                @click.stop="selectType(t.value)"
-              >
-                <span class="dot" :style="{ backgroundColor: t.color, opacity: t.value ? 1 : 0 }"></span>
-                {{ t.label }}
-              </div>
-            </div>
-          </Transition>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <label>Ordina Per</label>
-        <div class="custom-dropdown" v-click-outside="() => isSortDropdownOpen = false">
-          <div class="dropdown-trigger" @click.stop="isSortDropdownOpen = !isSortDropdownOpen">
-            {{ sortOptions.find(o => o.value === sortBy)?.label }}
-            <span class="arrow" :class="{ open: isSortDropdownOpen }">▼</span>
-          </div>
-          <Transition name="slide-up">
-            <div v-if="isSortDropdownOpen" class="dropdown-menu glass-panel">
-              <div 
-                v-for="o in sortOptions" 
-                :key="o.value" 
-                class="dropdown-item" 
-                :class="{ active: sortBy === o.value }"
-                @click.stop="selectSort(o.value)"
-              >
-                {{ o.label }}
-              </div>
-            </div>
-          </Transition>
-        </div>
-      </div>
-
-      <div class="filter-group">
-        <label>Max ET: {{ filterEt >= 10 ? '∞' : filterEt }}</label>
-        <input v-model.number="filterEt" type="range" min="0" max="10" step="1" class="glass-range" />
-      </div>
-
-      <div class="filter-group">
-        <label>Max PEP: {{ filterPep >= 10 ? '10+' : filterPep }}</label>
-        <input v-model.number="filterPep" type="range" min="0" max="10" step="1" class="glass-range" />
-      </div>
-
-      <div class="filter-group">
-        <label>Max RP: {{ filterRp >= 10 ? '10+' : filterRp }}</label>
-        <input v-model.number="filterRp" type="range" min="0" max="10" step="1" class="glass-range" />
-      </div>
-
-      <div class="filter-group">
-        <button @click="searchQuery = ''; selectedType = ''; filterEt = 10; filterPep = 10; filterRp = 10; sortBy = 'id';" class="btn-clear">RESET</button>
-      </div>
+      <button class="btn-primary toggle-filters-btn" @click="showFilters = !showFilters">
+        {{ showFilters ? 'CHIUDI FILTRI' : 'FILTRI AVANZATI' }}
+      </button>
     </div>
+
+    <!-- Pannello Filtri Avanzati (Toggle) -->
+    <Transition name="fade-slide">
+      <div v-if="showFilters" class="glass-panel filter-panel">
+        <div class="filter-group">
+          <label>Tipo</label>
+          <div class="custom-dropdown" v-click-outside="() => isTypeDropdownOpen = false">
+            <div class="dropdown-trigger" @click.stop="isTypeDropdownOpen = !isTypeDropdownOpen">
+              <span class="dot" :style="{ backgroundColor: types.find(t => t.value === selectedType)?.color || 'transparent', opacity: selectedType ? 1 : 0 }"></span>
+              {{ types.find(t => t.value === selectedType)?.label || 'Tutti' }}
+              <span class="arrow" :class="{ open: isTypeDropdownOpen }">▼</span>
+            </div>
+            <Transition name="slide-up">
+              <div v-if="isTypeDropdownOpen" class="dropdown-menu glass-panel">
+                <div 
+                  v-for="t in types" 
+                  :key="t.value" 
+                  class="dropdown-item" 
+                  :class="{ active: selectedType === t.value }"
+                  @click.stop="selectType(t.value)"
+                >
+                  <span class="dot" :style="{ backgroundColor: t.color, opacity: t.value ? 1 : 0 }"></span>
+                  {{ t.label }}
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label>Ordina Per</label>
+          <div class="custom-dropdown" v-click-outside="() => isSortDropdownOpen = false">
+            <div class="dropdown-trigger" @click.stop="isSortDropdownOpen = !isSortDropdownOpen">
+              {{ sortOptions.find(o => o.value === sortBy)?.label }}
+              <span class="arrow" :class="{ open: isSortDropdownOpen }">▼</span>
+            </div>
+            <Transition name="slide-up">
+              <div v-if="isSortDropdownOpen" class="dropdown-menu glass-panel">
+                <div 
+                  v-for="o in sortOptions" 
+                  :key="o.value" 
+                  class="dropdown-item" 
+                  :class="{ active: sortBy === o.value }"
+                  @click.stop="selectSort(o.value)"
+                >
+                  {{ o.label }}
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Max ET: {{ filterEt >= 10 ? '∞' : filterEt }}</label>
+          <input v-model.number="filterEt" type="range" min="0" max="10" step="1" class="glass-range" />
+        </div>
+
+        <div class="filter-group">
+          <label>Max PEP: {{ filterPep >= 10 ? '10+' : filterPep }}</label>
+          <input v-model.number="filterPep" type="range" min="0" max="10" step="1" class="glass-range" />
+        </div>
+
+        <div class="filter-group">
+          <label>Max RP: {{ filterRp >= 10 ? '10+' : filterRp }}</label>
+          <input v-model.number="filterRp" type="range" min="0" max="10" step="1" class="glass-range" />
+        </div>
+
+        <div class="filter-group">
+          <button @click="searchQuery = ''; selectedType = ''; filterEt = 10; filterPep = 10; filterRp = 10; sortBy = 'id';" class="btn-clear">RESET</button>
+        </div>
+      </div>
+    </Transition>
     
     <div v-if="loading" class="glass-panel main-panel text-center">
       <h3>Sincronizzazione in corso...</h3>
@@ -208,26 +241,40 @@ const vClickOutside = {
     </div>
 
     <div v-else class="cards-grid">
-      <div v-for="card in filteredCards" :key="card.id" class="glass-panel card-item" @click="selectedCard = card">
-        <div class="card-header">
+      <div v-for="card in paginatedCards" :key="card.id" class="glass-panel card-item" @click="selectedCard = card">
+        <div class="card-header stacked">
           <h3>{{ card.name }}</h3>
-          <span class="badge" :class="card.type?.toLowerCase()">{{ card.type }} <!-- {{ card.status }} --></span>
-        </div>
-        <div class="card-stats">
-          <p title="Energia Temporale"><strong>ET:</strong> {{ card.cost_et !== null ? card.cost_et : '-' }}</p>
-          <p title="Potenziale Energetico Presente"><strong>PEP:</strong> {{ card.pep !== null ? card.pep : '-' }}</p>
-          <p title="Resistenza Passata"><strong>RP:</strong> {{ card.rp !== null ? card.rp : '-' }}</p>
-        </div>
-        <div class="card-effect">
-          <p><em>{{ card.effect }}</em></p>
-        </div>
-        <div v-if="card.role" class="card-role">
-          Ruolo: {{ card.role }}
+          <span class="badge" :class="card.type?.toLowerCase()">{{ card.type }} | {{ card.status }}</span>
         </div>
         <div class="card-image-container">
           <img :src="card.image_url" :alt="card.name" class="card-img" @error="handleImgError" />
         </div>
       </div>
+    </div>
+
+    <!-- Controlli Paginazione -->
+    <div v-if="totalPages > 1" class="pagination-controls fade-in">
+      <button 
+        class="glass-btn pag-btn" 
+        :disabled="currentPage === 1" 
+        @click="currentPage-- ; scrollToTop()"
+      >
+        ← PREV
+      </button>
+      
+      <div class="page-info">
+        <span>PAGINA</span>
+        <span class="current-page">{{ currentPage }}</span>
+        <span>DI {{ totalPages }}</span>
+      </div>
+
+      <button 
+        class="glass-btn pag-btn" 
+        :disabled="currentPage === totalPages" 
+        @click="currentPage++ ; scrollToTop()"
+      >
+        NEXT →
+      </button>
     </div>
 
     <!-- Modal Ingrandimento via Teleport per evitare problemi di posizionamento -->
@@ -263,6 +310,9 @@ const vClickOutside = {
 </template>
 
 <style scoped>
+.glitch-text {
+  margin-bottom: 4rem !important;
+}
 .cards-view {
   text-align: center; /* Centra Titolo e Sottotitolo */
   padding: 2rem;
@@ -284,17 +334,33 @@ const vClickOutside = {
 }
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 3rem auto; /* Centrato */
+  max-width: 1400px;
+  margin: 0 auto 3rem auto; /* Centrato, reset margine superiore gestito da container */
+}
+@media (max-width: 1200px) {
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 900px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
 }
 .card-item {
-  padding: 1.5rem;
+  padding: 1rem;
   transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   flex-direction: column;
+  gap: 1rem;
 }
 .card-item:hover {
   transform: translateY(-8px);
@@ -304,44 +370,89 @@ const vClickOutside = {
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 1.5rem;
-  border-bottom: 1px solid var(--glass-border);
-  padding-bottom: 1rem;
+  align-items: center;
+}
+.card-header.stacked {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem; /* Uguale al gap della .card-item per simmetria */
 }
 .card-header h3 {
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: var(--text-main);
   text-shadow: 0 0 5px rgba(255,255,255,0.2);
 }
 
 /* Filtri Styles */
+/* Search Bar Styles */
+.search-container {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto 4rem auto; /* Semplificato e pareggiato */
+}
+.search-box {
+  position: relative;
+  flex-grow: 1;
+}
+.search-icon {
+  display: none; /* Rimosso icona interna */
+}
+.search-input {
+  padding-left: 1.5rem !important; /* Ridotto padding dato che non c'è icona */
+  font-size: 1.1rem;
+  height: 50px;
+  width: 100%;
+}
+.toggle-filters-btn {
+  height: 50px;
+  padding: 0 1.5rem;
+  white-space: nowrap;
+}
+
+/* Transitions per i filtri */
+.fade-slide-enter-active, .fade-slide-leave-active {
+  transition: all 0.4s ease;
+}
+.fade-slide-enter-from, .fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
 .filter-panel {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
   padding: 1.5rem;
-  margin: 0 auto 2rem auto; /* Centrato */
+  margin: -4rem auto 4rem auto; /* Offset del margine search per stare attaccato */
   max-width: 1200px; /* Limite larghezza per coerenza con la griglia */
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
   align-items: flex-end;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.2);
   position: relative;
   z-index: 100;
   text-align: left; /* Mantieni contenuti dei filtri allineati a sinistra */
 }
+
 @media (max-width: 1024px) {
-  .filter-panel {
-    gap: 1rem;
-    padding: 1rem;
-  }
   .filter-group {
     min-width: calc(50% - 0.5rem); /* Due colonne su tablet */
   }
 }
 @media (max-width: 600px) {
+  .search-container {
+    flex-direction: column;
+    padding: 0 1rem;
+  }
+  .toggle-filters-btn {
+    width: 100%;
+  }
   .filter-group {
     min-width: 100%; /* Una colonna su mobile */
   }
@@ -356,26 +467,10 @@ const vClickOutside = {
 .filter-group label {
   font-family: var(--font-display);
   font-size: 0.75rem;
-  color: #fff; /* Aumentato contrasto */
+  color: #fff;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-weight: 600;
-}
-.glass-input.small::placeholder {
-  color: rgba(255, 255, 255, 0.4); /* Placeholder più visibile */
-}
-.glass-input.small {
-  padding: 0.5rem;
-  margin-bottom: 0;
-}
-.glass-select {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--glass-border);
-  color: var(--text-main);
-  padding: 0.5rem;
-  border-radius: 4px;
-  font-family: var(--font-body);
-  outline: none;
 }
 .glass-range {
   -webkit-appearance: none;
@@ -716,5 +811,52 @@ const vClickOutside = {
   color: var(--text-muted);
   border-top: 1px solid rgba(255,255,255,0.05);
   padding-top: 1rem;
+}
+/* Pagination Styles */
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin: 4rem 0;
+  padding: 1.5rem;
+}
+.pag-btn {
+  padding: 0.8rem 1.5rem;
+  min-width: 120px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+  color: var(--accent-cyan);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.pag-btn:hover:not(:disabled) {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: var(--accent-cyan);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+.pag-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+.current-page {
+  font-size: 1.4rem;
+  color: #fff;
+  text-shadow: 0 0 10px var(--accent-cyan);
+  padding: 0 0.5rem;
 }
 </style>

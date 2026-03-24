@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 const router = useRouter();
+const route = useRoute();
 
 const isLogin = ref(true);
 const username = ref('');
@@ -33,7 +34,8 @@ const submitForm = async () => {
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('username', res.data.username);
       success.value = res.data.message;
-      setTimeout(() => router.push('/'), 1200);
+      const redirectTo = route.query.redirect as string || '/';
+      setTimeout(() => router.push(redirectTo), 1200);
     } else {
       const res = await axios.post('http://localhost:3000/api/auth/register', {
         username: username.value,

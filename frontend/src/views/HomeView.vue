@@ -1,270 +1,182 @@
 <script setup lang="ts">
-import axios from "axios";
-import { nextTick, ref } from "vue";
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
 
-const inputMessage = ref("");
-const messages = ref<{ role: string; text: string }[]>([
-  {
-    role: "ai",
-    text: "Stato Operativo: Online. Sono il Terminale del Punto Zero. Puoi interrogarmi sul regolamento, sui frammenti di lore o sulle frequenze specifiche (statistiche) di ogni Carta. Inserisci la tua direttiva, Costruttore.",
-  },
-]);
-const loading = ref(false);
-const threadId = ref<string | null>(null);
-const chatBoxRow = ref<HTMLElement | null>(null);
+const fragmentCount = ref(120); // Default placeholder
 
-const scrollToBottom = async () => {
-  await nextTick();
-  if (chatBoxRow.value) {
-    chatBoxRow.value.scrollTop = chatBoxRow.value.scrollHeight;
-  }
-};
-
-const resetChat = () => {
-  threadId.value = null;
-  messages.value = [
-    {
-      role: "ai",
-      text: "Sincronizzazione completata. Protocollo Terminale resettato. Inserisci la tua direttiva, Costruttore.",
-    },
-  ];
-};
-
-const formatMessage = (text: string) => {
-  if (!text) return "";
-  // Converte \n in <br/> e gestisce i punti seguiti da spazio per andare a capo (se non sono abbreviazioni comuni)
-  let html = text.replace(/\n/g, "<br/>");
-  // Aggiunge un a capo dopo i punti se seguiti da spazio e lettera maiuscola (opzionale, ma richiesto dall'utente)
-  html = html.replace(/\. ([A-Z])/g, ".<br/><br/>$1");
-  // Supporto Markdown Base: Grassetto
-  html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
-  // Supporto Liste (Semplice: trattino all'inizio riga)
-  html = html.replace(/(?:^|<br\/>)\s*-\s+(.*?)(?=<br\/>|$)/g, "<br/>• $1");
-  return html;
-};
-
-const sendMessage = async () => {
-  if (!inputMessage.value.trim()) return;
-
-  const userText = inputMessage.value;
-  messages.value.push({ role: "user", text: userText });
-  inputMessage.value = "";
-  loading.value = true;
-  await scrollToBottom();
-
+onMounted(async () => {
   try {
-    const response = await axios.post("/api/chat", {
-      message: userText,
-      threadId: threadId.value,
-    });
-
-    threadId.value = response.data.threadId;
-    messages.value.push({ role: "ai", text: response.data.reply });
-  } catch (error: any) {
-    messages.value.push({
-      role: "error",
-      text:
-        error.response?.data?.error ||
-        "Interferenza Quantica. Impossibile connettersi al server IA.",
-    });
-  } finally {
-    loading.value = false;
-    await scrollToBottom();
+    const response = await axios.get('http://localhost:3000/api/cards');
+    fragmentCount.value = response.data.length;
+  } catch (err) {
+    console.error('Errore sincronizzazione frammenti:', err);
   }
-};
+});
 </script>
 
 <template>
   <div class="home-view fade-in">
-    <div class="header-section">
-      <h1 class="glitch-text" data-text="TERMINALE DEL PUNTO ZERO">TERMINALE DEL PUNTO ZERO</h1>
-      <p class="subtitle">Interfaccia Terminale Attiva...</p>
-      <button @click="resetChat" class="btn-secondary sync-btn" :disabled="loading">
-        SINCRONIZZA TERMINALE
-      </button>
-    </div>
-
-    <div class="glass-panel main-panel chat-container">
-      <div class="chat-history" ref="chatBoxRow">
-        <div
-          v-for="(msg, index) in messages"
-          :key="index"
-          :class="['chat-bubble', msg.role]"
-        >
-          <span class="sender"
-            >{{
-              msg.role === "user"
-                ? "Costruttore"
-                : msg.role === "error"
-                  ? "Sistema"
-                  : "Terminale"
-            }}:</span
-          >
-          <div
-            class="message-content"
-            v-html="formatMessage(msg.text)"
-          ></div>
+    <section class="hero-section">
+      <div class="hero-content">
+        <h1 class="glitch-text" data-text="PUNTO ZERO">PUNTO ZERO</h1>
+        <p class="hero-subtitle">Il limite dove la Materia incontra il Vuoto.</p>
+        <div class="hero-actions">
+          <RouterLink to="/cards" class="btn-primary">VISITA IL DATABASE</RouterLink>
         </div>
+      </div>
+    </section>
 
-        <div v-if="loading" class="chat-bubble ai typing">
-          <span class="sender">Terminale:</span> Elaborazione direttive...
-          <span class="cursor">_</span>
+    <div class="dashboard-grid">
+      <!-- Lore Section -->
+      <div class="glass-panel info-card">
+        <h3>LORE: IL PUNTO ZERO</h3>
+        <p>In un futuro dove la realtà è stata frammentata da un collasso temporale, i Costruttori utilizzano i Frammenti di Joule per stabilizzare l'esistenza. Ogni carta è un ricordo, ogni mazzo una linea temporale.</p>
+        <RouterLink to="/cards" class="link-text">Scopri la Matrice →</RouterLink>
+      </div>
+
+      <!-- Quick Stats / News -->
+      <div class="glass-panel info-card">
+        <h3>STATO MATRICE</h3>
+        <div class="stats-list">
+          <div class="stat-item">
+            <span class="label">Frammenti Rilevati:</span>
+            <span class="value">{{ fragmentCount }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="label">Stabilità Sistema:</span>
+            <span class="value cyan">88%</span>
+          </div>
+          <div class="stat-item">
+            <span class="label">Anomalie Attive:</span>
+            <span class="value magenta">4</span>
+          </div>
         </div>
       </div>
 
-      <form class="chat-input-area" @submit.prevent="sendMessage">
-        <input
-          v-model="inputMessage"
-          type="text"
-          class="glass-input"
-          placeholder="Istruisci il Terminale (es: 'Come si gioca un Frammento?' o 'Quanto costa Nucleo di Basalto?')"
-          :disabled="loading"
-        />
-        <button
-          type="submit"
-          class="btn-primary"
-          :disabled="loading || !inputMessage.trim()"
-        >
-          INVIA
-        </button>
-      </form>
+      <!-- Deckbuilder Shortcut -->
+      <div class="glass-panel info-card highlight">
+        <h3>COSTRUZIONE MAZZI</h3>
+        <p>Assembla i tuoi Frammenti per forgiare la tua strategia. Ricorda: 40 carte, 3 copie per frammento stabile.</p>
+        <RouterLink to="/deckbuilder" class="btn-primary mini-btn">DECKBUILDER</RouterLink>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.header-section {
-  text-align: center;
-  margin-bottom: 2rem;
+.home-view {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
 }
-.chat-container {
+
+.hero-section {
+  height: 60vh;
   display: flex;
-  flex-direction: column;
-  height: 65vh;
-  min-height: 500px;
-  max-width: 1000px;
-  width: 100%;
-  padding: 1.5rem;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: radial-gradient(circle at center, rgba(0, 240, 255, 0.05) 0%, transparent 70%);
+  margin-bottom: 3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-.chat-history {
-  flex-grow: 1;
-  overflow-y: auto;
-  padding-right: 1rem;
-  margin-bottom: 1.5rem;
+
+.hero-content h1 {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  letter-spacing: 4px;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.info-card {
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  transition: all 0.3s ease;
 }
-.chat-history::-webkit-scrollbar {
-  width: 6px;
+
+.info-card:hover {
+  border-color: var(--accent-cyan);
+  background: rgba(255, 255, 255, 0.03);
+  transform: translateY(-5px);
 }
-.chat-history::-webkit-scrollbar-thumb {
-  background: var(--glass-border);
-  border-radius: 10px;
+
+.info-card h3 {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  letter-spacing: 2px;
+  color: var(--accent-cyan);
+  margin-bottom: 0.5rem;
 }
-.chat-bubble {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 3px solid transparent;
-  font-family: var(--font-body);
+
+.info-card p {
   line-height: 1.6;
   font-size: 0.95rem;
-}
-.chat-bubble.user {
-  background: rgba(0, 240, 255, 0.05);
-  border-left-color: var(--accent-cyan);
-  align-self: flex-end;
-  width: 85%;
-}
-.chat-bubble.ai {
-  background: rgba(255, 0, 60, 0.05);
-  border-left-color: var(--accent-magenta);
-  align-self: flex-start;
-  width: 90%;
-}
-.chat-bubble.error {
-  border-left-color: #ff0000;
-  color: #ff80a0;
-  background: rgba(255, 0, 0, 0.1);
-}
-.sender {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  margin-bottom: 0.5rem;
-  letter-spacing: 1px;
-}
-.chat-bubble.user .sender {
-  color: var(--accent-cyan);
-}
-.chat-bubble.ai .sender {
-  color: var(--accent-magenta);
-}
-.chat-bubble.error .sender {
-  color: #ff0000;
+  color: var(--text-muted);
 }
 
-.chat-input-area {
+.stats-list {
   display: flex;
-  gap: 1rem;
-  align-items: stretch;
-}
-.chat-input-area .glass-input {
-  margin-bottom: 0;
-  flex-grow: 1;
-}
-.cursor {
-  animation: blink 1s infinite;
-}
-@keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
-/* Formattazione speciale per i messaggi del bot che contengono markdown base */
-.message-content {
-  white-space: pre-wrap; /* Mantiene gli a capo naturali */
-  line-height: 1.6;
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 0.5rem;
 }
-.message-content strong {
+
+.value.cyan { color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan); }
+.value.magenta { color: var(--accent-magenta); text-shadow: 0 0 10px var(--accent-magenta); }
+
+.link-text {
   color: var(--accent-cyan);
-  text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
-}
-.message-content br {
-  margin-bottom: 0.5rem;
-  display: block;
-  content: "";
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-top: auto;
 }
 
-.sync-btn {
-  margin-top: 1rem;
-  padding: 0.5rem 1rem;
+.mini-btn {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 0.5rem 1.5rem;
   font-size: 0.8rem;
-  background: rgba(0, 240, 255, 0.1);
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: var(--font-display);
-  letter-spacing: 2px;
 }
 
-.sync-btn:hover:not(:disabled) {
-  background: var(--accent-cyan);
-  color: var(--bg-main);
-  box-shadow: 0 0 15px var(--accent-cyan);
+.highlight {
+  border-top: 2px solid var(--accent-cyan);
 }
 
-.sync-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 3.5rem;
+  }
+  .hero-actions {
+    flex-direction: column;
+    gap: 1rem;
+  }
 }
 </style>
