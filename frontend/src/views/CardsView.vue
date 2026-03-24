@@ -86,11 +86,16 @@ const filteredCards = computed(() => {
   }).sort((a, b) => {
     if (sortBy.value === 'id') return 0; // Mantieni ordine originale
     if (sortBy.value === 'name') return a.name.localeCompare(b.name);
+    if (sortBy.value === 'pep' || sortBy.value === 'rp') {
+      const valA = a[sortBy.value] ?? -1;
+      const valB = b[sortBy.value] ?? -1;
+      return (valB as number) - (valA as number); // Decrescente per Potenza e Resistenza
+    }
     
-    // Ordinamento numerico (Null trattati come 999 per apparire in fondo al sort crescente)
+    // Ordinamento numerico crescente per gli altri (es: ET)
     const valA = a[sortBy.value] ?? 999;
     const valB = b[sortBy.value] ?? 999;
-    return (valA as number) - (valB as number); // Crescente per numeri (es: ET 1 prima di ET 5)
+    return (valA as number) - (valB as number);
   });
 });
 
