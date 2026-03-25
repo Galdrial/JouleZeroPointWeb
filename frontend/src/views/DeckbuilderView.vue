@@ -40,7 +40,7 @@ const isEditorCostruttoreDropdownOpen = ref(false);
 const isTypeDropdownOpen = ref(false);
 const isPublic = ref(false);
 const editingDeckId = ref<number | null>(null);
-const showSavePrompt = ref(false);
+const originalDeckName = ref("Nuovo Mazzo");
 
 // Delete State
 const deckToDelete = ref<number | null>(null);
@@ -163,14 +163,20 @@ const saveDeck = () => {
   }
 
   if (editingDeckId.value) {
-    showSavePrompt.value = true;
-  } else {
-    executeSave(false);
+    const normalizedCurrentName = deckName.value.trim().toLowerCase();
+    const normalizedOriginalName = originalDeckName.value.trim().toLowerCase();
+    const hasRenamedDeck =
+      normalizedCurrentName.length > 0 &&
+      normalizedCurrentName !== normalizedOriginalName;
+
+    executeSave(!hasRenamedDeck);
+    return;
   }
+
+  executeSave(false);
 };
 
 const executeSave = async (overwrite: boolean) => {
-  showSavePrompt.value = false;
   isSaving.value = true;
   try {
     const payload: SavedDeck = {
@@ -253,6 +259,7 @@ const executeDelete = async () => {
 
 const editDeck = (deck: SavedDeck) => {
   deckName.value = deck.name;
+  originalDeckName.value = deck.name;
   editingDeckId.value = deck.id || null;
   isPublic.value = deck.isPublic || false;
   selectedCostruttore.value =
@@ -268,6 +275,7 @@ const editDeck = (deck: SavedDeck) => {
 
 const createNewDeck = () => {
   deckName.value = "Nuovo Mazzo";
+  originalDeckName.value = "Nuovo Mazzo";
   editingDeckId.value = null;
   isPublic.value = false;
   selectedCostruttore.value = null;
@@ -765,42 +773,6 @@ onMounted(async () => {
               @click="showAlert = false"
             >
               RICEVUTO
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
-
-    <!-- SAVE PROMPT OVERLAY -->
-    <Transition name="fade">
-      <div
-        v-if="showSavePrompt"
-        class="alert-overlay"
-        @click="showSavePrompt = false"
-      >
-        <div class="alert-box glass-panel" @click.stop>
-          <div class="alert-header">
-            <span class="alert-icon">⚠️</span>
-            SOVRASCRITTURA LINEA TEMPORALE
-          </div>
-          <div class="alert-content" style="margin-bottom: 2rem">
-            Questa Linea Temporale esiste già. Vuoi aggiornarla o crearne una
-            nuova variante?
-          </div>
-          <div class="alert-actions split-actions">
-            <button
-              class="cyber-btn btn-danger small-btn"
-              @click="executeSave(true)"
-              :disabled="isSaving"
-            >
-              AGGIORNA ESISTENTE
-            </button>
-            <button
-              class="cyber-btn btn-primary small-btn"
-              @click="executeSave(false)"
-              :disabled="isSaving"
-            >
-              CREA NUOVO
             </button>
           </div>
         </div>
