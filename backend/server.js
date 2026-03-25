@@ -64,6 +64,30 @@ const fs = require('fs');
 const path = require('path');
 const DECKS_FILE = path.join(__dirname, 'decks.json');
 
+function normalizeDeck(deck) {
+  return {
+    ...deck,
+    isPublic: deck.isPublic === true,
+    createdAt: deck.createdAt || deck.id || Date.now(),
+    updatedAt: deck.updatedAt || deck.createdAt || deck.id || Date.now(),
+    votes: Array.isArray(deck.votes)
+      ? [...new Set(deck.votes.filter(v => typeof v === 'string' && v.trim().length > 0))]
+      : [],
+    importsCount: Number.isFinite(deck.importsCount) ? deck.importsCount : 0
+  };
+}
+
+function readDecks() {
+  const raw = fs.readFileSync(DECKS_FILE, 'utf8');
+  const parsed = JSON.parse(raw);
+  if (!Array.isArray(parsed)) return [];
+  return parsed.map(normalizeDeck);
+}
+
+function writeDecks(decks) {
+  fs.writeFileSync(DECKS_FILE, JSON.stringify(decks, null, 2));
+}
+
 app.get( '/api/cards', async ( req, res ) => {
   try {
     const response = await axios.get( GOOGLE_SHEETS_CSV_URL );
@@ -79,8 +103,7 @@ app.get( '/api/cards', async ( req, res ) => {
 app.get( '/api/decks', ( req, res ) => {
   try {
     const { creator, q, costruttoreId, page = 1, limit = 12 } = req.query;
-    const data = fs.readFileSync(DECKS_FILE, 'utf8');
-    let decks = JSON.parse(data);
+    let decks = readDecks();
     
     // Filtro per creatore
     if (creator) {
@@ -120,10 +143,146 @@ app.get( '/api/decks', ( req, res ) => {
   }
 } );
 
+app.get('/api/public-decks', (req, res) => {
+  try {
+    const { q, costruttoreId, sort = 'recent', page = 1, limit = 12 } = req.query;
+    const requester = (req.headers['x-user'] || '').toString();
+    let decks = readDecks().filter(d => d.isPublic === true);
+
+    if (q) {
+      const query = q.toString().toLowerCase();
+      decks = decks.filter(d =>
+        (d.name || '').toLowerCase().includes(query) ||
+        (d.creator || '').toLowerCase().includes(query)
+      );
+    }
+
+    if (costruttoreId) {
+      const cid = parseInt(costruttoreId, 10);
+      decks = decks.filter(d => d.costruttoreId === cid);
+    }
+
+    if (sort === 'top') {
+      decks.sort((a, b) => (b.votes.length - a.votes.length) || (b.createdAt - a.createdAt));
+    } else if (sort === 'imports') {
+      decks.sort((a, b) => (b.importsCount - a.importsCount) || (b.createdAt - a.createdAt));
+    } else {
+      decks.sort((a, b) => b.createdAt - a.createdAt);
+    }
+
+    const total = decks.length;
+    const start = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    const end = start + parseInt(limit, 10);
+    const paginatedDecks = decks.slice(start, end).map(d => {
+      const { votes, ...rest } = d;
+      return {
+        ...rest,
+        votesCount: votes.length,
+        userVoted: requester ? votes.includes(requester) : false
+      };
+    });
+
+    res.json({ decks: paginatedDecks, total });
+  } catch (error) {
+    console.error('Errore caricamento mazzi pubblici:', error);
+    res.status(500).json({ error: 'Errore caricamento mazzi pubblici' });
+  }
+});
+
+app.post('/api/decks/:id/vote', (req, res) => {
+  try {
+    const deckId = parseInt(req.params.id, 10);
+    const requester = (req.headers['x-user'] || '').toString().trim();
+
+    if (!requester) {
+      return res.status(401).json({ error: 'Autenticazione richiesta per votare.' });
+    }
+
+    let decks = readDecks();
+    const deck = decks.find(d => d.id === deckId);
+
+    if (!deck || deck.isPublic !== true) {
+      return res.status(404).json({ error: 'Mazzo pubblico non trovato.' });
+    }
+
+    if (deck.votes.includes(requester)) {
+      deck.votes = deck.votes.filter(v => v !== requester);
+    } else {
+      deck.votes.push(requester);
+    }
+    deck.updatedAt = Date.now();
+
+    writeDecks(decks);
+    res.json({
+      deckId,
+      votesCount: deck.votes.length,
+      userVoted: deck.votes.includes(requester)
+    });
+  } catch (error) {
+    console.error('Errore voto mazzo:', error);
+    res.status(500).json({ error: 'Errore voto mazzo' });
+  }
+});
+
+app.post('/api/decks/:id/import', (req, res) => {
+  try {
+    const deckId = parseInt(req.params.id, 10);
+    const requester = (req.headers['x-user'] || '').toString().trim();
+
+    if (!requester) {
+      return res.status(401).json({ error: 'Autenticazione richiesta per importare.' });
+    }
+
+    let decks = readDecks();
+    const sourceDeck = decks.find(d => d.id === deckId && d.isPublic === true);
+    if (!sourceDeck) {
+      return res.status(404).json({ error: 'Mazzo pubblico non trovato.' });
+    }
+
+    const existingNames = new Set(
+      decks
+        .filter(d => (d.creator || '').toLowerCase() === requester.toLowerCase())
+        .map(d => (d.name || '').trim().toLowerCase())
+    );
+
+    let importedName = `${sourceDeck.name} (importato)`;
+    let suffix = 2;
+    while (existingNames.has(importedName.trim().toLowerCase())) {
+      importedName = `${sourceDeck.name} (importato ${suffix})`;
+      suffix++;
+    }
+
+    const importedDeck = normalizeDeck({
+      id: Date.now(),
+      name: importedName,
+      cards: sourceDeck.cards,
+      costruttoreId: sourceDeck.costruttoreId,
+      creator: requester,
+      isPublic: false,
+      parentDeckId: sourceDeck.id,
+      votes: [],
+      importsCount: 0,
+      createdAt: Date.now(),
+      updatedAt: Date.now()
+    });
+
+    sourceDeck.importsCount = (sourceDeck.importsCount || 0) + 1;
+    sourceDeck.updatedAt = Date.now();
+
+    decks.push(importedDeck);
+    writeDecks(decks);
+
+    res.json({ importedDeck });
+  } catch (error) {
+    console.error('Errore import mazzo:', error);
+    res.status(500).json({ error: 'Errore import mazzo' });
+  }
+});
+
 app.post( '/api/decks', ( req, res ) => {
   try {
     const newDeck = req.body;
-    let decks = JSON.parse( fs.readFileSync( DECKS_FILE, 'utf8' ) );
+    let decks = readDecks();
 
     const normalizedName = ( newDeck.name || '' ).trim().toLowerCase();
     const normalizedCreator = ( newDeck.creator || '' ).trim().toLowerCase();
@@ -145,15 +304,32 @@ app.post( '/api/decks', ( req, res ) => {
 
     if ( newDeck.id ) {
       // Aggiornamento esistente
-      decks = decks.map( d => d.id === newDeck.id ? newDeck : d );
+      const existingDeck = decks.find(d => d.id === newDeck.id);
+      const mergedDeck = normalizeDeck({
+        ...existingDeck,
+        ...newDeck,
+        createdAt: existingDeck?.createdAt || newDeck.createdAt || Date.now(),
+        updatedAt: Date.now(),
+        votes: existingDeck?.votes || [],
+        importsCount: existingDeck?.importsCount || 0
+      });
+      decks = decks.map( d => d.id === newDeck.id ? mergedDeck : d );
+      writeDecks(decks);
+      return res.json(mergedDeck);
     } else {
       // Nuovo mazzo
-      newDeck.id = Date.now();
-      decks.push( newDeck );
+      const normalizedDeck = normalizeDeck({
+        ...newDeck,
+        id: Date.now(),
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        votes: [],
+        importsCount: 0
+      });
+      decks.push( normalizedDeck );
+      writeDecks(decks);
+      return res.json(normalizedDeck);
     }
-
-    fs.writeFileSync( DECKS_FILE, JSON.stringify( decks, null, 2 ) );
-    res.json( newDeck );
   } catch ( error ) {
     console.error( 'Errore salvataggio mazzo:', error );
     res.status( 500 ).json( { error: 'Errore salvataggio mazzo' } );
@@ -167,7 +343,7 @@ app.delete( '/api/decks/:id', ( req, res ) => {
       return res.status( 400 ).json( { error: 'ID mazzo non valido' } );
     }
 
-    let decks = JSON.parse( fs.readFileSync( DECKS_FILE, 'utf8' ) );
+    let decks = readDecks();
     const initialLength = decks.length;
     decks = decks.filter( d => d.id !== deckId );
 
@@ -175,7 +351,7 @@ app.delete( '/api/decks/:id', ( req, res ) => {
       return res.status( 404 ).json( { error: 'Mazzo non trovato' } );
     }
 
-    fs.writeFileSync( DECKS_FILE, JSON.stringify( decks, null, 2 ) );
+    writeDecks(decks);
     res.json( { message: 'Mazzo eliminato con successo.' } );
   } catch ( error ) {
     res.status( 500 ).json( { error: 'Errore eliminazione mazzo' } );
@@ -185,9 +361,9 @@ app.delete( '/api/decks/:id', ( req, res ) => {
 app.delete( '/api/decks/user/:username', ( req, res ) => {
   try {
     const { username } = req.params;
-    let decks = JSON.parse(fs.readFileSync(DECKS_FILE, 'utf8'));
+    let decks = readDecks();
     decks = decks.filter(d => d.creator !== username);
-    fs.writeFileSync(DECKS_FILE, JSON.stringify(decks, null, 2));
+    writeDecks(decks);
 
     res.json({ message: `Tutti i mazzi di ${username} rimossi con successo.` });
   } catch (error) {

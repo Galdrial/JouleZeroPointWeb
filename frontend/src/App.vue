@@ -51,6 +51,7 @@ watch(() => route.query.terminal, (newVal) => {
       <nav>
         <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item">Database</RouterLink>
         <RouterLink to="/deckbuilder" class="cyber-btn btn-secondary nav-item">Mazzi</RouterLink>
+        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item">Community</RouterLink>
 
         <template v-if="username">
           <RouterLink to="/profile" class="cyber-btn btn-secondary nav-item user-btn">{{ username }}</RouterLink>

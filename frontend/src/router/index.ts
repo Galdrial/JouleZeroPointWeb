@@ -26,6 +26,11 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
+      path: '/public-decks',
+      name: 'public-decks',
+      component: () => import('../views/PublicDecksView.vue')
+    },
+    {
       path: '/terminale-punto-zero',
       name: 'oracle',
       component: () => import('../views/TerminalView.vue'),
