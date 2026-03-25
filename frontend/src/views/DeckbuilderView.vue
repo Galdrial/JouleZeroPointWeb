@@ -1196,12 +1196,23 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  min-height: 66px;
+}
+
+.deck-title-row {
+  min-height: 66px;
+  padding-right: 0.6rem;
 }
 
 .deck-title-row h3 {
   font-family: var(--font-display);
-  font-size: 1.6rem;
+  font-size: 1.45rem;
+  line-height: 1.25;
   margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   color: var(--accent-cyan);
   text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
 }
@@ -1235,6 +1246,7 @@ onMounted(async () => {
   flex-direction: column;
   gap: 0.2rem;
   padding: 0 0.5rem;
+  min-height: 2.8rem;
 }
 
 .caption-label {
@@ -1250,6 +1262,12 @@ onMounted(async () => {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  line-height: 1.4;
+  min-height: 2.8rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .deck-footer-row {
