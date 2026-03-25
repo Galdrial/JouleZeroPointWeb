@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import HomeView from '../views/HomeView.vue';
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+const router = createRouter( {
+  history: createWebHistory( import.meta.env.BASE_URL ),
   routes: [
     {
       path: '/',
@@ -12,46 +12,46 @@ const router = createRouter({
     {
       path: '/cards',
       name: 'cards',
-      component: () => import('../views/CardsView.vue')
+      component: () => import( '../views/CardsView.vue' )
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('../views/LoginView.vue')
+      component: () => import( '../views/LoginView.vue' )
     },
     {
       path: '/deckbuilder',
       name: 'deckbuilder',
-      component: () => import('../views/DeckbuilderView.vue'),
+      component: () => import( '../views/DeckbuilderView.vue' ),
       meta: { requiresAuth: true }
     },
     {
       path: '/public-decks',
       name: 'public-decks',
-      component: () => import('../views/PublicDecksView.vue')
+      component: () => import( '../views/PublicDecksView.vue' )
     },
     {
       path: '/terminale-punto-zero',
       name: 'oracle',
-      component: () => import('../views/TerminalView.vue'),
+      component: () => import( '../views/TerminalView.vue' ),
       meta: { hideUI: true }
     },
     {
       path: '/profile',
       name: 'profile',
-      component: () => import('../views/ProfileView.vue'),
+      component: () => import( '../views/ProfileView.vue' ),
       meta: { requiresAuth: true }
     }
   ]
-})
+} )
 
-router.beforeEach((to, _from, next) => {
-  const isAuthenticated = localStorage.getItem('username');
-  if (to.meta.requiresAuth && !isAuthenticated) {
-    next({ name: 'login', query: { redirect: to.fullPath } });
+router.beforeEach( ( to, _from, next ) => {
+  const isAuthenticated = localStorage.getItem( 'username' );
+  if ( to.meta.requiresAuth && !isAuthenticated ) {
+    next( { name: 'login', query: { redirect: to.fullPath } } );
   } else {
     next();
   }
-});
+} );
 
 export default router

@@ -1,43 +1,44 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
-import { RouterView, RouterLink, useRoute, useRouter } from 'vue-router'
-import TerminalOracle from './components/TerminalOracle.vue'
+import { computed, onMounted, ref, watch } from "vue";
+import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
+import TerminalOracle from "./components/TerminalOracle.vue";
 
-
-const router = useRouter()
-const route = useRoute()
-const username = ref(localStorage.getItem('username') || '')
+const router = useRouter();
+const route = useRoute();
+const username = ref(localStorage.getItem("username") || "");
 
 watch(
   () => route.fullPath,
   () => {
-    username.value = localStorage.getItem('username') || ''
-  }
-)
+    username.value = localStorage.getItem("username") || "";
+  },
+);
 
 const logout = () => {
-  localStorage.removeItem('token')
-  localStorage.removeItem('username')
-  username.value = ''
-  router.push('/login')
-}
+  localStorage.removeItem("token");
+  localStorage.removeItem("username");
+  username.value = "";
+  router.push("/login");
+};
 
-const isTerminalOpen = ref(false)
+const isTerminalOpen = ref(false);
 const hideUI = computed(() => route.meta.hideUI === true);
 
 onMounted(() => {
-  if (route.query.terminal === '1') {
-    isTerminalOpen.value = true
+  if (route.query.terminal === "1") {
+    isTerminalOpen.value = true;
   }
-})
+});
 
 // Watcher per cambiamenti rotta (es: navigazione verso un link con query)
-watch(() => route.query.terminal, (newVal) => {
-  if (newVal === '1') {
-    isTerminalOpen.value = true
-  }
-})
-
+watch(
+  () => route.query.terminal,
+  (newVal) => {
+    if (newVal === "1") {
+      isTerminalOpen.value = true;
+    }
+  },
+);
 </script>
 
 <template>
@@ -49,16 +50,35 @@ watch(() => route.query.terminal, (newVal) => {
         </div>
       </RouterLink>
       <nav>
-        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item">Database</RouterLink>
-        <RouterLink to="/deckbuilder" class="cyber-btn btn-secondary nav-item">Mazzi</RouterLink>
-        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item">Community</RouterLink>
+        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
+          >Database</RouterLink
+        >
+        <RouterLink to="/deckbuilder" class="cyber-btn btn-secondary nav-item"
+          >Mazzi</RouterLink
+        >
+        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
+          >Community</RouterLink
+        >
 
         <template v-if="username">
-          <RouterLink to="/profile" class="cyber-btn btn-secondary nav-item user-btn">{{ username }}</RouterLink>
-          <button @click="logout" class="cyber-btn btn-danger nav-item logout-btn">Logout</button>
+          <RouterLink
+            to="/profile"
+            class="cyber-btn btn-secondary nav-item user-btn"
+            >{{ username }}</RouterLink
+          >
+          <button
+            @click="logout"
+            class="cyber-btn btn-danger nav-item logout-btn"
+          >
+            Logout
+          </button>
         </template>
         <template v-else>
-          <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn">Accedi</RouterLink>
+          <RouterLink
+            to="/login"
+            class="cyber-btn btn-primary nav-item auth-btn"
+            >Accedi</RouterLink
+          >
         </template>
       </nav>
     </header>
@@ -71,13 +91,28 @@ watch(() => route.query.terminal, (newVal) => {
     <button
       v-if="!hideUI"
       class="terminal-trigger"
-      :class="{ 'active': isTerminalOpen }"
+      :class="{ active: isTerminalOpen }"
       @click.stop="isTerminalOpen = !isTerminalOpen"
       title="Terminale Punto Zero"
     >
-      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 22 12 2Z" fill="currentColor" opacity="0.1"/>
-        <path d="M7 8L3 12L7 16M11 16H15M17 8L21 12L17 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg
+        class="icon-svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 22 12 2Z"
+          fill="currentColor"
+          opacity="0.1"
+        />
+        <path
+          d="M7 8L3 12L7 16M11 16H15M17 8L21 12L17 16"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </svg>
       <span class="pulse-ring"></span>
     </button>
@@ -110,8 +145,6 @@ watch(() => route.query.terminal, (newVal) => {
 .logout-btn {
   margin-left: 0.5rem;
 }
-
-
 
 .logo-link {
   text-decoration: none;
@@ -178,7 +211,13 @@ watch(() => route.query.terminal, (newVal) => {
 }
 
 @keyframes pulse-ring {
-  0% { transform: scale(0.8); opacity: 0.8; }
-  100% { transform: scale(1.5); opacity: 0; }
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
 }
 </style>

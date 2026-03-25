@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from "axios";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 interface CardRef {
   cardId: number;
@@ -19,7 +19,7 @@ interface PublicDeck {
   userVoted: boolean;
 }
 
-interface CostruttoreCard {
+interface Card {
   id: number;
   name: string;
   image_url: string;
@@ -29,6 +29,8 @@ interface CostruttoreCard {
 const username = ref(localStorage.getItem("username") || "");
 const loading = ref(true);
 const error = ref("");
+const successMessage = ref("");
+let successMessageTimer: ReturnType<typeof setTimeout> | null = null;
 const decks = ref<PublicDeck[]>([]);
 const totalDecks = ref(0);
 const currentPage = ref(1);
@@ -38,9 +40,14 @@ const searchQuery = ref("");
 const filterCostruttore = ref<number | "">("");
 const sortBy = ref<"recent" | "top" | "imports">("recent");
 
-const costruttori = ref<CostruttoreCard[]>([]);
+const allCards = ref<Card[]>([]);
+const selectedDeck = ref<PublicDeck | null>(null);
 const isCostruttoreDropdownOpen = ref(false);
 const isSortDropdownOpen = ref(false);
+
+const costruttori = computed(() =>
+  allCards.value.filter((c) => c.type === "Costruttore"),
+);
 
 const sortOptions = [
   { value: "recent", label: "Recenti" },
@@ -66,7 +73,7 @@ const vClickOutside = {
 
 const getCostruttoreName = (id: number | null) => {
   if (!id) return "Sconosciuto";
-  return costruttori.value.find((c) => c.id === id)?.name.split(",")[0] || "Sconosciuto";
+  return costruttori.value.find((c) => c.id === id)?.name || "Sconosciuto";
 };
 
 const getCostruttoreImg = (id: number | null) => {
@@ -74,13 +81,24 @@ const getCostruttoreImg = (id: number | null) => {
   return costruttori.value.find((c) => c.id === id)?.image_url || "";
 };
 
-const getDeckCardsTotal = (deck: PublicDeck) => {
-  return deck.cards.reduce((sum, item) => sum + item.count, 0);
-};
+const previewCards = computed(() => {
+  if (!selectedDeck.value) return [];
+  return selectedDeck.value.cards
+    .map((item) => {
+      const card = allCards.value.find((c) => c.id === item.cardId);
+      return {
+        cardId: item.cardId,
+        count: item.count,
+        name: card?.name || `Carta #${item.cardId}`,
+        type: card?.type || "Sconosciuto",
+      };
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+});
 
 const loadCostruttori = async () => {
   const response = await axios.get("/api/cards");
-  costruttori.value = response.data.filter((c: CostruttoreCard) => c.type === "Costruttore");
+  allCards.value = response.data;
 };
 
 const loadPublicDecks = async () => {
@@ -138,8 +156,16 @@ const importDeck = async (deck: PublicDeck) => {
     return;
   }
 
+  if (
+    (deck.creator || "").trim().toLowerCase() ===
+    username.value.trim().toLowerCase()
+  ) {
+    error.value = "Non puoi importare un tuo mazzo.";
+    return;
+  }
+
   try {
-    await axios.post(
+    const response = await axios.post(
       `/api/decks/${deck.id}/import`,
       {},
       {
@@ -148,21 +174,56 @@ const importDeck = async (deck: PublicDeck) => {
     );
 
     deck.importsCount += 1;
+    const importedDeckName =
+      response?.data?.importedDeck?.name || "Mazzo importato";
+    showSuccessMessage(`Import riuscito: ${importedDeckName}`);
+    error.value = "";
   } catch (e: any) {
+    clearSuccessMessage();
     error.value = e?.response?.data?.error || "Errore durante l'import.";
   }
 };
 
+const clearSuccessMessage = () => {
+  successMessage.value = "";
+  if (successMessageTimer) {
+    clearTimeout(successMessageTimer);
+    successMessageTimer = null;
+  }
+};
+
+const showSuccessMessage = (message: string) => {
+  clearSuccessMessage();
+  successMessage.value = message;
+  successMessageTimer = setTimeout(() => {
+    successMessage.value = "";
+    successMessageTimer = null;
+  }, 3500);
+};
+
+const openPreview = (deck: PublicDeck) => {
+  selectedDeck.value = deck;
+};
+
 watch([searchQuery, filterCostruttore, sortBy], () => {
   currentPage.value = 1;
+  clearSuccessMessage();
   loadPublicDecks();
 });
 
 watch(currentPage, loadPublicDecks);
 
+watch(selectedDeck, (value) => {
+  document.body.style.overflow = value ? "hidden" : "";
+});
+
 onMounted(async () => {
   username.value = localStorage.getItem("username") || "";
   await Promise.all([loadCostruttori(), loadPublicDecks()]);
+});
+
+onBeforeUnmount(() => {
+  clearSuccessMessage();
 });
 </script>
 
@@ -188,18 +249,28 @@ onMounted(async () => {
           @click.stop="isCostruttoreDropdownOpen = !isCostruttoreDropdownOpen"
         >
           {{
-            costruttori.find((c) => c.id === filterCostruttore)?.name.split(",")[0] ||
-            "COSTRUTTORE"
+            costruttori
+              .find((c) => c.id === filterCostruttore)
+              ?.name.split(",")[0] || "COSTRUTTORE"
           }}
-          <span class="arrow" :class="{ open: isCostruttoreDropdownOpen }">▼</span>
+          <span class="arrow" :class="{ open: isCostruttoreDropdownOpen }"
+            >▼</span
+          >
         </div>
         <Transition name="slide-up">
-          <div v-if="isCostruttoreDropdownOpen" class="dropdown-menu glass-panel">
+          <div
+            v-if="isCostruttoreDropdownOpen"
+            class="dropdown-menu glass-panel"
+          >
             <div
               class="dropdown-item"
               :class="{ active: filterCostruttore === '' }"
               @click.stop="filterCostruttore = ''"
             >
+              <span
+                class="dot"
+                style="background: transparent; opacity: 0"
+              ></span>
               TUTTI
             </div>
             <div
@@ -209,14 +280,24 @@ onMounted(async () => {
               :class="{ active: filterCostruttore === c.id }"
               @click.stop="filterCostruttore = c.id"
             >
+              <span
+                class="dot"
+                style="background: #ffd700; box-shadow: 0 0 5px #ffd700"
+              ></span>
               {{ c.name.split(",")[0] }}
             </div>
           </div>
         </Transition>
       </div>
 
-      <div class="custom-dropdown" v-click-outside="() => (isSortDropdownOpen = false)">
-        <div class="dropdown-trigger" @click.stop="isSortDropdownOpen = !isSortDropdownOpen">
+      <div
+        class="custom-dropdown"
+        v-click-outside="() => (isSortDropdownOpen = false)"
+      >
+        <div
+          class="dropdown-trigger"
+          @click.stop="isSortDropdownOpen = !isSortDropdownOpen"
+        >
           {{ sortOptions.find((s) => s.value === sortBy)?.label }}
           <span class="arrow" :class="{ open: isSortDropdownOpen }">▼</span>
         </div>
@@ -236,11 +317,15 @@ onMounted(async () => {
       </div>
 
       <div class="stats-box">
-        <span class="count-tag">Mazzi trovati {{ totalDecks }}</span>
+        <span class="count-tag">Mazzi Rilevati {{ totalDecks }}</span>
       </div>
     </div>
 
     <div v-if="error" class="error-banner">{{ error }}</div>
+    <div v-if="successMessage" class="success-banner">
+      <span>{{ successMessage }}</span>
+      <button class="success-close" @click="clearSuccessMessage">×</button>
+    </div>
 
     <div v-if="loading" class="dashboard-loading">
       <div class="loader"></div>
@@ -249,25 +334,43 @@ onMounted(async () => {
     <div v-else class="decks-grid">
       <div v-for="d in decks" :key="d.id" class="deck-card glass-panel">
         <div class="deck-top-row">
-          <h3>{{ d.name }}</h3>
-          <span class="deck-creator">@{{ d.creator }}</span>
+          <div class="deck-title-row">
+            <h3>{{ d.name }}</h3>
+            <span class="deck-creator">@{{ d.creator }}</span>
+          </div>
         </div>
 
         <div class="deck-hero-container">
-          <img :src="getCostruttoreImg(d.costruttoreId)" class="deck-hero-img" />
+          <img
+            :src="getCostruttoreImg(d.costruttoreId)"
+            class="deck-hero-img"
+          />
         </div>
 
-        <div class="deck-meta">
-          <span>{{ getCostruttoreName(d.costruttoreId) }}</span>
-          <span>Carte: {{ getDeckCardsTotal(d) }}/40</span>
+        <div class="deck-hero-caption">
+          <span class="caption-name">{{
+            getCostruttoreName(d.costruttoreId)
+          }}</span>
         </div>
 
-        <div class="deck-counters">
-          <span>▲ {{ d.votesCount }}</span>
-          <span>⭳ {{ d.importsCount }}</span>
+        <div class="deck-footer-row">
+          <div class="stat-chip">
+            <span class="stat-key">VOTI</span>
+            <span class="stat-val">{{ d.votesCount }}</span>
+          </div>
+          <div class="stat-chip">
+            <span class="stat-key">IMPORT</span>
+            <span class="stat-val">{{ d.importsCount }}</span>
+          </div>
         </div>
 
         <div class="deck-actions">
+          <button
+            class="cyber-btn btn-secondary small preview-btn"
+            @click="openPreview(d)"
+          >
+            Visualizza
+          </button>
           <button
             class="cyber-btn btn-secondary small"
             :class="{ voted: d.userVoted }"
@@ -275,7 +378,20 @@ onMounted(async () => {
           >
             {{ d.userVoted ? "Votato" : "Vota" }}
           </button>
-          <button class="cyber-btn btn-primary small" @click="importDeck(d)">
+          <button
+            class="cyber-btn btn-primary small"
+            :disabled="
+              (d.creator || '').trim().toLowerCase() ===
+              username.trim().toLowerCase()
+            "
+            :title="
+              (d.creator || '').trim().toLowerCase() ===
+              username.trim().toLowerCase()
+                ? 'Non puoi importare un tuo mazzo.'
+                : ''
+            "
+            @click="importDeck(d)"
+          >
             Importa
           </button>
         </div>
@@ -286,10 +402,55 @@ onMounted(async () => {
       </div>
     </div>
 
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="selectedDeck"
+          class="modal-overlay"
+          @click.self="selectedDeck = null"
+        >
+          <div class="modal-content glass-panel">
+            <button class="close-btn" @click="selectedDeck = null">
+              &times;
+            </button>
+            <h2 class="modal-title">{{ selectedDeck.name }}</h2>
+            <div class="modal-subtitle">
+              <span>@{{ selectedDeck.creator }}</span>
+              <span>{{ getCostruttoreName(selectedDeck.costruttoreId) }}</span>
+            </div>
+
+            <div class="preview-list">
+              <div
+                v-for="item in previewCards"
+                :key="item.cardId"
+                class="preview-row"
+              >
+                <span class="preview-count">{{ item.count }}x</span>
+                <span class="preview-name">{{ item.name }}</span>
+                <span class="preview-type">{{ item.type }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
     <div v-if="totalPages > 1" class="pagination">
-      <button :disabled="currentPage === 1" class="page-btn" @click="currentPage--">PREV</button>
+      <button
+        :disabled="currentPage === 1"
+        class="page-btn"
+        @click="currentPage--"
+      >
+        PREV
+      </button>
       <span class="page-info">PAG {{ currentPage }} / {{ totalPages }}</span>
-      <button :disabled="currentPage === totalPages" class="page-btn" @click="currentPage++">NEXT</button>
+      <button
+        :disabled="currentPage === totalPages"
+        class="page-btn"
+        @click="currentPage++"
+      >
+        NEXT
+      </button>
     </div>
   </div>
 </template>
@@ -300,30 +461,47 @@ onMounted(async () => {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
+  padding-bottom: 4rem;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
 }
 
 .main-title {
   text-align: center;
-  font-size: 3rem;
+  font-size: 3.5rem;
   font-family: var(--font-display);
-  letter-spacing: 0.4rem;
-  margin-bottom: 1.5rem;
-  color: var(--accent-cyan);
+  letter-spacing: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 3.5rem;
+  text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
 }
 
 .search-container {
   display: flex;
+  justify-content: center;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .search-box {
-  flex: 1;
+  flex-grow: 1;
 }
 
 .search-input {
-  height: 48px;
+  padding-left: 1.5rem !important;
+  font-size: 1.1rem;
+  height: 50px;
+  width: 100%;
   margin-bottom: 0 !important;
 }
 
@@ -337,18 +515,27 @@ onMounted(async () => {
   border: 1px solid var(--glass-border);
   color: var(--text-main);
   padding: 0 1.2rem;
-  height: 48px;
+  height: 50px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 0.8rem;
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
   user-select: none;
+  white-space: nowrap;
+}
+
+.dropdown-trigger:hover {
+  border-color: var(--accent-cyan);
 }
 
 .dropdown-trigger .arrow {
   margin-left: auto;
   font-size: 0.7rem;
   transition: transform 0.3s;
+  color: #fff;
 }
 
 .dropdown-trigger .arrow.open {
@@ -370,6 +557,9 @@ onMounted(async () => {
 .dropdown-item {
   padding: 0.85rem 1rem;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 .dropdown-item:hover,
@@ -386,15 +576,27 @@ onMounted(async () => {
 .count-tag {
   background: rgba(0, 240, 255, 0.1);
   border: 1px solid var(--accent-cyan);
-  padding: 0 1.1rem;
-  height: 48px;
+  padding: 0 1.2rem;
+  height: 50px;
   display: flex;
   align-items: center;
   border-radius: 6px;
+  font-size: 0.85rem;
+  font-family: var(--font-display);
+  color: var(--accent-cyan);
+  white-space: nowrap;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .error-banner {
-  margin-bottom: 1rem;
+  margin: 0;
   border: 1px solid var(--accent-magenta);
   color: var(--accent-magenta);
   background: rgba(255, 0, 110, 0.08);
@@ -402,43 +604,96 @@ onMounted(async () => {
   padding: 0.75rem 1rem;
 }
 
+.success-banner {
+  margin: 0;
+  border: 1px solid rgba(0, 255, 136, 0.6);
+  color: #00ff88;
+  background: rgba(0, 255, 136, 0.1);
+  box-shadow: 0 0 18px rgba(0, 255, 136, 0.15);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.success-close {
+  border: 0;
+  background: transparent;
+  color: #00ff88;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
 .decks-grid {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  align-items: stretch;
   gap: 1.2rem;
+  margin-top: 0.2rem;
 }
 
 .deck-card {
-  padding: 1rem;
+  padding: 1.4rem;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  height: 100%;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.deck-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 15px 40px rgba(0, 240, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .deck-top-row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
-.deck-top-row h3 {
+.deck-title-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-height: 66px;
+}
+
+.deck-title-row h3 {
   margin: 0;
   color: var(--accent-cyan);
   font-family: var(--font-display);
+  font-size: 1.3rem;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
 }
 
 .deck-creator {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+  letter-spacing: 0.5px;
 }
 
 .deck-hero-container {
   width: 100%;
-  height: 210px;
+  height: 260px;
   border-radius: 8px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -448,28 +703,81 @@ onMounted(async () => {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
+  transition: transform 0.45s ease;
 }
 
-.deck-meta,
-.deck-counters,
-.deck-actions {
+.deck-card:hover .deck-hero-img {
+  transform: scale(1.08);
+}
+
+.deck-hero-caption {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0 0.4rem;
+  min-height: 42px;
+}
+
+.caption-name {
+  font-size: 0.92rem;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.45px;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.deck-footer-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
   gap: 0.8rem;
+  padding-top: 0.5rem;
+  min-height: 44px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.deck-meta,
-.deck-counters {
-  font-size: 0.85rem;
+.stat-chip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 30px;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 240, 255, 0.18);
+  background: rgba(0, 240, 255, 0.06);
 }
 
-.deck-counters {
+.stat-key {
+  font-size: 0.68rem;
+  letter-spacing: 1px;
   color: var(--text-muted);
+  font-family: var(--font-display);
+}
+
+.stat-val {
+  font-size: 0.85rem;
+  color: var(--accent-cyan);
+  font-family: var(--font-display);
 }
 
 .cyber-btn.small {
-  flex: 1;
+  width: 100%;
   height: 36px;
+}
+
+.deck-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+  margin-top: auto;
+}
+
+.preview-btn {
+  grid-column: 1 / -1;
 }
 
 .cyber-btn.voted {
@@ -512,6 +820,97 @@ onMounted(async () => {
 .slide-up-leave-to {
   opacity: 0;
   transform: translateY(8px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-content {
+  width: 100%;
+  max-width: 760px;
+  max-height: 82vh;
+  overflow-y: auto;
+  padding: 1.5rem;
+  border: 1px solid var(--accent-cyan);
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.9rem;
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font-size: 2rem;
+  cursor: pointer;
+}
+
+.modal-title {
+  margin: 0 0 0.7rem 0;
+  color: var(--accent-cyan);
+  font-family: var(--font-display);
+}
+
+.modal-subtitle {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.preview-list {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.preview-row {
+  display: grid;
+  grid-template-columns: 56px 1fr auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.preview-row:last-child {
+  border-bottom: 0;
+}
+
+.preview-count {
+  color: var(--accent-cyan);
+  font-family: var(--font-display);
+}
+
+.preview-name {
+  color: var(--text-main);
+}
+
+.preview-type {
+  color: var(--text-muted);
+  font-size: 0.82rem;
 }
 
 @media (max-width: 980px) {

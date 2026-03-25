@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
-import axios from 'axios';
+import axios from "axios";
+import { computed, onMounted, ref, watch } from "vue";
 
 const cards = ref<any[]>([]);
 const loading = ref(true);
-const error = ref('');
+const error = ref("");
 
 // Filtri Reattivi
-const searchQuery = ref('');
-const selectedType = ref('');
+const searchQuery = ref("");
+const selectedType = ref("");
 const filterEt = ref(10);
 const filterPep = ref(10);
 const filterRp = ref(10);
@@ -24,15 +24,15 @@ const isTypeDropdownOpen = ref(false);
 const currentPage = ref(1);
 const itemsPerPage = 20;
 const types = [
-  { value: '', label: 'Tutti', color: 'transparent' },
-  { value: 'Solido', label: 'Solido', color: '#007bff' },
-  { value: 'Liquido', label: 'Liquido', color: '#28a745' },
-  { value: 'Gas', label: 'Gas', color: '#fd7e14' },
-  { value: 'Plasma', label: 'Plasma', color: '#dc3545' },
-  { value: 'Materia Oscura', label: 'Materia Oscura', color: '#bf00ff' }, // Neon Purple
-  { value: 'Evento', label: 'Evento', color: '#cd7f32' },
-  { value: 'Anomalia', label: 'Anomalia', color: '#e0e0e0' }, // Lighter Silver
-  { value: 'Costruttore', label: 'Costruttore', color: '#ffd700' }
+  { value: "", label: "Tutti", color: "transparent" },
+  { value: "Solido", label: "Solido", color: "#007bff" },
+  { value: "Liquido", label: "Liquido", color: "#28a745" },
+  { value: "Gas", label: "Gas", color: "#fd7e14" },
+  { value: "Plasma", label: "Plasma", color: "#dc3545" },
+  { value: "Materia Oscura", label: "Materia Oscura", color: "#bf00ff" }, // Neon Purple
+  { value: "Evento", label: "Evento", color: "#cd7f32" },
+  { value: "Anomalia", label: "Anomalia", color: "#e0e0e0" }, // Lighter Silver
+  { value: "Costruttore", label: "Costruttore", color: "#ffd700" },
 ];
 
 const selectType = (type: string) => {
@@ -41,14 +41,14 @@ const selectType = (type: string) => {
 };
 
 // Stato Ordinamento
-const sortBy = ref('id');
+const sortBy = ref("id");
 const isSortDropdownOpen = ref(false);
 const sortOptions = [
-  { value: 'id', label: 'Default (ID)' },
-  { value: 'name', label: 'Nome (A-Z)' },
-  { value: 'cost_et', label: 'Costo (ET)' },
-  { value: 'pep', label: 'Potenza (PEP)' },
-  { value: 'rp', label: 'Resistenza (RP)' }
+  { value: "id", label: "Default (ID)" },
+  { value: "name", label: "Nome (A-Z)" },
+  { value: "cost_et", label: "Costo (ET)" },
+  { value: "pep", label: "Potenza (PEP)" },
+  { value: "rp", label: "Resistenza (RP)" },
 ];
 
 const selectSort = (val: string) => {
@@ -59,47 +59,58 @@ const selectSort = (val: string) => {
 // Blocca/Sblocca Scroll quando il modal è aperto
 watch(selectedCard, (val) => {
   if (val) {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
   } else {
-    document.body.style.overflow = '';
+    document.body.style.overflow = "";
   }
 });
 
 const handleImgError = (e: Event) => {
   const target = e.target as HTMLImageElement;
-  target.style.display = 'none';
-  target.parentElement?.classList.add('missing-image');
+  target.style.display = "none";
+  target.parentElement?.classList.add("missing-image");
 };
 
 const filteredCards = computed(() => {
-  return cards.value.filter(card => {
-    const nameMatch = card.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-    const typeMatch = !selectedType.value || card.type === selectedType.value;
-    
-    // Tutti filtri MASSIMI per coerenza visiva (barre a destra = mostrano tutto)
-    // Se il filtro è attivo (< 10), mostriamo solo le carte che HANNO il valore e rientrano nel limite
-    const etMatch = filterEt.value >= 10 || (card.cost_et !== null && card.cost_et <= filterEt.value);
-    const pepMatch = filterPep.value >= 10 || (card.pep !== null && card.pep <= filterPep.value);
-    const rpMatch = filterRp.value >= 10 || (card.rp !== null && card.rp <= filterRp.value);
-    
-    return nameMatch && typeMatch && etMatch && pepMatch && rpMatch;
-  }).sort((a, b) => {
-    if (sortBy.value === 'id') return 0; // Mantieni ordine originale
-    if (sortBy.value === 'name') return a.name.localeCompare(b.name);
-    if (sortBy.value === 'pep' || sortBy.value === 'rp') {
-      const valA = a[sortBy.value] ?? -1;
-      const valB = b[sortBy.value] ?? -1;
-      return (valB as number) - (valA as number); // Decrescente per Potenza e Resistenza
-    }
-    
-    // Ordinamento numerico crescente per gli altri (es: ET)
-    const valA = a[sortBy.value] ?? 999;
-    const valB = b[sortBy.value] ?? 999;
-    return (valA as number) - (valB as number);
-  });
+  return cards.value
+    .filter((card) => {
+      const nameMatch = card.name
+        .toLowerCase()
+        .includes(searchQuery.value.toLowerCase());
+      const typeMatch = !selectedType.value || card.type === selectedType.value;
+
+      // Tutti filtri MASSIMI per coerenza visiva (barre a destra = mostrano tutto)
+      // Se il filtro è attivo (< 10), mostriamo solo le carte che HANNO il valore e rientrano nel limite
+      const etMatch =
+        filterEt.value >= 10 ||
+        (card.cost_et !== null && card.cost_et <= filterEt.value);
+      const pepMatch =
+        filterPep.value >= 10 ||
+        (card.pep !== null && card.pep <= filterPep.value);
+      const rpMatch =
+        filterRp.value >= 10 || (card.rp !== null && card.rp <= filterRp.value);
+
+      return nameMatch && typeMatch && etMatch && pepMatch && rpMatch;
+    })
+    .sort((a, b) => {
+      if (sortBy.value === "id") return 0; // Mantieni ordine originale
+      if (sortBy.value === "name") return a.name.localeCompare(b.name);
+      if (sortBy.value === "pep" || sortBy.value === "rp") {
+        const valA = a[sortBy.value] ?? -1;
+        const valB = b[sortBy.value] ?? -1;
+        return (valB as number) - (valA as number); // Decrescente per Potenza e Resistenza
+      }
+
+      // Ordinamento numerico crescente per gli altri (es: ET)
+      const valA = a[sortBy.value] ?? 999;
+      const valB = b[sortBy.value] ?? 999;
+      return (valA as number) - (valB as number);
+    });
 });
 
-const totalPages = computed(() => Math.ceil(filteredCards.value.length / itemsPerPage));
+const totalPages = computed(() =>
+  Math.ceil(filteredCards.value.length / itemsPerPage),
+);
 
 const paginatedCards = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
@@ -107,20 +118,24 @@ const paginatedCards = computed(() => {
 });
 
 // Reset pagina quando cambiano i filtri
-watch([searchQuery, selectedType, filterEt, filterPep, filterRp, sortBy], () => {
-  currentPage.value = 1;
-});
+watch(
+  [searchQuery, selectedType, filterEt, filterPep, filterRp, sortBy],
+  () => {
+    currentPage.value = 1;
+  },
+);
 
 function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/cards');
+    const response = await axios.get("/api/cards");
     cards.value = response.data;
   } catch (e) {
-    error.value = 'Errore critico di sincronizzazione col Nucleo (Backend Node.js offline).';
+    error.value =
+      "Errore critico di sincronizzazione col Nucleo (Backend Node.js offline).";
     console.error(e);
   } finally {
     loading.value = false;
@@ -135,31 +150,34 @@ const vClickOutside = {
         binding.value(event);
       }
     };
-    document.body.addEventListener('click', el.clickOutsideEvent);
+    document.body.addEventListener("click", el.clickOutsideEvent);
   },
   unmounted(el: any) {
-    document.body.removeEventListener('click', el.clickOutsideEvent);
-  }
+    document.body.removeEventListener("click", el.clickOutsideEvent);
+  },
 };
 </script>
 
 <template>
   <div class="cards-view fade-in">
     <h1 class="glitch-text" data-text="DATABASE">DATABASE</h1>
-    
+
     <!-- Barra di Ricerca Centrale -->
     <div class="search-container">
       <div class="search-box">
-        <input 
-          v-model="searchQuery" 
-          type="text" 
-          placeholder="Es: Nucleo di Basalto" 
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Es: Nucleo di Basalto"
           class="glass-input search-input"
-          @keyup.enter="showFilters = false" 
+          @keyup.enter="showFilters = false"
         />
       </div>
-      <button class="cyber-btn btn-primary toggle-filters-btn" @click="showFilters = !showFilters">
-        {{ showFilters ? 'CHIUDI FILTRI' : 'FILTRI AVANZATI' }}
+      <button
+        class="cyber-btn btn-primary toggle-filters-btn"
+        @click="showFilters = !showFilters"
+      >
+        {{ showFilters ? "CHIUDI FILTRI" : "FILTRI AVANZATI" }}
       </button>
     </div>
 
@@ -168,42 +186,70 @@ const vClickOutside = {
       <div v-if="showFilters" class="glass-panel filter-panel">
         <div class="filter-group">
           <label>Tipo</label>
-          <div class="custom-dropdown" v-click-outside="() => isTypeDropdownOpen = false">
-            <div class="dropdown-trigger" @click.stop="isTypeDropdownOpen = !isTypeDropdownOpen">
-              <span class="dot" :style="{ backgroundColor: types.find(t => t.value === selectedType)?.color || 'transparent', opacity: selectedType ? 1 : 0 }"></span>
-              {{ types.find(t => t.value === selectedType)?.label || 'Tutti' }}
+          <div
+            class="custom-dropdown"
+            v-click-outside="() => (isTypeDropdownOpen = false)"
+          >
+            <div
+              class="dropdown-trigger"
+              @click.stop="isTypeDropdownOpen = !isTypeDropdownOpen"
+            >
+              <span
+                class="dot"
+                :style="{
+                  backgroundColor:
+                    types.find((t) => t.value === selectedType)?.color ||
+                    'transparent',
+                  opacity: selectedType ? 1 : 0,
+                }"
+              ></span>
+              {{
+                types.find((t) => t.value === selectedType)?.label || "Tutti"
+              }}
               <span class="arrow" :class="{ open: isTypeDropdownOpen }">▼</span>
             </div>
             <Transition name="slide-up">
               <div v-if="isTypeDropdownOpen" class="dropdown-menu glass-panel">
-                <div 
-                  v-for="t in types" 
-                  :key="t.value" 
-                  class="dropdown-item" 
+                <div
+                  v-for="t in types"
+                  :key="t.value"
+                  class="dropdown-item"
                   :class="{ active: selectedType === t.value }"
                   @click.stop="selectType(t.value)"
                 >
-                  <span class="dot" :style="{ backgroundColor: t.color, opacity: t.value ? 1 : 0 }"></span>
+                  <span
+                    class="dot"
+                    :style="{
+                      backgroundColor: t.color,
+                      opacity: t.value ? 1 : 0,
+                    }"
+                  ></span>
                   {{ t.label }}
                 </div>
               </div>
             </Transition>
           </div>
         </div>
-        
+
         <div class="filter-group">
           <label>Ordina Per</label>
-          <div class="custom-dropdown" v-click-outside="() => isSortDropdownOpen = false">
-            <div class="dropdown-trigger" @click.stop="isSortDropdownOpen = !isSortDropdownOpen">
-              {{ sortOptions.find(o => o.value === sortBy)?.label }}
+          <div
+            class="custom-dropdown"
+            v-click-outside="() => (isSortDropdownOpen = false)"
+          >
+            <div
+              class="dropdown-trigger"
+              @click.stop="isSortDropdownOpen = !isSortDropdownOpen"
+            >
+              {{ sortOptions.find((o) => o.value === sortBy)?.label }}
               <span class="arrow" :class="{ open: isSortDropdownOpen }">▼</span>
             </div>
             <Transition name="slide-up">
               <div v-if="isSortDropdownOpen" class="dropdown-menu glass-panel">
-                <div 
-                  v-for="o in sortOptions" 
-                  :key="o.value" 
-                  class="dropdown-item" 
+                <div
+                  v-for="o in sortOptions"
+                  :key="o.value"
+                  class="dropdown-item"
                   :class="{ active: sortBy === o.value }"
                   @click.stop="selectSort(o.value)"
                 >
@@ -215,68 +261,119 @@ const vClickOutside = {
         </div>
 
         <div class="filter-group">
-          <label>Max ET: {{ filterEt >= 10 ? '∞' : filterEt }}</label>
-          <input v-model.number="filterEt" type="range" min="0" max="10" step="1" class="glass-range" />
+          <label>Max ET: {{ filterEt >= 10 ? "∞" : filterEt }}</label>
+          <input
+            v-model.number="filterEt"
+            type="range"
+            min="0"
+            max="10"
+            step="1"
+            class="glass-range"
+          />
         </div>
 
         <div class="filter-group">
-          <label>Max PEP: {{ filterPep >= 10 ? '10+' : filterPep }}</label>
-          <input v-model.number="filterPep" type="range" min="0" max="10" step="1" class="glass-range" />
+          <label>Max PEP: {{ filterPep >= 10 ? "10+" : filterPep }}</label>
+          <input
+            v-model.number="filterPep"
+            type="range"
+            min="0"
+            max="10"
+            step="1"
+            class="glass-range"
+          />
         </div>
 
         <div class="filter-group">
-          <label>Max RP: {{ filterRp >= 10 ? '10+' : filterRp }}</label>
-          <input v-model.number="filterRp" type="range" min="0" max="10" step="1" class="glass-range" />
+          <label>Max RP: {{ filterRp >= 10 ? "10+" : filterRp }}</label>
+          <input
+            v-model.number="filterRp"
+            type="range"
+            min="0"
+            max="10"
+            step="1"
+            class="glass-range"
+          />
         </div>
 
         <div class="filter-group">
-          <button @click="searchQuery = ''; selectedType = ''; filterEt = 10; filterPep = 10; filterRp = 10; sortBy = 'id';" class="cyber-btn btn-danger small">RESET</button>
+          <button
+            @click="
+              searchQuery = '';
+              selectedType = '';
+              filterEt = 10;
+              filterPep = 10;
+              filterRp = 10;
+              sortBy = 'id';
+            "
+            class="cyber-btn btn-danger small"
+          >
+            RESET
+          </button>
         </div>
       </div>
     </Transition>
-    
+
     <div v-if="loading" class="glass-panel main-panel text-center">
       <h3>Sincronizzazione in corso...</h3>
       <div class="loader"></div>
     </div>
-    
+
     <div v-else-if="error" class="glass-panel auth-panel text-center">
       <h3 class="text-red">ERRORE IT</h3>
       <p>{{ error }}</p>
     </div>
 
     <div v-else class="cards-grid">
-      <div v-for="card in paginatedCards" :key="card.id" class="glass-panel card-item" @click="selectedCard = card">
+      <div
+        v-for="card in paginatedCards"
+        :key="card.id"
+        class="glass-panel card-item"
+        @click="selectedCard = card"
+      >
         <div class="card-header stacked">
           <h3>{{ card.name }}</h3>
-          <span class="badge" :class="card.type?.toLowerCase()">{{ card.type }} | {{ card.status }}</span>
+          <span class="badge" :class="card.type?.toLowerCase()"
+            >{{ card.type }} | {{ card.status }}</span
+          >
         </div>
         <div class="card-image-container">
-          <img :src="card.image_url" :alt="card.name" class="card-img" @error="handleImgError" />
+          <img
+            :src="card.image_url"
+            :alt="card.name"
+            class="card-img"
+            @error="handleImgError"
+          />
         </div>
       </div>
     </div>
 
     <!-- Controlli Paginazione -->
     <div v-if="totalPages > 1" class="pagination-controls fade-in">
-      <button 
-        class="cyber-btn btn-primary pag-btn" 
-        :disabled="currentPage === 1" 
-        @click="currentPage-- ; scrollToTop()"
+      <button
+        class="cyber-btn btn-primary pag-btn"
+        :disabled="currentPage === 1"
+        @click="
+          currentPage--;
+          scrollToTop();
+        "
       >
         ← PREV
       </button>
-      
+
       <div class="page-info">
         <span>PAGINA</span>
         <span class="current-page">{{ currentPage }}</span>
         <span>DI {{ totalPages }}</span>
       </div>
 
-      <button 
-        class="cyber-btn btn-primary pag-btn" 
-        :disabled="currentPage === totalPages" 
-        @click="currentPage++ ; scrollToTop()"
+      <button
+        class="cyber-btn btn-primary pag-btn"
+        :disabled="currentPage === totalPages"
+        @click="
+          currentPage++;
+          scrollToTop();
+        "
       >
         NEXT →
       </button>
@@ -285,26 +382,50 @@ const vClickOutside = {
     <!-- Modal Ingrandimento via Teleport per evitare problemi di posizionamento -->
     <Teleport to="body">
       <Transition name="fade">
-        <div v-if="selectedCard" class="modal-overlay" @click.self="selectedCard = null">
+        <div
+          v-if="selectedCard"
+          class="modal-overlay"
+          @click.self="selectedCard = null"
+        >
           <div class="modal-content glass-panel">
-            <button class="close-btn" @click="selectedCard = null">&times;</button>
+            <button class="close-btn" @click="selectedCard = null">
+              &times;
+            </button>
             <div class="modal-body">
               <div class="modal-image-container">
-                <img :src="selectedCard.image_url" :alt="selectedCard.name" @error="handleImgError" />
+                <img
+                  :src="selectedCard.image_url"
+                  :alt="selectedCard.name"
+                  @error="handleImgError"
+                />
               </div>
               <div class="modal-info">
                 <h2>{{ selectedCard.name }}</h2>
                 <div class="badge-row">
-                   <span class="badge" :class="selectedCard.type?.toLowerCase()">{{ selectedCard.type }}</span>
-                   <span class="rarity-badge">{{ selectedCard.rarity }}</span>
+                  <span
+                    class="badge"
+                    :class="selectedCard.type?.toLowerCase()"
+                    >{{ selectedCard.type }}</span
+                  >
+                  <span class="rarity-badge">{{ selectedCard.rarity }}</span>
                 </div>
                 <p class="modal-effect">{{ selectedCard.effect }}</p>
                 <div class="modal-stats">
-                  <div class="stat-box"><strong>ET</strong><span>{{ selectedCard.cost_et ?? '-' }}</span></div>
-                  <div class="stat-box"><strong>PEP</strong><span>{{ selectedCard.pep ?? '-' }}</span></div>
-                  <div class="stat-box"><strong>RP</strong><span>{{ selectedCard.rp ?? '-' }}</span></div>
+                  <div class="stat-box">
+                    <strong>ET</strong
+                    ><span>{{ selectedCard.cost_et ?? "-" }}</span>
+                  </div>
+                  <div class="stat-box">
+                    <strong>PEP</strong
+                    ><span>{{ selectedCard.pep ?? "-" }}</span>
+                  </div>
+                  <div class="stat-box">
+                    <strong>RP</strong><span>{{ selectedCard.rp ?? "-" }}</span>
+                  </div>
                 </div>
-                <p v-if="selectedCard.role" class="modal-role">Ruolo: {{ selectedCard.role }}</p>
+                <p v-if="selectedCard.role" class="modal-role">
+                  Ruolo: {{ selectedCard.role }}
+                </p>
               </div>
             </div>
           </div>
@@ -316,17 +437,27 @@ const vClickOutside = {
 
 <style scoped>
 .glitch-text {
-  margin-bottom: 4rem !important;
+  margin-bottom: 3.5rem !important;
 }
 .cards-view {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
   text-align: center; /* Centra Titolo e Sottotitolo */
   padding: 2rem;
+  padding-bottom: 4rem;
+  min-height: calc(100vh - 120px);
 }
 .cards-view h1 {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-  color: var(--text-main);
-  text-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+  font-size: 3.5rem;
+  font-family: var(--font-display);
+  letter-spacing: 0.5rem;
+  background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 3.5rem;
+  text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
 }
 .subtitle {
   margin-bottom: 2rem;
@@ -387,7 +518,7 @@ const vClickOutside = {
   margin: 0;
   font-size: 1.2rem;
   color: var(--text-main);
-  text-shadow: 0 0 5px rgba(255,255,255,0.2);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
 /* Filtri Styles */
@@ -398,7 +529,7 @@ const vClickOutside = {
   align-items: stretch;
   gap: 1rem;
   max-width: 800px;
-  margin: 0 auto 4rem auto; /* Semplificato e pareggiato */
+  margin: 1rem auto 4rem auto; /* Più respiro sotto al titolo */
 }
 .search-box {
   position: relative;
@@ -420,10 +551,12 @@ const vClickOutside = {
 }
 
 /* Transitions per i filtri */
-.fade-slide-enter-active, .fade-slide-leave-active {
+.fade-slide-enter-active,
+.fade-slide-leave-active {
   transition: all 0.4s ease;
 }
-.fade-slide-enter-from, .fade-slide-leave-to {
+.fade-slide-enter-from,
+.fade-slide-leave-to {
   opacity: 0;
   transform: translateY(-20px);
 }
@@ -501,20 +634,52 @@ const vClickOutside = {
   font-size: 0.75rem;
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: var(--text-main);
   font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: 1px;
 }
-.badge.solido { background: rgba(0, 123, 255, 0.2); border-bottom: 2px solid #007bff; color: #80cfff; }
-.badge.liquido { background: rgba(40, 167, 69, 0.2); border-bottom: 2px solid #28a745; color: #80ffc0; }
-.badge.gas { background: rgba(253, 126, 20, 0.2); border-bottom: 2px solid #fd7e14; color: #ffc080; }
-.badge.plasma { background: rgba(220, 53, 69, 0.2); border-bottom: 2px solid #dc3545; color: #ff80a0; }
-.badge.materia { background: rgba(138, 43, 226, 0.3); border-bottom: 2px solid #8a2be2; color: #d0a0ff; }
-.badge.evento { background: rgba(205, 127, 50, 0.2); border-bottom: 2px solid #cd7f32; color: #dfaf80; }
-.badge.anomalia { background: rgba(192, 192, 192, 0.2); border-bottom: 2px solid #c0c0c0; color: #e0e0e0; }
-.badge.costruttore { background: rgba(255, 215, 0, 0.2); border-bottom: 2px solid #ffd700; color: #fff080; }
+.badge.solido {
+  background: rgba(0, 123, 255, 0.2);
+  border-bottom: 2px solid #007bff;
+  color: #80cfff;
+}
+.badge.liquido {
+  background: rgba(40, 167, 69, 0.2);
+  border-bottom: 2px solid #28a745;
+  color: #80ffc0;
+}
+.badge.gas {
+  background: rgba(253, 126, 20, 0.2);
+  border-bottom: 2px solid #fd7e14;
+  color: #ffc080;
+}
+.badge.plasma {
+  background: rgba(220, 53, 69, 0.2);
+  border-bottom: 2px solid #dc3545;
+  color: #ff80a0;
+}
+.badge.materia {
+  background: rgba(138, 43, 226, 0.3);
+  border-bottom: 2px solid #8a2be2;
+  color: #d0a0ff;
+}
+.badge.evento {
+  background: rgba(205, 127, 50, 0.2);
+  border-bottom: 2px solid #cd7f32;
+  color: #dfaf80;
+}
+.badge.anomalia {
+  background: rgba(192, 192, 192, 0.2);
+  border-bottom: 2px solid #c0c0c0;
+  color: #e0e0e0;
+}
+.badge.costruttore {
+  background: rgba(255, 215, 0, 0.2);
+  border-bottom: 2px solid #ffd700;
+  color: #fff080;
+}
 
 .card-stats {
   display: flex;
@@ -522,7 +687,7 @@ const vClickOutside = {
   margin-bottom: 1.5rem;
 }
 .card-stats p {
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   padding: 0.5rem 0.8rem;
   border-radius: 8px;
   font-family: var(--font-display);
@@ -543,7 +708,7 @@ const vClickOutside = {
   margin-top: 1rem;
   font-size: 0.8rem;
   color: var(--text-muted);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 0.5rem;
   font-style: italic;
 }
@@ -558,7 +723,7 @@ const vClickOutside = {
   align-items: center;
   justify-content: center;
   background: rgba(0, 0, 0, 0.2);
-  border: 1px dashed rgba(255,255,255,0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.05);
 }
 
 /* Custom Dropdown Styles */
@@ -607,7 +772,7 @@ const vClickOutside = {
   border: 1px solid var(--accent-cyan); /* Bordo ciano per separazione netta */
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
 }
 .dropdown-item {
   padding: 1rem 1.2rem; /* Più spazio per il tocco */
@@ -633,14 +798,16 @@ const vClickOutside = {
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
-  border: 1px solid rgba(255,255,255,0.3); /* Bordo per visibilità su sfondo scuro */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Bordo per visibilità su sfondo scuro */
   box-shadow: 0 0 5px currentColor;
 }
 
-.slide-up-enter-active, .slide-up-leave-active {
+.slide-up-enter-active,
+.slide-up-leave-active {
   transition: all 0.3s ease-out;
 }
-.slide-up-enter-from, .slide-up-leave-to {
+.slide-up-enter-from,
+.slide-up-leave-to {
   opacity: 0;
   transform: translateY(10px);
 }
@@ -652,7 +819,7 @@ const vClickOutside = {
   display: block;
 }
 .missing-image::after {
-  content: 'Nessuna Scansione Immagine';
+  content: "Nessuna Scansione Immagine";
   font-family: var(--font-display);
   color: var(--text-muted);
   font-size: 0.8rem;
@@ -669,7 +836,14 @@ const vClickOutside = {
   animation: spin 1s linear infinite;
   margin: 2rem auto;
 }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 /* Modal Styles */
 .modal-overlay {
@@ -688,10 +862,12 @@ const vClickOutside = {
 }
 
 /* Transitions */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 
@@ -738,8 +914,8 @@ const vClickOutside = {
 .modal-image-container img {
   width: 100%;
   border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .modal-info h2 {
   font-family: var(--font-display);
@@ -799,7 +975,7 @@ const vClickOutside = {
 .modal-role {
   font-size: 0.9rem;
   color: var(--text-muted);
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 1rem;
 }
 /* Pagination Styles */

@@ -62,9 +62,16 @@
     ],
     "creator": "Joule",
     "isPublic": true,
-    "id": 1774414066162
+    "id": 1774414066162,
+    "createdAt": 1774414066162,
+    "updatedAt": 1774453741922,
+    "votes": [
+      "ZinzenGame"
+    ],
+    "importsCount": 6
   },
   {
+    "id": 1774414258859,
     "name": "Nuovo Mazzo",
     "costruttoreId": 257,
     "cards": [
@@ -127,7 +134,12 @@
     ],
     "creator": "ZinzenGame",
     "isPublic": true,
-    "id": 1774414258859
+    "createdAt": 1774414258859,
+    "updatedAt": 1774453450818,
+    "votes": [
+      "ZinzenGame"
+    ],
+    "importsCount": 1
   },
   {
     "id": 1774428453751,
@@ -192,6 +204,82 @@
       }
     ],
     "creator": "ZinzenGame",
-    "isPublic": false
+    "isPublic": true,
+    "createdAt": 1774428453751,
+    "updatedAt": 1774453449830,
+    "votes": [
+      "ZinzenGame"
+    ],
+    "importsCount": 0
+  },
+  {
+    "id": 1774453741922,
+    "name": "Nuovo Mazzo (importato)",
+    "cards": [
+      {
+        "cardId": 1,
+        "count": 3
+      },
+      {
+        "cardId": 2,
+        "count": 3
+      },
+      {
+        "cardId": 3,
+        "count": 3
+      },
+      {
+        "cardId": 4,
+        "count": 3
+      },
+      {
+        "cardId": 5,
+        "count": 3
+      },
+      {
+        "cardId": 6,
+        "count": 3
+      },
+      {
+        "cardId": 8,
+        "count": 3
+      },
+      {
+        "cardId": 9,
+        "count": 3
+      },
+      {
+        "cardId": 11,
+        "count": 3
+      },
+      {
+        "cardId": 12,
+        "count": 3
+      },
+      {
+        "cardId": 13,
+        "count": 3
+      },
+      {
+        "cardId": 15,
+        "count": 3
+      },
+      {
+        "cardId": 17,
+        "count": 3
+      },
+      {
+        "cardId": 18,
+        "count": 1
+      }
+    ],
+    "costruttoreId": 254,
+    "creator": "ZinzenGame",
+    "isPublic": false,
+    "parentDeckId": 1774414066162,
+    "votes": [],
+    "importsCount": 0,
+    "createdAt": 1774453741922,
+    "updatedAt": 1774453741922
   }
 ]
