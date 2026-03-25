@@ -158,7 +158,7 @@ const vClickOutside = {
           @keyup.enter="showFilters = false" 
         />
       </div>
-      <button class="btn-primary toggle-filters-btn" @click="showFilters = !showFilters">
+      <button class="cyber-btn btn-primary toggle-filters-btn" @click="showFilters = !showFilters">
         {{ showFilters ? 'CHIUDI FILTRI' : 'FILTRI AVANZATI' }}
       </button>
     </div>
@@ -230,7 +230,7 @@ const vClickOutside = {
         </div>
 
         <div class="filter-group">
-          <button @click="searchQuery = ''; selectedType = ''; filterEt = 10; filterPep = 10; filterRp = 10; sortBy = 'id';" class="btn-clear">RESET</button>
+          <button @click="searchQuery = ''; selectedType = ''; filterEt = 10; filterPep = 10; filterRp = 10; sortBy = 'id';" class="cyber-btn btn-danger small">RESET</button>
         </div>
       </div>
     </Transition>
@@ -260,7 +260,7 @@ const vClickOutside = {
     <!-- Controlli Paginazione -->
     <div v-if="totalPages > 1" class="pagination-controls fade-in">
       <button 
-        class="glass-btn pag-btn" 
+        class="cyber-btn btn-primary pag-btn" 
         :disabled="currentPage === 1" 
         @click="currentPage-- ; scrollToTop()"
       >
@@ -274,7 +274,7 @@ const vClickOutside = {
       </div>
 
       <button 
-        class="glass-btn pag-btn" 
+        class="cyber-btn btn-primary pag-btn" 
         :disabled="currentPage === totalPages" 
         @click="currentPage++ ; scrollToTop()"
       >
@@ -495,21 +495,6 @@ const vClickOutside = {
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 0 10px var(--accent-cyan);
-}
-.btn-clear {
-  background: transparent;
-  border: 1px solid var(--accent-magenta);
-  color: var(--accent-magenta);
-  padding: 0.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: var(--font-display);
-  font-size: 0.8rem;
-  transition: all 0.3s ease;
-}
-.btn-clear:hover {
-  background: var(--accent-magenta);
-  color: white;
 }
 
 .badge {
@@ -825,30 +810,6 @@ const vClickOutside = {
   gap: 2rem;
   margin: 4rem 0;
   padding: 1.5rem;
-}
-.pag-btn {
-  padding: 0.8rem 1.5rem;
-  min-width: 120px;
-  font-family: var(--font-display);
-  font-weight: 800;
-  letter-spacing: 2px;
-  font-size: 0.9rem;
-  color: var(--accent-cyan);
-  border: 1px solid rgba(0, 240, 255, 0.3);
-  background: rgba(255, 255, 255, 0.05);
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-.pag-btn:hover:not(:disabled) {
-  background: rgba(0, 240, 255, 0.1);
-  border-color: var(--accent-cyan);
-  transform: scale(1.05);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-}
-.pag-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  filter: grayscale(1);
 }
 .page-info {
   display: flex;

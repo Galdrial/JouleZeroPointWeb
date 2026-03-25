@@ -97,7 +97,7 @@ onMounted(scrollToBottom);
           :disabled="isLoading"
           autofocus
         />
-        <button @click="sendMessage" :disabled="isLoading || !userInput.trim()" class="send-btn">
+        <button @click="sendMessage" :disabled="isLoading || !userInput.trim()" class="cyber-btn btn-primary send-btn">
           ➤
         </button>
       </div>
@@ -269,20 +269,18 @@ input:focus {
 }
 
 .send-btn {
-  background: var(--accent-cyan);
-  color: #000;
-  border: none;
-  padding: 0 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 1.2rem;
+  padding: 0 2.5rem !important;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem !important;
 }
 
-.send-btn:hover:not(:disabled) {
-  background: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+.send-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  filter: grayscale(1);
 }
 
 @media (max-width: 768px) {

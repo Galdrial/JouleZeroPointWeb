@@ -66,4 +66,14 @@ router.post('/login', (req, res) => {
   });
 });
 
+// Endpoint: Elimina Account
+router.delete('/account/:username', (req, res) => {
+  const { username } = req.params;
+  
+  db.run(`DELETE FROM users WHERE username = ?`, [username], function(err) {
+    if (err) return res.status(500).json({ error: 'Errore durante l\'epurazione dei dati genetici (DB).' });
+    res.json({ message: 'Account rimosso con successo dal archivio centrale.' });
+  });
+});
+
 module.exports = router;

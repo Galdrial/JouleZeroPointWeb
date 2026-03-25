@@ -68,7 +68,7 @@ const submitForm = async () => {
         <input v-if="!isLogin" v-model="username" type="text" placeholder="Nome Costruttore" class="glass-input" required />
         <input v-model="email" type="email" placeholder="Frequenza Temporale (Email)" class="glass-input" required />
         <input v-model="password" type="password" placeholder="Passphrase" class="glass-input" required />
-        <button type="submit" class="btn-primary full-width" :disabled="loading">
+        <button type="submit" class="cyber-btn btn-primary full-width" :disabled="loading">
           {{ loading ? 'Elaborazione...' : (isLogin ? 'Sincronizzazione' : 'Registra Frequenza') }}
         </button>
       </form>

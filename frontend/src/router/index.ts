@@ -30,6 +30,12 @@ const router = createRouter({
       name: 'oracle',
       component: () => import('../views/TerminalView.vue'),
       meta: { hideUI: true }
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue'),
+      meta: { requiresAuth: true }
     }
   ]
 })

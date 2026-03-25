@@ -137,15 +137,15 @@ app.post('/api/decks', (req, res) => {
   }
 });
 
-app.delete('/api/decks/:id', (req, res) => {
+app.delete('/api/decks/user/:username', (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const { username } = req.params;
     let decks = JSON.parse(fs.readFileSync(DECKS_FILE, 'utf8'));
-    decks = decks.filter(d => d.id !== id);
+    decks = decks.filter(d => d.creator !== username);
     fs.writeFileSync(DECKS_FILE, JSON.stringify(decks, null, 2));
-    res.json({ message: 'Mazzo eliminato' });
+    res.json({ message: `Tutti i mazzi di ${username} rimosse con successo.` });
   } catch (error) {
-    res.status(500).json({ error: 'Errore eliminazione mazzo' });
+    res.status(500).json({ error: 'Errore durante la pulizia dei dati mazzi' });
   }
 });
 

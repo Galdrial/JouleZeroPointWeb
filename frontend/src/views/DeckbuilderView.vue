@@ -293,7 +293,7 @@ onMounted(async () => {
       <h1 class="main-title">MAZZI</h1>
       
       <div class="top-actions">
-        <button @click="createNewDeck" class="btn-primary huge">NUOVO MAZZO</button>
+        <button @click="createNewDeck" class="cyber-btn btn-primary huge">NUOVO MAZZO</button>
       </div>
 
       <div class="search-container">
@@ -346,7 +346,7 @@ onMounted(async () => {
             <div class="deck-title-row">
               <h3>{{ d.name }}</h3>
             </div>
-            <button class="small-delete cyber-btn mini magenta" @click.stop="confirmDelete(d.id!)" title="Elimina Mazzo">
+            <button class="small-delete cyber-btn btn-danger mini" @click.stop="confirmDelete(d.id!)" title="Elimina Mazzo">
                <span class="trash-icon">×</span>
             </button>
           </div>
@@ -358,14 +358,8 @@ onMounted(async () => {
 
           <!-- CAPTION: Costruttore name below image -->
           <div class="deck-hero-caption">
-            <span class="caption-label">COSTRUTTORE</span>
             <span class="caption-name">{{ getCostruttoreName(d.costruttoreId) }}</span>
           </div>
-          
-          <div class="deck-body">
-            <!-- Conteggio rimosso per richiesta utente -->
-          </div>
-
           <!-- FOOTER ROW: Privacy and Sincronizza -->
           <div class="deck-footer-row">
             <span class="deck-privacy" :class="d.isPublic ? 'public' : 'private'">
@@ -392,7 +386,7 @@ onMounted(async () => {
         <div class="glass-panel library-panel">
           <div class="library-header">
             <h3 class="uppercase-title">ARCHIVIO FRAMMENTI</h3>
-            <button @click="viewMode = 'dashboard'" class="btn-primary small-btn">DASHBOARD</button>
+            <button @click="viewMode = 'dashboard'" class="cyber-btn btn-primary small-btn">DASHBOARD</button>
           </div>
           <div class="filters">
             <input v-model="editorSearchQuery" placeholder="Cerca..." class="glass-input small" />
@@ -483,10 +477,10 @@ onMounted(async () => {
             <div v-for="item in currentDeck" :key="item.card.id" class="deck-row">
               <span class="count">{{ item.count }}x</span>
               <span class="name">{{ item.card.name }}</span>
-              <div class="row-actions">
-                 <button class="cyber-btn extra-small magenta" @click="removeFromDeck(item.card)">-</button>
-                 <button class="cyber-btn extra-small cyan" @click="addToDeck(item.card)">+</button>
-              </div>
+                <div class="row-actions">
+                  <button class="cyber-btn btn-danger extra-small" @click="removeFromDeck(item.card)">-</button>
+                  <button class="cyber-btn btn-primary extra-small cyan-bg" @click="addToDeck(item.card)">+</button>
+                </div>
             </div>
             <div v-if="currentDeck.length === 0" class="empty-deck">
               Seleziona le carte dall'archivio a sinistra.
@@ -494,7 +488,7 @@ onMounted(async () => {
           </div>
 
           <div class="editor-actions">
-            <button @click="saveDeck" class="btn-primary full-width" :disabled="isSaving">
+            <button @click="saveDeck" class="cyber-btn btn-primary full-width" :disabled="isSaving">
               {{ isSaving ? 'SINCRONIZZAZIONE...' : 'SALVA LINEA TEMPORALE' }}
             </button>
           </div>
@@ -532,9 +526,9 @@ onMounted(async () => {
                   
                   <!-- RAPID CONTROLS -->
                   <div class="viewer-controls">
-                    <button class="cyber-btn small magenta" @click="removeFromDeck(selectedCard)">-</button>
+                    <button class="cyber-btn btn-danger small" @click="removeFromDeck(selectedCard)">-</button>
                     <span class="current-count">{{ currentDeck.find(d => d.card.id === selectedCard?.id)?.count || 0 }}</span>
-                    <button class="cyber-btn small cyan" @click="addToDeck(selectedCard)">+</button>
+                    <button class="cyber-btn btn-primary small cyan-bg" @click="addToDeck(selectedCard)">+</button>
                   </div>
                 </div>
 
@@ -557,7 +551,7 @@ onMounted(async () => {
             {{ alertMessage }}
           </div>
           <div class="alert-actions">
-            <button class="btn-primary small-btn" @click="showAlert = false">RICEVUTO</button>
+            <button class="cyber-btn btn-primary small-btn" @click="showAlert = false">RICEVUTO</button>
           </div>
         </div>
       </div>
@@ -575,8 +569,8 @@ onMounted(async () => {
             Questa Linea Temporale esiste già. Vuoi aggiornarla o crearne una nuova variante?
           </div>
           <div class="alert-actions split-actions">
-            <button class="btn-primary small-btn danger" @click="executeSave(true)" :disabled="isSaving">AGGIORNA ESISTENTE</button>
-            <button class="btn-primary small-btn" @click="executeSave(false)" :disabled="isSaving">CREA NUOVO</button>
+            <button class="cyber-btn btn-danger small-btn" @click="executeSave(true)" :disabled="isSaving">AGGIORNA ESISTENTE</button>
+            <button class="cyber-btn btn-primary small-btn" @click="executeSave(false)" :disabled="isSaving">CREA NUOVO</button>
           </div>
         </div>
       </div>
@@ -593,8 +587,8 @@ onMounted(async () => {
             Sei sicuro di voler distruggere definitivamente questa linea temporale dalla matrice?
           </div>
           <div class="alert-actions split-actions">
-            <button class="btn-primary small-btn danger" @click="executeDelete" :disabled="loading">CONFERMA ELIMINAZIONE</button>
-            <button class="btn-primary small-btn" @click="showDeleteConfirm = false">ANNULLA</button>
+            <button class="cyber-btn btn-danger small-btn" @click="executeDelete" :disabled="loading">CONFERMA ELIMINAZIONE</button>
+            <button class="cyber-btn btn-secondary small-btn" @click="showDeleteConfirm = false">ANNULLA</button>
           </div>
         </div>
       </div>
@@ -618,6 +612,7 @@ onMounted(async () => {
   letter-spacing: 0.5rem;
   background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 0;
   text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
@@ -872,18 +867,19 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0.5rem;
-  padding-top: 1rem;
+  margin-top: 0.1rem;
+  padding-top: 0.4rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .small-delete.cyber-btn.mini {
   width: 32px;
   height: 32px;
-  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
+  font-size: 1.2rem;
   border-radius: 4px;
   background: rgba(255, 0, 110, 0.1);
   border: 1px solid var(--accent-magenta);
@@ -1474,25 +1470,10 @@ onMounted(async () => {
   margin-left: auto;
 }
 
-.cyber-btn.extra-small {
-  width: 25px;
-  height: 25px;
-  border-radius: 3px;
-  font-size: 1.2rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  background: transparent;
-  font-family: var(--font-display);
-  transition: all 0.3s;
+.cyan-bg {
+  background: var(--accent-cyan);
+  color: #000;
 }
-
-.cyber-btn.extra-small.cyan { border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
-.cyber-btn.extra-small.cyan:hover { background: var(--accent-cyan); color: #000; box-shadow: 0 0 10px var(--accent-cyan); }
-
-.cyber-btn.extra-small.magenta { border: 1px solid var(--accent-magenta); color: var(--accent-magenta); }
-.cyber-btn.extra-small.magenta:hover { background: var(--accent-magenta); color: #fff; box-shadow: 0 0 10px var(--accent-magenta); }
 
 .deck-stats-bar {
   background: rgba(0,0,0,0.4);

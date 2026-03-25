@@ -130,26 +130,59 @@ nav a:hover, nav a.router-link-active {
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent-cyan), #00a2ff);
-  color: #000;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
+.cyber-btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
   font-family: var(--font-display);
   font-weight: 800;
-  cursor: pointer;
-  transition: all 0.3s ease;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
   text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--accent-cyan);
+  color: #000;
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 240, 255, 0.4);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 20px var(--accent-cyan);
+  filter: brightness(1.2);
   color: #000 !important;
 }
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--text-main);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.btn-danger {
+  background: transparent;
+  border: 1px solid var(--accent-magenta);
+  color: var(--accent-magenta);
+}
+
+.btn-danger:hover {
+  background: var(--accent-magenta);
+  color: #fff;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 25px var(--accent-magenta);
+}
+
 
 .full-width {
   width: 100%;

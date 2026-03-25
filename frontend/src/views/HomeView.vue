@@ -21,7 +21,7 @@ onMounted(async () => {
         <h1 class="glitch-text" data-text="PUNTO ZERO">PUNTO ZERO</h1>
         <p class="hero-subtitle">Il limite dove la Materia incontra il Vuoto.</p>
         <div class="hero-actions">
-          <RouterLink to="/cards" class="btn-primary">VISITA IL DATABASE</RouterLink>
+          <RouterLink to="/cards" class="cyber-btn btn-primary">VISITA IL DATABASE</RouterLink>
         </div>
       </div>
     </section>
@@ -57,7 +57,7 @@ onMounted(async () => {
       <div class="glass-panel info-card highlight">
         <h3>COSTRUZIONE MAZZI</h3>
         <p>Assembla i tuoi Frammenti per forgiare la tua strategia. Ricorda: 40 carte, 3 copie per frammento stabile.</p>
-        <RouterLink to="/deckbuilder" class="btn-primary mini-btn">DECKBUILDER</RouterLink>
+        <RouterLink to="/deckbuilder" class="cyber-btn btn-primary mini-btn">DECKBUILDER</RouterLink>
       </div>
     </div>
   </div>

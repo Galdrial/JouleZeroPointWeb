@@ -1,0 +1,477 @@
+<script setup lang="ts">
+import { ref, onMounted, computed } from 'vue';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+
+interface Card {
+  id: number;
+  name: string;
+  type: string;
+  rarity: string;
+  image_url: string;
+}
+
+interface SavedDeck {
+  id: number;
+  name: string;
+  costruttoreId: number | null;
+  creator: string;
+  cards: { cardId: number; count: number }[];
+  isPublic: boolean;
+}
+
+const router = useRouter();
+const username = ref(localStorage.getItem('username') || '');
+const loading = ref(true);
+const userDecks = ref<SavedDeck[]>([]);
+const allCards = ref<Card[]>([]);
+const showDeleteConfirm = ref(false);
+
+const fetchProfileData = async () => {
+  try {
+    loading.value = true;
+    const [decksRes, cardsRes] = await Promise.all([
+      axios.get(`http://localhost:3000/api/decks?creator=${username.value}`),
+      axios.get('http://localhost:3000/api/cards')
+    ]);
+    userDecks.value = decksRes.data.decks;
+    allCards.value = cardsRes.data;
+  } catch (error) {
+    console.error('Errore caricamento profilo:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const deleteAccount = async () => {
+  try {
+    // 1. Purge Decks
+    await axios.delete(`http://localhost:3000/api/decks/user/${username.value}`);
+    // 2. Delete User
+    await axios.delete(`http://localhost:3000/api/auth/account/${username.value}`);
+    
+    // 3. Cleanup and redirect
+    localStorage.clear();
+    router.push('/login');
+    window.location.reload(); // Force refresh to clear app state
+  } catch (error) {
+    alert('Errore critico durante la rimozione dei dati.');
+  }
+};
+
+onMounted(fetchProfileData);
+
+const totalCardsInDecks = computed(() => {
+  return userDecks.value.reduce((acc, deck) => {
+    return acc + deck.cards.reduce((sum, c) => sum + c.count, 0);
+  }, 0);
+});
+
+const getCostruttoreImage = (deck: SavedDeck) => {
+  const costruttore = allCards.value.find(c => c.id === deck.costruttoreId);
+  return costruttore ? costruttore.image_url : '/assets/cards/placeholder.png';
+};
+
+const getCostruttoreName = (deck: SavedDeck) => {
+  const costruttore = allCards.value.find(c => c.id === deck.costruttoreId);
+  return costruttore ? costruttore.name : 'Sconosciuto';
+};
+
+const goToDeck = (deckId: number) => {
+  router.push({ path: '/deckbuilder', query: { edit: deckId } });
+};
+</script>
+
+<template>
+  <div class="profile-page">
+    <div class="profile-header glass-panel">
+      <div class="cyber-avatar">
+        <div class="avatar-glow"></div>
+        <div class="avatar-symbol">{{ username.charAt(0).toUpperCase() }}</div>
+      </div>
+      <div class="user-info">
+        <h1 class="username-title">{{ username }}</h1>
+        <div class="user-badges">
+          <span class="badge status">ACTIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card glass-panel">
+        <div class="stat-label">MAZZI CREATI</div>
+        <div class="stat-value">{{ userDecks.length }}</div>
+      </div>
+      <div class="stat-card glass-panel">
+        <div class="stat-label">CARTE TOTALI</div>
+        <div class="stat-value">{{ totalCardsInDecks }}</div>
+      </div>
+    </div>
+
+    <section class="user-decks-section">
+      <div class="section-header">
+        <h2 class="cyber-subtitle">I TUOI MAZZI SINCRONIZZATI</h2>
+        <div class="header-line"></div>
+      </div>
+
+      <div v-if="loading" class="loading-state">
+        <div class="scanner-bar"></div>
+        CARICAMENTO DATI...
+      </div>
+
+      <div v-else-if="userDecks.length === 0" class="empty-state glass-panel">
+        <p>NESSUN MAZZO TROVATO NEI TUOI ARCHIVI.</p>
+        <RouterLink to="/deckbuilder" class="cyber-btn">CREA ORA</RouterLink>
+      </div>
+
+      <div v-else class="decks-grid">
+        <div 
+          v-for="deck in userDecks" 
+          :key="deck.id" 
+          class="deck-card glass-panel hover-glow"
+          @click="goToDeck(deck.id)"
+        >
+          <div class="deck-header">
+            <span class="deck-name">{{ deck.name }}</span>
+          </div>
+
+          <div class="deck-hero-container">
+            <img :src="getCostruttoreImage(deck)" :alt="getCostruttoreName(deck)" class="deck-hero">
+          </div>
+
+          <div class="deck-hero-caption">
+            <span class="caption-name">{{ getCostruttoreName(deck) }}</span>
+            <div class="tag-row mt-spacing">
+              <span class="privacy-tag" :class="{ 'public': deck.isPublic }">
+                {{ deck.isPublic ? 'PUBBLICO' : 'PRIVATO' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="deck-footer">
+            <span class="edit-btn">MODIFICA ARCHIVIO →</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Danger Zone -->
+    <section class="danger-zone">
+      <div class="section-header">
+        <h2 class="cyber-subtitle magenta">DANGER ZONE</h2>
+        <div class="header-line magenta"></div>
+      </div>
+      <div class="danger-panel glass-panel">
+        <div class="danger-content">
+          <h3>ELIMINAZIONE DATI GENETICI</h3>
+          <p>L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi mazzi sincronizzati e i tuoi record dal database del Punto Zero.</p>
+        </div>
+        <button class="cyber-btn btn-danger" @click="showDeleteConfirm = true">ELIMINA ACCOUNT</button>
+      </div>
+    </section>
+
+    <!-- Confirmation Modal -->
+    <div v-if="showDeleteConfirm" class="modal-overlay">
+      <div class="confirm-modal glass-panel">
+        <div class="modal-header">
+          <span class="warning-icon">⚠️</span>
+          <h2>CONFERMA ELIMINAZIONE?</h2>
+        </div>
+        <p>Questa azione è irreversibile. Tutta la tua sincronizzazione verrà persa nei flussi del tempo.</p>
+        <div class="modal-actions">
+          <button class="cyber-btn btn-secondary" @click="showDeleteConfirm = false">ANNULLA</button>
+          <button class="cyber-btn btn-danger" @click="deleteAccount">CONFERMA ELIMINAZIONE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.profile-page {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  padding: 3rem;
+  margin-bottom: 3rem;
+  border-left: 5px solid var(--accent-cyan);
+}
+
+.cyber-avatar {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(0, 240, 255, 0.05);
+  border: 2px solid var(--accent-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.avatar-glow {
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, transparent 70%);
+  animation: pulse-avatar 4s infinite;
+}
+
+@keyframes pulse-avatar {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+.avatar-symbol {
+  font-family: var(--font-display);
+  font-size: 5rem;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 20px var(--accent-cyan);
+}
+
+.username-title {
+  font-size: 4rem;
+  margin: 0;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.user-badges {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.badge {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  border-radius: 0;
+}
+
+.badge.status {
+  background: rgba(0, 255, 150, 0.1);
+  color: #00ff96;
+  border: 1px solid #00ff96;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.stat-card {
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  font-size: 3.5rem;
+  font-family: var(--font-display);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  margin: 0.5rem 0;
+}
+
+.stat-icon {
+  display: none;
+}
+
+.cyber-subtitle {
+  font-size: 1.2rem;
+  letter-spacing: 5px;
+  color: var(--accent-cyan);
+  margin: 0;
+}
+
+.cyber-subtitle.magenta {
+  color: var(--accent-magenta);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.header-line {
+  flex-grow: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent-cyan), transparent);
+}
+
+.header-line.magenta {
+  background: linear-gradient(90deg, var(--accent-magenta), transparent);
+}
+
+.decks-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.deck-card {
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.deck-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.05);
+}
+
+.deck-header {
+  margin-bottom: 1rem;
+}
+
+.deck-name {
+  font-weight: 700;
+  color: #fff;
+  font-size: 1.1rem;
+  display: block;
+}
+
+.deck-hero-container {
+  height: 200px;
+  background: rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+.deck-hero {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.deck-hero-caption {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.caption-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.caption-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 0.5rem;
+}
+
+.tag-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.privacy-tag {
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--accent-magenta);
+  color: var(--accent-magenta);
+}
+
+.privacy-tag.public {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.deck-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.edit-btn {
+  font-size: 0.75rem;
+  color: var(--accent-cyan);
+  font-weight: 700;
+}
+
+.danger-zone {
+  margin-top: 4rem;
+}
+
+.danger-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2.5rem;
+  border: 1px solid rgba(255, 0, 80, 0.3);
+  background: rgba(255, 0, 80, 0.02);
+}
+
+.danger-content h3 {
+  color: var(--accent-magenta);
+  margin: 0 0 0.5rem 0;
+  font-family: var(--font-display);
+}
+
+.danger-content p {
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 600px;
+}
+
+.mt-spacing {
+  margin-top: 1rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2.5rem;
+}
+
+@media (max-width: 900px) {
+  .stats-grid, .decks-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .danger-panel {
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+  }
+}
+</style>

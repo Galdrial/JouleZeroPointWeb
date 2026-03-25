@@ -48,15 +48,15 @@ watch(() => route.query.terminal, (newVal) => {
         </div>
       </RouterLink>
       <nav>
-        <RouterLink to="/cards">Database</RouterLink>
-        <RouterLink to="/deckbuilder">Mazzi</RouterLink>
+        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item">Database</RouterLink>
+        <RouterLink to="/deckbuilder" class="cyber-btn btn-secondary nav-item">Mazzi</RouterLink>
         
         <template v-if="username">
-          <span class="welcome-text">{{ username }}</span>
-          <button @click="logout" class="btn-primary" style="background: linear-gradient(135deg, var(--accent-magenta), #800020); padding: 0.6rem 1.2rem; font-size: 0.85rem;">Disconnessione</button>
+          <RouterLink to="/profile" class="cyber-btn btn-secondary nav-item user-btn">{{ username }}</RouterLink>
+          <button @click="logout" class="cyber-btn btn-danger nav-item logout-btn">Logout</button>
         </template>
         <template v-else>
-          <RouterLink to="/login" class="btn-primary">Accedi</RouterLink>
+          <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn">Accedi</RouterLink>
         </template>
       </nav>
     </header>
@@ -93,10 +93,20 @@ watch(() => route.query.terminal, (newVal) => {
 </template>
 
 <style scoped>
-.welcome-text {
-  color: var(--text-muted);
-  font-family: var(--font-display);
-  font-weight: 600;
+/* Nav Customizations */
+.nav-item {
+  padding: 0.5rem 1.5rem !important;
+  font-size: 0.8rem !important;
+  height: fit-content;
+}
+
+.user-btn {
+  border-color: var(--accent-cyan) !important;
+  color: var(--accent-cyan) !important;
+}
+
+.logout-btn {
+  margin-left: 0.5rem;
 }
 
 .logo-link {
