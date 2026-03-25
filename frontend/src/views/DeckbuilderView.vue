@@ -48,6 +48,7 @@ const showDeleteConfirm = ref(false);
 
 // Preview & Modal State
 const selectedCard = ref<Card | null>(null);
+const showStatsModal = ref(false);
 
 // Alert State
 const alertMessage = ref("");
@@ -122,6 +123,79 @@ const totalEvents = computed(() => {
     return isEvent ? sum + item.count : sum;
   }, 0);
 });
+
+const costCurve = computed(() => {
+  const curve: Record<string, number> = {};
+  currentDeck.value.forEach((item) => {
+    const cost = item.card.cost_et !== null ? String(item.card.cost_et) : "—";
+    curve[cost] = (curve[cost] || 0) + item.count;
+  });
+  return curve;
+});
+
+const averagePep = computed(() => {
+  const cardsWithPep = currentDeck.value.filter(
+    (item) => item.card.pep !== null,
+  );
+  if (cardsWithPep.length === 0) return 0;
+  const totalPep = cardsWithPep.reduce(
+    (sum, item) => sum + (item.card.pep || 0) * item.count,
+    0,
+  );
+  const totalCount = cardsWithPep.reduce((sum, item) => sum + item.count, 0);
+  return (totalPep / totalCount).toFixed(2);
+});
+
+const averageRp = computed(() => {
+  const cardsWithRp = currentDeck.value.filter((item) => item.card.rp !== null);
+  if (cardsWithRp.length === 0) return 0;
+  const totalRp = cardsWithRp.reduce(
+    (sum, item) => sum + (item.card.rp || 0) * item.count,
+    0,
+  );
+  const totalCount = cardsWithRp.reduce((sum, item) => sum + item.count, 0);
+  return (totalRp / totalCount).toFixed(2);
+});
+
+const typeDistribution = computed(() => {
+  const distribution: Record<string, number> = {};
+  currentDeck.value.forEach((item) => {
+    distribution[item.card.type] =
+      (distribution[item.card.type] || 0) + item.count;
+  });
+  return distribution;
+});
+
+const getTypeColor = (type: string): string => {
+  const colors: Record<string, string> = {
+    Solido: "linear-gradient(90deg, #007bff, #0099ff)",
+    Liquido: "linear-gradient(90deg, #28a745, #00e676)",
+    Gas: "linear-gradient(90deg, #fd7e14, #ffaa44)",
+    Plasma: "linear-gradient(90deg, #dc3545, #ff5566)",
+    "Materia Oscura": "linear-gradient(90deg, #8a2be2, #bb55ff)",
+    Evento: "linear-gradient(90deg, #cd7f32, #f0a050)",
+    Anomalia: "linear-gradient(90deg, #888, #c0c0c0)",
+    Costruttore: "linear-gradient(90deg, #ffd700, #ffe94d)",
+  };
+  return colors[type] || "linear-gradient(90deg, #fff, #ccc)";
+};
+
+const getTypeGlow = (type: string): string => {
+  const glows: Record<string, string> = {
+    Solido: "0 0 12px rgba(0, 123, 255, 0.9), 0 0 4px rgba(0, 153, 255, 0.7)",
+    Liquido: "0 0 12px rgba(40, 167, 69, 0.9), 0 0 4px rgba(0, 230, 118, 0.7)",
+    Gas: "0 0 12px rgba(253, 126, 20, 0.9), 0 0 4px rgba(255, 170, 68, 0.7)",
+    Plasma: "0 0 12px rgba(220, 53, 69, 0.9), 0 0 4px rgba(255, 85, 102, 0.7)",
+    "Materia Oscura":
+      "0 0 12px rgba(138, 43, 226, 0.9), 0 0 4px rgba(187, 85, 255, 0.7)",
+    Evento: "0 0 12px rgba(205, 127, 50, 0.9), 0 0 4px rgba(240, 160, 80, 0.7)",
+    Anomalia:
+      "0 0 12px rgba(192, 192, 192, 0.6), 0 0 4px rgba(255, 255, 255, 0.4)",
+    Costruttore:
+      "0 0 12px rgba(255, 215, 0, 0.9), 0 0 4px rgba(255, 233, 77, 0.7)",
+  };
+  return glows[type] || "none";
+};
 
 const getLimit = (rarity: string) => {
   if (rarity === "Critica") return 1;
@@ -214,6 +288,9 @@ const loadDecks = async () => {
         costruttoreId: filterCostruttore.value,
         page: currentPage.value,
         limit: limit,
+      },
+      headers: {
+        "x-user": username.value,
       },
     });
     decks.value = res.data.decks;
@@ -620,15 +697,24 @@ onMounted(async () => {
           </div>
 
           <div class="deck-stats-bar">
-            <div
-              class="stat"
-              :class="{
-                warning: totalCards !== 40,
-                success: totalCards === 40,
-              }"
-            >
-              CARTE: <span>{{ totalCards }}</span
-              >/40
+            <div class="stats-bar-top">
+              <div
+                class="stat"
+                :class="{
+                  warning: totalCards !== 40,
+                  success: totalCards === 40,
+                }"
+              >
+                CARTE: <span>{{ totalCards }}</span
+                >/40
+              </div>
+              <button
+                @click="showStatsModal = true"
+                class="cyber-btn btn-primary stats-trigger-btn"
+                title="Analisi Statistica"
+              >
+                <span class="stats-icon">▁▃▅</span>
+              </button>
             </div>
             <div class="composition-hints">
               <div class="hint">Frammenti: {{ totalFrammenti }}</div>
@@ -747,6 +833,90 @@ onMounted(async () => {
                     >
                       +
                     </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <!-- STATS MODAL -->
+    <Teleport to="body">
+      <Transition name="fade">
+        <div
+          v-if="showStatsModal"
+          class="modal-overlay"
+          @click.self="showStatsModal = false"
+        >
+          <div class="modal-content glass-panel">
+            <button class="close-btn" @click="showStatsModal = false">
+              &times;
+            </button>
+            <div class="modal-header-stats">
+              <h2>ANALISI STATISTICA MAZZO</h2>
+            </div>
+            <div class="stats-modal-body">
+              <!-- CURVA DI COSTO -->
+              <div class="stats-section">
+                <h3>CURVA DI COSTO (ET)</h3>
+                <div class="cost-chart">
+                  <div
+                    v-for="(count, cost) in costCurve"
+                    :key="cost"
+                    class="cost-bar"
+                  >
+                    <div class="cost-label">
+                      {{ cost }}
+                    </div>
+                    <div
+                      class="cost-bar-fill"
+                      :style="{ width: (count / totalCards) * 100 + '%' }"
+                    >
+                      <span class="cost-count">{{ count }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STATISTICHE MEDIE -->
+              <div class="stats-section">
+                <h3>STATISTICHE MEDIE</h3>
+                <div class="avg-stats-grid">
+                  <div class="avg-stat">
+                    <span class="stat-label">PEP MEDIO</span>
+                    <span class="stat-value">{{ averagePep }}</span>
+                  </div>
+                  <div class="avg-stat">
+                    <span class="stat-label">RP MEDIO</span>
+                    <span class="stat-value">{{ averageRp }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- DISTRIBUZIONE PER TIPO -->
+              <div class="stats-section">
+                <h3>DISTRIBUZIONE PER TIPO</h3>
+                <div class="type-distribution">
+                  <div
+                    v-for="(count, type) in typeDistribution"
+                    :key="type"
+                    class="type-row"
+                  >
+                    <span class="type-name">{{ type }}</span>
+                    <div class="type-bar">
+                      <div
+                        class="type-bar-fill"
+                        :style="{
+                          width: (count / totalCards) * 100 + '%',
+                          background: getTypeColor(type),
+                          boxShadow: getTypeGlow(type),
+                        }"
+                      >
+                        <span class="type-count">{{ count }}</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1303,13 +1473,22 @@ onMounted(async () => {
   padding-top: 0.6rem;
   padding-right: 0.8rem;
   margin-bottom: 0.5rem;
-  /* Hide scrollbar */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
 }
 
 .library-grid-container::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  width: 6px;
+}
+.library-grid-container::-webkit-scrollbar-button {
+  height: 0;
+  width: 0;
+}
+.library-grid-container::-webkit-scrollbar-track {
+  background: rgba(0, 240, 255, 0.05);
+  border-radius: 10px;
+}
+.library-grid-container::-webkit-scrollbar-thumb {
+  background: var(--accent-cyan);
+  border-radius: 10px;
 }
 
 .cards-grid {
@@ -1651,6 +1830,7 @@ onMounted(async () => {
 .privacy-area {
   margin-top: 1.5rem;
   padding-top: 1rem;
+  padding-bottom: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
@@ -1709,17 +1889,32 @@ onMounted(async () => {
   height: 100%;
 }
 
+.editor-actions {
+  padding-top: 1rem;
+}
+
 .current-deck-list {
   flex: 0 1 auto;
   max-height: 42vh;
   overflow-y: auto;
   margin: 1rem 0;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
+  padding-right: 0.6rem;
 }
 
 .current-deck-list::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
+  width: 6px;
+}
+.current-deck-list::-webkit-scrollbar-button {
+  height: 0;
+  width: 0;
+}
+.current-deck-list::-webkit-scrollbar-track {
+  background: rgba(0, 240, 255, 0.05);
+  border-radius: 10px;
+}
+.current-deck-list::-webkit-scrollbar-thumb {
+  background: var(--accent-cyan);
+  border-radius: 10px;
 }
 
 .deck-row {
@@ -1774,8 +1969,36 @@ onMounted(async () => {
 
 .deck-stats-bar {
   background: rgba(0, 0, 0, 0.4);
-  padding: 1rem;
+  padding: 0.6rem 1rem;
+  padding-right: calc(1rem + 6px);
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.stats-bar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stats-trigger-btn {
+  margin-left: auto;
+  width: 36px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0;
+}
+
+.stats-icon {
+  font-size: 1rem;
+  letter-spacing: 1px;
+  line-height: 1;
+  font-family: monospace;
 }
 
 .stat {
@@ -1859,6 +2082,180 @@ onMounted(async () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Stats Modal Styles */
+.modal-header-stats {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.modal-header-stats h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--text-main);
+  background: linear-gradient(to right, #fff, var(--accent-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.stats-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+.stats-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.stats-modal-body::-webkit-scrollbar-track {
+  background: rgba(0, 240, 255, 0.05);
+  border-radius: 10px;
+}
+.stats-modal-body::-webkit-scrollbar-thumb {
+  background: var(--accent-cyan);
+  border-radius: 10px;
+}
+
+.stats-section {
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  padding: 1.5rem;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.stats-section h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--accent-cyan);
+  margin: 0 0 1.5rem 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* Cost Chart */
+.cost-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.cost-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.cost-label {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  min-width: 30px;
+  text-align: right;
+  color: var(--text-muted);
+  font-weight: bold;
+}
+
+.cost-bar-fill {
+  flex: 0 0 auto;
+  background: linear-gradient(90deg, var(--accent-cyan), #00ff88);
+  min-height: 28px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+}
+
+.cost-count {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000;
+  font-weight: bold;
+  font-size: 0.85rem;
+  font-family: var(--font-display);
+}
+
+/* Average Stats Grid */
+.avg-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.avg-stat {
+  background: rgba(0, 240, 255, 0.08);
+  padding: 1.2rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  text-align: center;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+  letter-spacing: 1px;
+}
+
+.stat-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 2rem;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+}
+
+/* Type Distribution */
+.type-distribution {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.type-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1rem;
+  align-items: center;
+}
+
+.type-name {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.type-bar {
+  height: 24px;
+  background: rgba(0, 240, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 240, 255, 0.15);
+  position: relative;
+}
+
+.type-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.type-count {
+  color: #000;
+  font-size: 0.75rem;
+  font-weight: bold;
+  font-family: var(--font-display);
 }
 
 @media (max-width: 1100px) {

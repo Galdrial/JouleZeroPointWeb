@@ -132,7 +132,7 @@
   {
     "id": 1774428453751,
     "name": "Nuovo Mazzo2",
-    "costruttoreId": 257,
+    "costruttoreId": 262,
     "cards": [
       {
         "cardId": 1,
@@ -192,6 +192,6 @@
       }
     ],
     "creator": "ZinzenGame",
-    "isPublic": true
+    "isPublic": false
   }
 ]
