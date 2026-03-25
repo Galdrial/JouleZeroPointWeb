@@ -174,7 +174,7 @@ const goToDeck = (deckId: number) => {
       <div class="danger-panel glass-panel">
         <div class="danger-content">
           <h3>ELIMINAZIONE DATI GENETICI</h3>
-          <p>L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi mazzi sincronizzati, i collegamenti social e i tuoi record dal database del Punto Zero.</p>
+          <p>L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi mazzi sincronizzati e i tuoi record dal database del Punto Zero.</p>
         </div>
         <button class="cyber-btn btn-danger" @click="showDeleteConfirm = true">ELIMINA ACCOUNT</button>
       </div>
