@@ -1,0 +1,90 @@
+[
+  {
+    "id": "1774413178917",
+    "from": "TestB",
+    "to": "TestA",
+    "content": "Messaggio di prova dal Punto Zero",
+    "timestamp": "2026-03-25T04:32:58.917Z",
+    "read": true
+  },
+  {
+    "id": "1774414923172",
+    "from": "Alpha",
+    "to": "Beta",
+    "content": "Hello Beta! This is Alpha.",
+    "timestamp": "2026-03-25T05:02:03.172Z",
+    "read": true
+  },
+  {
+    "id": "1774415185404",
+    "from": "Alpha",
+    "to": "Beta",
+    "content": "Hello Beta! Testing the notification system.",
+    "timestamp": "2026-03-25T05:06:25.404Z",
+    "read": true
+  },
+  {
+    "id": "1774415273545",
+    "from": "Alpha",
+    "to": "Beta",
+    "content": "Latest test message for Beta.",
+    "timestamp": "2026-03-25T05:07:53.545Z",
+    "read": true
+  },
+  {
+    "id": "1774415440458",
+    "from": "ZinzenGame",
+    "to": "Joule",
+    "content": "ciao bello",
+    "timestamp": "2026-03-25T05:10:40.458Z",
+    "read": true
+  },
+  {
+    "id": "1774415506384",
+    "from": "Joule",
+    "to": "ZinzenGame",
+    "content": "hi",
+    "timestamp": "2026-03-25T05:11:46.384Z",
+    "read": true
+  },
+  {
+    "id": "1774416676884",
+    "from": "Joule",
+    "to": "ZinzenGame",
+    "content": "ciao",
+    "read": true,
+    "timestamp": "2026-03-25T05:31:16.884Z"
+  },
+  {
+    "id": "1774416951658",
+    "from": "ZinzenGame",
+    "to": "Joule",
+    "content": "bella",
+    "read": true,
+    "timestamp": "2026-03-25T05:35:51.658Z"
+  },
+  {
+    "id": "1774417141879",
+    "from": "Joule",
+    "to": "ZinzenGame",
+    "content": "hola",
+    "read": true,
+    "timestamp": "2026-03-25T05:39:01.879Z"
+  },
+  {
+    "id": "1774417244922",
+    "from": "ZinzenGame",
+    "to": "Joule",
+    "content": "ave",
+    "read": true,
+    "timestamp": "2026-03-25T05:40:44.922Z"
+  },
+  {
+    "id": "1774417359130",
+    "from": "Joule",
+    "to": "ZinzenGame",
+    "content": "come va",
+    "read": true,
+    "timestamp": "2026-03-25T05:42:39.130Z"
+  }
+]

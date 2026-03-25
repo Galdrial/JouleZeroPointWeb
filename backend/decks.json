@@ -1,132 +1,5 @@
 [
   {
-    "name": "Mazzo Vanguard",
-    "costruttoreId": 254,
-    "cards": [
-      {
-        "cardId": 1,
-        "count": 3
-      },
-      {
-        "cardId": 2,
-        "count": 3
-      },
-      {
-        "cardId": 3,
-        "count": 3
-      },
-      {
-        "cardId": 4,
-        "count": 3
-      },
-      {
-        "cardId": 5,
-        "count": 3
-      },
-      {
-        "cardId": 6,
-        "count": 3
-      },
-      {
-        "cardId": 8,
-        "count": 3
-      },
-      {
-        "cardId": 9,
-        "count": 3
-      },
-      {
-        "cardId": 11,
-        "count": 3
-      },
-      {
-        "cardId": 12,
-        "count": 3
-      },
-      {
-        "cardId": 13,
-        "count": 3
-      },
-      {
-        "cardId": 15,
-        "count": 3
-      },
-      {
-        "cardId": 17,
-        "count": 3
-      },
-      {
-        "cardId": 18,
-        "count": 1
-      }
-    ],
-    "id": 1774283902128
-  },
-  {
-    "name": "Mazzo Protetto",
-    "costruttoreId": 254,
-    "cards": [
-      {
-        "cardId": 1,
-        "count": 3
-      },
-      {
-        "cardId": 2,
-        "count": 3
-      },
-      {
-        "cardId": 3,
-        "count": 3
-      },
-      {
-        "cardId": 4,
-        "count": 3
-      },
-      {
-        "cardId": 5,
-        "count": 3
-      },
-      {
-        "cardId": 6,
-        "count": 3
-      },
-      {
-        "cardId": 8,
-        "count": 3
-      },
-      {
-        "cardId": 9,
-        "count": 3
-      },
-      {
-        "cardId": 11,
-        "count": 3
-      },
-      {
-        "cardId": 12,
-        "count": 3
-      },
-      {
-        "cardId": 13,
-        "count": 3
-      },
-      {
-        "cardId": 15,
-        "count": 3
-      },
-      {
-        "cardId": 17,
-        "count": 3
-      },
-      {
-        "cardId": 18,
-        "count": 1
-      }
-    ],
-    "creator": "Simone",
-    "id": 1774285018530
-  },
-  {
     "name": "Nuovo Mazzo",
     "costruttoreId": 254,
     "cards": [
@@ -180,157 +53,19 @@
       },
       {
         "cardId": 17,
-        "count": 1
+        "count": 3
       },
       {
         "cardId": 18,
         "count": 1
-      },
-      {
-        "cardId": 19,
-        "count": 1
-      },
-      {
-        "cardId": 20,
-        "count": 1
       }
     ],
-    "creator": "Simone",
+    "creator": "Joule",
     "isPublic": true,
-    "id": 1774365418597
+    "id": 1774414066162
   },
   {
     "name": "Nuovo Mazzo",
-    "costruttoreId": 254,
-    "cards": [
-      {
-        "cardId": 1,
-        "count": 3
-      },
-      {
-        "cardId": 2,
-        "count": 3
-      },
-      {
-        "cardId": 3,
-        "count": 3
-      },
-      {
-        "cardId": 4,
-        "count": 3
-      },
-      {
-        "cardId": 5,
-        "count": 3
-      },
-      {
-        "cardId": 6,
-        "count": 3
-      },
-      {
-        "cardId": 8,
-        "count": 3
-      },
-      {
-        "cardId": 9,
-        "count": 3
-      },
-      {
-        "cardId": 11,
-        "count": 3
-      },
-      {
-        "cardId": 12,
-        "count": 3
-      },
-      {
-        "cardId": 13,
-        "count": 3
-      },
-      {
-        "cardId": 15,
-        "count": 3
-      },
-      {
-        "cardId": 17,
-        "count": 3
-      },
-      {
-        "cardId": 18,
-        "count": 1
-      }
-    ],
-    "creator": "ZinzenGame",
-    "isPublic": false,
-    "id": 1774369194223
-  },
-  {
-    "name": "Nuovo Mazzo",
-    "costruttoreId": 254,
-    "cards": [
-      {
-        "cardId": 1,
-        "count": 3
-      },
-      {
-        "cardId": 2,
-        "count": 3
-      },
-      {
-        "cardId": 3,
-        "count": 3
-      },
-      {
-        "cardId": 4,
-        "count": 3
-      },
-      {
-        "cardId": 5,
-        "count": 3
-      },
-      {
-        "cardId": 6,
-        "count": 3
-      },
-      {
-        "cardId": 8,
-        "count": 3
-      },
-      {
-        "cardId": 9,
-        "count": 3
-      },
-      {
-        "cardId": 11,
-        "count": 3
-      },
-      {
-        "cardId": 12,
-        "count": 3
-      },
-      {
-        "cardId": 13,
-        "count": 3
-      },
-      {
-        "cardId": 15,
-        "count": 3
-      },
-      {
-        "cardId": 17,
-        "count": 3
-      },
-      {
-        "cardId": 18,
-        "count": 1
-      }
-    ],
-    "creator": "ZinzenGame",
-    "isPublic": true,
-    "id": 1774369250990
-  },
-  {
-    "name": "Nuovo Mazzo2",
     "costruttoreId": 257,
     "cards": [
       {
@@ -342,71 +77,6 @@
         "count": 3
       },
       {
-        "cardId": 9,
-        "count": 3
-      },
-      {
-        "cardId": 23,
-        "count": 3
-      },
-      {
-        "cardId": 24,
-        "count": 2
-      },
-      {
-        "cardId": 30,
-        "count": 3
-      },
-      {
-        "cardId": 31,
-        "count": 3
-      },
-      {
-        "cardId": 38,
-        "count": 3
-      },
-      {
-        "cardId": 39,
-        "count": 3
-      },
-      {
-        "cardId": 50,
-        "count": 3
-      },
-      {
-        "cardId": 52,
-        "count": 3
-      },
-      {
-        "cardId": 41,
-        "count": 3
-      },
-      {
-        "cardId": 42,
-        "count": 3
-      },
-      {
-        "cardId": 36,
-        "count": 2
-      }
-    ],
-    "creator": "ZinzenGame",
-    "isPublic": true,
-    "id": 1774369800303
-  },
-  {
-    "name": "Mazzo Protetto",
-    "costruttoreId": 254,
-    "cards": [
-      {
-        "cardId": 1,
-        "count": 3
-      },
-      {
-        "cardId": 2,
-        "count": 3
-      },
-      {
         "cardId": 3,
         "count": 3
       },
@@ -455,8 +125,8 @@
         "count": 1
       }
     ],
-    "creator": "Simone",
+    "creator": "ZinzenGame",
     "isPublic": true,
-    "id": 1774369934679
+    "id": 1774414258859
   }
 ]

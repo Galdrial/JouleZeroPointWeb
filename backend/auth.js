@@ -66,6 +66,20 @@ router.post('/login', (req, res) => {
   });
 });
 
+// Endpoint: Cerca Utenti
+router.get('/search', (req, res) => {
+  const { q, current } = req.query;
+  if (!q) return res.json([]);
+  
+  db.all(`SELECT username FROM users WHERE username LIKE ? AND username != ? LIMIT 10`, 
+    [`%${q}%`, current], 
+    (err, rows) => {
+      if (err) return res.status(500).json({ error: 'Errore durante la ricerca neurale.' });
+      res.json(rows);
+    }
+  );
+});
+
 // Endpoint: Elimina Account
 router.delete('/account/:username', (req, res) => {
   const { username } = req.params;

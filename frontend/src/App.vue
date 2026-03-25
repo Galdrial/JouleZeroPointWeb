@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, watch, onMounted, computed, onUnmounted } from 'vue'
 import { RouterView, RouterLink, useRoute, useRouter } from 'vue-router'
 import TerminalOracle from './components/TerminalOracle.vue'
+import axios from 'axios'
+
 
 const router = useRouter()
 const route = useRoute()
@@ -24,12 +26,47 @@ const logout = () => {
 const isTerminalOpen = ref(false)
 const hideUI = computed(() => route.meta.hideUI === true);
 
-// Deep-linking: Apre il terminale se ?terminal=1 è presente
+const notifications = ref({ total: 0, pendingRequests: 0, unreadMessages: 0, unreadSenders: [] });
+let notificationInterval: any = null;
+
+const fetchNotifications = async () => {
+  if (!username.value) {
+    notifications.value = { total: 0, pendingRequests: 0, unreadMessages: 0, unreadSenders: [] };
+    return;
+  }
+  try {
+    const res = await axios.get('http://localhost:3000/api/social/notifications', {
+      params: { username: username.value }
+    });
+    notifications.value = {
+      total: Number(res.data.total) || 0,
+      pendingRequests: Number(res.data.pendingRequests) || 0,
+      unreadMessages: Number(res.data.unreadMessages) || 0,
+      unreadSenders: res.data.unreadSenders || []
+    };
+  } catch (e) {
+    console.error("Errore notifiche:", e);
+    // Don't leave it in error state, assume 0 to avoid stuck UI
+    notifications.value = { total: 0, pendingRequests: 0, unreadMessages: 0, unreadSenders: [] };
+  }
+};
+
 onMounted(() => {
   if (route.query.terminal === '1') {
     isTerminalOpen.value = true
   }
+  fetchNotifications();
+  notificationInterval = setInterval(fetchNotifications, 5000);
 })
+
+onUnmounted(() => {
+  if (notificationInterval) clearInterval(notificationInterval);
+});
+
+watch(username, (newVal) => {
+  if (newVal) fetchNotifications();
+  else notifications.value = { total: 0, pendingRequests: 0, unreadMessages: 0, unreadSenders: [] };
+});
 
 // Watcher per cambiamenti rotta (es: navigazione verso un link con query)
 watch(() => route.query.terminal, (newVal) => {
@@ -37,6 +74,7 @@ watch(() => route.query.terminal, (newVal) => {
     isTerminalOpen.value = true
   }
 })
+
 </script>
 
 <template>
@@ -50,7 +88,16 @@ watch(() => route.query.terminal, (newVal) => {
       <nav>
         <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item">Database</RouterLink>
         <RouterLink to="/deckbuilder" class="cyber-btn btn-secondary nav-item">Mazzi</RouterLink>
-        
+        <RouterLink
+          to="/social"
+          class="cyber-btn btn-secondary nav-item social-link"
+          :class="{ 'has-notifications': notifications.total > 0 }"
+          v-if="username"
+        >
+          Social <span v-if="notifications.total > 0" class="notif-dot">●</span>
+        </RouterLink>
+
+
         <template v-if="username">
           <RouterLink to="/profile" class="cyber-btn btn-secondary nav-item user-btn">{{ username }}</RouterLink>
           <button @click="logout" class="cyber-btn btn-danger nav-item logout-btn">Logout</button>
@@ -66,9 +113,9 @@ watch(() => route.query.terminal, (newVal) => {
     </main>
 
     <!-- Trigger Flottante Terminale -->
-    <button 
+    <button
       v-if="!hideUI"
-      class="terminal-trigger" 
+      class="terminal-trigger"
       :class="{ 'active': isTerminalOpen }"
       @click.stop="isTerminalOpen = !isTerminalOpen"
       title="Terminale Punto Zero"
@@ -82,9 +129,9 @@ watch(() => route.query.terminal, (newVal) => {
 
     <!-- Modal Terminale (Teleport) -->
     <Teleport to="body">
-      <TerminalOracle 
-        :is-open="isTerminalOpen" 
-        @close="isTerminalOpen = false" 
+      <TerminalOracle
+        :is-open="isTerminalOpen"
+        @close="isTerminalOpen = false"
       />
     </Teleport>
 
@@ -108,6 +155,45 @@ watch(() => route.query.terminal, (newVal) => {
 .logout-btn {
   margin-left: 0.5rem;
 }
+
+/* Social Notification Styles */
+.social-link.has-notifications {
+  border-color: #ffd700 !important;
+  color: #ffd700 !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+  animation: pulse-yellow 2s infinite;
+}
+
+.notif-icon {
+  margin-right: 8px;
+  font-size: 1.1rem;
+  vertical-align: middle;
+}
+
+.notif-dot {
+  color: #ffd700;
+  margin-left: 8px;
+  font-size: 0.8rem;
+}
+
+
+@keyframes pulse-yellow {
+  0% { 
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+  }
+  50% { 
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+    border-color: #fff;
+    transform: scale(1.05);
+  }
+  100% { 
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+    border-color: #ffd700;
+  }
+}
+
+
 
 .logo-link {
   text-decoration: none;

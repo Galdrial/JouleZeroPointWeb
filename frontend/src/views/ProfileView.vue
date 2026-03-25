@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import axios from 'axios';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 interface Card {
   id: number;
@@ -21,17 +21,27 @@ interface SavedDeck {
 }
 
 const router = useRouter();
-const username = ref(localStorage.getItem('username') || '');
+const route = useRoute();
+const loggedInUser = localStorage.getItem('username') || '';
+const username = ref(route.query.user?.toString() || loggedInUser);
+const isOwnProfile = computed(() => !route.query.user || route.query.user === loggedInUser);
 const loading = ref(true);
 const userDecks = ref<SavedDeck[]>([]);
 const allCards = ref<Card[]>([]);
 const showDeleteConfirm = ref(false);
 
+watch(() => route.query.user, (newVal) => {
+  username.value = newVal?.toString() || loggedInUser;
+  fetchProfileData();
+});
+
 const fetchProfileData = async () => {
   try {
     loading.value = true;
     const [decksRes, cardsRes] = await Promise.all([
-      axios.get(`http://localhost:3000/api/decks?creator=${username.value}`),
+      axios.get(`http://localhost:3000/api/decks?creator=${username.value}`, {
+        headers: { 'x-user': loggedInUser }
+      }),
       axios.get('http://localhost:3000/api/cards')
     ]);
     userDecks.value = decksRes.data.decks;
@@ -148,7 +158,7 @@ const goToDeck = (deckId: number) => {
             </div>
           </div>
 
-          <div class="deck-footer">
+          <div v-if="isOwnProfile" class="deck-footer">
             <span class="edit-btn">MODIFICA ARCHIVIO →</span>
           </div>
         </div>
@@ -156,7 +166,7 @@ const goToDeck = (deckId: number) => {
     </section>
 
     <!-- Danger Zone -->
-    <section class="danger-zone">
+    <section v-if="isOwnProfile" class="danger-zone">
       <div class="section-header">
         <h2 class="cyber-subtitle magenta">DANGER ZONE</h2>
         <div class="header-line magenta"></div>
@@ -164,7 +174,7 @@ const goToDeck = (deckId: number) => {
       <div class="danger-panel glass-panel">
         <div class="danger-content">
           <h3>ELIMINAZIONE DATI GENETICI</h3>
-          <p>L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi mazzi sincronizzati e i tuoi record dal database del Punto Zero.</p>
+          <p>L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi mazzi sincronizzati, i collegamenti social e i tuoi record dal database del Punto Zero.</p>
         </div>
         <button class="cyber-btn btn-danger" @click="showDeleteConfirm = true">ELIMINA ACCOUNT</button>
       </div>

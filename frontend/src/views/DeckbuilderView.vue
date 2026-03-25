@@ -478,8 +478,8 @@ onMounted(async () => {
               <span class="count">{{ item.count }}x</span>
               <span class="name">{{ item.card.name }}</span>
                 <div class="row-actions">
-                  <button class="cyber-btn btn-danger extra-small" @click="removeFromDeck(item.card)">-</button>
-                  <button class="cyber-btn btn-primary extra-small cyan-bg" @click="addToDeck(item.card)">+</button>
+                  <button class="cyber-btn extra-small red-bg" @click="removeFromDeck(item.card)">-</button>
+                  <button class="cyber-btn extra-small cyan-bg" @click="addToDeck(item.card)">+</button>
                 </div>
             </div>
             <div v-if="currentDeck.length === 0" class="empty-deck">
@@ -526,9 +526,9 @@ onMounted(async () => {
                   
                   <!-- RAPID CONTROLS -->
                   <div class="viewer-controls">
-                    <button class="cyber-btn btn-danger small" @click="removeFromDeck(selectedCard)">-</button>
+                    <button class="cyber-btn extra-small red-bg" @click="removeFromDeck(selectedCard)">-</button>
                     <span class="current-count">{{ currentDeck.find(d => d.card.id === selectedCard?.id)?.count || 0 }}</span>
-                    <button class="cyber-btn btn-primary small cyan-bg" @click="addToDeck(selectedCard)">+</button>
+                    <button class="cyber-btn extra-small cyan-bg" @click="addToDeck(selectedCard)">+</button>
                   </div>
                 </div>
 
@@ -1466,14 +1466,37 @@ onMounted(async () => {
 
 .row-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.8rem;
   margin-left: auto;
 }
 
 .cyan-bg {
-  background: var(--accent-cyan);
-  color: #000;
+  background: var(--accent-cyan) !important;
+  color: #000 !important;
 }
+
+.red-bg {
+  background: var(--accent-magenta) !important;
+  color: #fff !important;
+}
+
+.extra-small {
+  width: 36px !important; /* Slightly larger to accommodate clip-path */
+  height: 32px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1.2rem !important;
+  font-weight: 900 !important;
+  border-radius: 0 !important; /* Clip-path handles the shape */
+}
+
+.extra-small:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 10px currentColor;
+}
+
 
 .deck-stats-bar {
   background: rgba(0,0,0,0.4);

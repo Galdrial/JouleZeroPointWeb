@@ -63,6 +63,12 @@ function parseCSV(fileContent) {
 const fs = require('fs');
 const path = require('path');
 const DECKS_FILE = path.join(__dirname, 'decks.json');
+const FRIENDS_FILE = path.join(__dirname, 'friends.json');
+const MESSAGES_FILE = path.join(__dirname, 'messages.json');
+
+// Utility helper to read/write JSON files
+const readJSON = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
+const writeJSON = (file, data) => fs.writeFileSync(file, JSON.stringify(data, null, 2));
 
 app.get('/api/cards', async (req, res) => {
   try {
@@ -82,9 +88,14 @@ app.get('/api/decks', (req, res) => {
     const data = fs.readFileSync(DECKS_FILE, 'utf8');
     let decks = JSON.parse(data);
     
-    // Filtro per creatore (obbligatorio per i mazzi privati)
+    // Filtro per creatore
     if (creator) {
       decks = decks.filter(d => d.creator === creator);
+      // Se non è il creatore stesso a richiedere, mostriamo solo i pubblici
+      const requester = req.headers['x-user'] || ''; 
+      if (requester !== creator) {
+        decks = decks.filter(d => d.isPublic === true);
+      }
     }
     
     // Filtro ricerca testuale
@@ -143,11 +154,178 @@ app.delete('/api/decks/user/:username', (req, res) => {
     let decks = JSON.parse(fs.readFileSync(DECKS_FILE, 'utf8'));
     decks = decks.filter(d => d.creator !== username);
     fs.writeFileSync(DECKS_FILE, JSON.stringify(decks, null, 2));
-    res.json({ message: `Tutti i mazzi di ${username} rimosse con successo.` });
+
+    // Social Data Purge
+    let friends = readJSON(FRIENDS_FILE);
+    friends = friends.filter(f => f.user1 !== username && f.user2 !== username);
+    writeJSON(FRIENDS_FILE, friends);
+
+    let messages = readJSON(MESSAGES_FILE);
+    messages = messages.filter(m => m.from !== username && m.to !== username);
+    writeJSON(MESSAGES_FILE, messages);
+
+    res.json({ message: `Tutti i dati (mazzi, messaggi, collegamenti) di ${username} rimosse con successo.` });
   } catch (error) {
     res.status(500).json({ error: 'Errore durante la pulizia dei dati mazzi' });
   }
 });
+
+// Social Layer Implementation
+app.get('/api/social/friends', (req, res) => {
+  const { username } = req.query;
+  const friends = readJSON(FRIENDS_FILE);
+  const userFriends = friends.filter(f => (f.user1 === username || f.user2 === username) && f.status === 'accepted');
+  res.json(userFriends);
+});
+
+app.get('/api/social/notifications', (req, res) => {
+  const { username } = req.query;
+  try {
+    const friends = readJSON(FRIENDS_FILE);
+    const messages = readJSON(MESSAGES_FILE);
+
+    const pendingRequests = friends.filter(f => f.user2 === username && f.status === 'pending').length;
+    
+    // Get list of active friends
+    const activeFriends = friends
+      .filter(f => (f.user1 === username || f.user2 === username) && f.status === 'accepted')
+      .map(f => f.user1 === username ? f.user2 : f.user1);
+
+    // Only count unread messages from active friends
+    const unreadMessagesList = messages.filter(m => 
+      m.to === username && 
+      m.read !== true && 
+      activeFriends.includes(m.from)
+    );
+    
+    const unreadSenders = [...new Set(unreadMessagesList.map(m => m.from.toLowerCase()))];
+
+
+    res.json({
+      pendingRequests,
+      unreadMessages: unreadMessagesList.length,
+      unreadSenders,
+      total: pendingRequests + unreadMessagesList.length
+    });
+  } catch (e) {
+    res.status(500).json({ error: 'Errore nel recupero notifiche' });
+  }
+});
+
+
+app.get('/api/social/requests', (req, res) => {
+  const { username } = req.query;
+  const friends = readJSON(FRIENDS_FILE);
+  const incoming = friends.filter(f => f.user2 === username && f.status === 'pending');
+  const outgoing = friends.filter(f => f.user1 === username && f.status === 'pending');
+  res.json({ incoming, outgoing });
+});
+
+app.post('/api/social/request', (req, res) => {
+  const { from, to } = req.body;
+  const friends = readJSON(FRIENDS_FILE);
+  
+  // Check if exists
+  const existing = friends.find(f => (f.user1 === from && f.user2 === to) || (f.user1 === to && f.user2 === from));
+  if (existing) return res.status(400).json({ error: 'Richiesta già esistente o collegamento attivo.' });
+
+  const newRequest = {
+    id: Date.now().toString(),
+    user1: from,
+    user2: to,
+    status: 'pending',
+    timestamp: new Date().toISOString()
+  };
+  friends.push(newRequest);
+  writeJSON(FRIENDS_FILE, friends);
+  res.json(newRequest);
+});
+
+app.post('/api/social/accept', (req, res) => {
+  const { id } = req.body;
+  let friends = readJSON(FRIENDS_FILE);
+  const request = friends.find(f => f.id === id);
+  if (!request) return res.status(404).json({ error: 'Richiesta non trovata.' });
+
+  request.status = 'accepted';
+  writeJSON(FRIENDS_FILE, friends);
+  res.json(request);
+});
+
+app.delete('/api/social/friend/:id', (req, res) => {
+  const { id } = req.params;
+  try {
+    let friends = readJSON(FRIENDS_FILE);
+    const connection = friends.find(f => f.id === id);
+    
+    if (connection) {
+      const { user1, user2 } = connection;
+      // Rimuovi il collegamento
+      friends = friends.filter(f => f.id !== id);
+      writeJSON(FRIENDS_FILE, friends);
+
+      // Cancella tutto lo storico messaggi tra questi due utenti
+      let messages = readJSON(MESSAGES_FILE);
+      messages = messages.filter(m => 
+        !((m.from === user1 && m.to === user2) || (m.from === user2 && m.to === user1))
+      );
+      writeJSON(MESSAGES_FILE, messages);
+    }
+    
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Errore durante la rimozione del collegamento' });
+  }
+});
+
+
+// Messaging Layer Implementation
+app.get('/api/social/messages/:chattingWith', (req, res) => {
+  const { user } = req.query;
+  const { chattingWith } = req.params;
+  const messages = readJSON(MESSAGES_FILE);
+  const chatHistory = messages.filter(m => 
+    (m.from === user && m.to === chattingWith) || 
+    (m.from === chattingWith && m.to === user)
+  ).sort((a,b) => new Date(a.timestamp) - new Date(b.timestamp));
+  res.json(chatHistory);
+});
+
+app.post('/api/social/messages', (req, res) => {
+  const { from, to, content } = req.body;
+  const messages = readJSON(MESSAGES_FILE);
+  const newMessage = {
+    id: Date.now().toString(),
+    from,
+    to,
+    content,
+    read: false,
+    timestamp: new Date().toISOString()
+  };
+  messages.push(newMessage);
+  writeJSON(MESSAGES_FILE, messages);
+  res.json(newMessage);
+});
+
+app.post('/api/social/messages/read', (req, res) => {
+  const { user, from } = req.body;
+  try {
+    let messages = readJSON(MESSAGES_FILE);
+    let changed = false;
+    messages = messages.map(m => {
+      if (m.to === user && m.from === from && m.read === false) {
+        changed = true;
+        return { ...m, read: true };
+      }
+      return m;
+    });
+    if (changed) writeJSON(MESSAGES_FILE, messages);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Errore aggiornamento stato lettura' });
+  }
+});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
