@@ -1,60 +1,60 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const axios = require('axios');
+require( 'dotenv' ).config();
+const express = require( 'express' );
+const cors = require( 'cors' );
+const axios = require( 'axios' );
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+app.use( cors() );
+app.use( express.json() );
 
 // Autenticazione (Gestione Costruttori)
-const authRoutes = require('./auth');
-app.use('/api/auth', authRoutes);
+const authRoutes = require( './auth' );
+app.use( '/api/auth', authRoutes );
 
 // Terminale del Punto Zero (AI Oracolo)
-const chatbotRoutes = require('./chatbot');
-app.use('/api', chatbotRoutes);
+const chatbotRoutes = require( './chatbot' );
+app.use( '/api', chatbotRoutes );
 
 const GOOGLE_SHEETS_CSV_URL = process.env.SHEETS_URL || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ4otsaVBcLkcGI4zdD8aBJn0nRah9mUrEG0BprARIMF0WdocEkPsBkK0n4v-Sdf70KnBGmI95nS7EG/pub?gid=1051449153&single=true&output=tsv';
 
-function parseCSV(fileContent) {
-  const lines = fileContent.split('\n');
-  if (lines.length < 2) return [];
+function parseCSV( fileContent ) {
+  const lines = fileContent.split( '\n' );
+  if ( lines.length < 2 ) return [];
 
-  const headers = lines[0].split('\t').map(h => h.trim());
+  const headers = lines[0].split( '\t' ).map( h => h.trim() );
   const cards = [];
 
-  for (let i = 1; i < lines.length; i++) {
+  for ( let i = 1; i < lines.length; i++ ) {
     const line = lines[i];
-    if (!line.trim()) continue;
-    
-    const values = line.split('\t').map(v => v.trim());
+    if ( !line.trim() ) continue;
+
+    const values = line.split( '\t' ).map( v => v.trim() );
     const data = {};
-    headers.forEach((header, index) => {
+    headers.forEach( ( header, index ) => {
       data[header] = values[index];
-    });
+    } );
 
-    const cost_et = data['Costo_ET'] ? parseInt(data['Costo_ET'], 10) : null;
-    const pep = data['PEP'] ? parseInt(data['PEP'], 10) : null;
-    const rp = data['RP'] ? parseInt(data['RP'], 10) : null;
+    const cost_et = data['Costo_ET'] ? parseInt( data['Costo_ET'], 10 ) : null;
+    const pep = data['PEP'] ? parseInt( data['PEP'], 10 ) : null;
+    const rp = data['RP'] ? parseInt( data['RP'], 10 ) : null;
 
-    const id = parseInt(data['ID'], 10);
+    const id = parseInt( data['ID'], 10 );
     const card = {
       id: id,
       name: data['Nome'],
       type: data['Tipo'],
       status: data['Stato'],
-      cost_et: isNaN(cost_et) ? null : cost_et,
-      pep: isNaN(pep) ? null : pep,
-      rp: isNaN(rp) ? null : rp,
+      cost_et: isNaN( cost_et ) ? null : cost_et,
+      pep: isNaN( pep ) ? null : pep,
+      rp: isNaN( rp ) ? null : rp,
       rarity: data['Rarità'],
       effect: data['Effetto'],
       role: data['Ruolo'],
-      image_url: `/assets/cards/${String(id).padStart(3, '0')}_${(data['Nome'] || '').replace(/,/g, '').replace(/ /g, '_')}.png`
+      image_url: `/assets/cards/${String( id ).padStart( 3, '0' )}_${( data['Nome'] || '' ).replace( /,/g, '' ).replace( / /g, '_' )}.png`
     };
-    
-    if (data['Nome']) {
-      cards.push(card);
+
+    if ( data['Nome'] ) {
+      cards.push( card );
     }
   }
   return cards;
@@ -70,19 +70,19 @@ const MESSAGES_FILE = path.join(__dirname, 'messages.json');
 const readJSON = (file) => JSON.parse(fs.readFileSync(file, 'utf8'));
 const writeJSON = (file, data) => fs.writeFileSync(file, JSON.stringify(data, null, 2));
 
-app.get('/api/cards', async (req, res) => {
+app.get( '/api/cards', async ( req, res ) => {
   try {
-    const response = await axios.get(GOOGLE_SHEETS_CSV_URL);
-    const liveCards = parseCSV(response.data);
-    res.json(liveCards);
-  } catch (error) {
-    console.error('Errore nel fetch delle carte da Google Sheets:', error);
-    res.status(500).json({ error: 'Errore durante la lettura della Matrice Dati (Server Error)' });
+    const response = await axios.get( GOOGLE_SHEETS_CSV_URL );
+    const liveCards = parseCSV( response.data );
+    res.json( liveCards );
+  } catch ( error ) {
+    console.error( 'Errore nel fetch delle carte da Google Sheets:', error );
+    res.status( 500 ).json( { error: 'Errore durante la lettura della Matrice Dati (Server Error)' } );
   }
-});
+} );
 
 // Gestione Mazzi
-app.get('/api/decks', (req, res) => {
+app.get( '/api/decks', ( req, res ) => {
   try {
     const { creator, q, costruttoreId, page = 1, limit = 12 } = req.query;
     const data = fs.readFileSync(DECKS_FILE, 'utf8');
@@ -97,58 +97,98 @@ app.get('/api/decks', (req, res) => {
         decks = decks.filter(d => d.isPublic === true);
       }
     }
-    
+
     // Filtro ricerca testuale
-    if (q) {
+    if ( q ) {
       const query = q.toLowerCase();
-      decks = decks.filter(d => d.name.toLowerCase().includes(query));
+      decks = decks.filter( d => d.name.toLowerCase().includes( query ) );
     }
-    
+
     // Filtro per Costruttore
-    if (costruttoreId) {
-      const cid = parseInt(costruttoreId);
-      decks = decks.filter(d => d.costruttoreId === cid);
+    if ( costruttoreId ) {
+      const cid = parseInt( costruttoreId );
+      decks = decks.filter( d => d.costruttoreId === cid );
     }
-    
+
     const total = decks.length;
-    
+
     // Paginazione
-    const start = (parseInt(page) - 1) * parseInt(limit);
-    const end = start + parseInt(limit);
-    const paginatedDecks = decks.slice(start, end);
-    
-    res.json({
+    const start = ( parseInt( page ) - 1 ) * parseInt( limit );
+    const end = start + parseInt( limit );
+    const paginatedDecks = decks.slice( start, end );
+
+    res.json( {
       decks: paginatedDecks,
       total: total
-    });
-  } catch (error) {
-    res.status(500).json({ error: 'Errore caricamento mazzi' });
+    } );
+  } catch ( error ) {
+    res.status( 500 ).json( { error: 'Errore caricamento mazzi' } );
   }
-});
+} );
 
-app.post('/api/decks', (req, res) => {
+app.post( '/api/decks', ( req, res ) => {
   try {
     const newDeck = req.body;
-    let decks = JSON.parse(fs.readFileSync(DECKS_FILE, 'utf8'));
-    
-    if (newDeck.id) {
-       // Aggiornamento esistente
-       decks = decks.map(d => d.id === newDeck.id ? newDeck : d);
-    } else {
-       // Nuovo mazzo
-       newDeck.id = Date.now();
-       decks.push(newDeck);
-    }
-    
-    fs.writeFileSync(DECKS_FILE, JSON.stringify(decks, null, 2));
-    res.json(newDeck);
-  } catch (error) {
-    console.error('Errore salvataggio mazzo:', error);
-    res.status(500).json({ error: 'Errore salvataggio mazzo' });
-  }
-});
+    let decks = JSON.parse( fs.readFileSync( DECKS_FILE, 'utf8' ) );
 
-app.delete('/api/decks/user/:username', (req, res) => {
+    const normalizedName = ( newDeck.name || '' ).trim().toLowerCase();
+    const normalizedCreator = ( newDeck.creator || '' ).trim().toLowerCase();
+
+    if ( !normalizedName ) {
+      return res.status( 400 ).json( { error: 'Nome mazzo obbligatorio.' } );
+    }
+
+    const duplicateDeck = decks.find( d => {
+      const sameName = ( d.name || '' ).trim().toLowerCase() === normalizedName;
+      const sameCreator = ( d.creator || '' ).trim().toLowerCase() === normalizedCreator;
+      const differentDeck = !newDeck.id || d.id !== newDeck.id;
+      return sameName && sameCreator && differentDeck;
+    } );
+
+    if ( duplicateDeck ) {
+      return res.status( 409 ).json( { error: 'Esiste già un mazzo con questo nome per questo utente.' } );
+    }
+
+    if ( newDeck.id ) {
+      // Aggiornamento esistente
+      decks = decks.map( d => d.id === newDeck.id ? newDeck : d );
+    } else {
+      // Nuovo mazzo
+      newDeck.id = Date.now();
+      decks.push( newDeck );
+    }
+
+    fs.writeFileSync( DECKS_FILE, JSON.stringify( decks, null, 2 ) );
+    res.json( newDeck );
+  } catch ( error ) {
+    console.error( 'Errore salvataggio mazzo:', error );
+    res.status( 500 ).json( { error: 'Errore salvataggio mazzo' } );
+  }
+} );
+
+app.delete( '/api/decks/:id', ( req, res ) => {
+  try {
+    const deckId = parseInt( req.params.id, 10 );
+    if ( Number.isNaN( deckId ) ) {
+      return res.status( 400 ).json( { error: 'ID mazzo non valido' } );
+    }
+
+    let decks = JSON.parse( fs.readFileSync( DECKS_FILE, 'utf8' ) );
+    const initialLength = decks.length;
+    decks = decks.filter( d => d.id !== deckId );
+
+    if ( decks.length === initialLength ) {
+      return res.status( 404 ).json( { error: 'Mazzo non trovato' } );
+    }
+
+    fs.writeFileSync( DECKS_FILE, JSON.stringify( decks, null, 2 ) );
+    res.json( { message: 'Mazzo eliminato con successo.' } );
+  } catch ( error ) {
+    res.status( 500 ).json( { error: 'Errore eliminazione mazzo' } );
+  }
+} );
+
+app.delete( '/api/decks/user/:username', ( req, res ) => {
   try {
     const { username } = req.params;
     let decks = JSON.parse(fs.readFileSync(DECKS_FILE, 'utf8'));
@@ -168,7 +208,7 @@ app.delete('/api/decks/user/:username', (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Errore durante la pulizia dei dati mazzi' });
   }
-});
+} );
 
 // Social Layer Implementation
 app.get('/api/social/friends', (req, res) => {
@@ -328,6 +368,6 @@ app.post('/api/social/messages/read', (req, res) => {
 
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`[Punto Zero] Backend Server in ascolto sulla porta ${PORT}`);
-});
+app.listen( PORT, '0.0.0.0', () => {
+  console.log( `[Punto Zero] Backend Server in ascolto sulla porta ${PORT}` );
+} );
