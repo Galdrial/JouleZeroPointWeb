@@ -10,6 +10,18 @@ const chatRateBuckets = new Map();
 
 const openai = new OpenAI( { apiKey: process.env.OPENAI_API_KEY } );
 let ASSISTANT_ID = process.env.ASSISTANT_ID;
+const CARD_TYPE_ALIASES = {
+  gas: 'Gas',
+  solido: 'Solido',
+  solidi: 'Solido',
+  liquido: 'Liquido',
+  liquidi: 'Liquido',
+  plasma: 'Plasma',
+  anomalia: 'Anomalia',
+  anomalie: 'Anomalia',
+  'materia oscura': 'Materia Oscura',
+  critica: 'Critica'
+};
 
 function getRateKey( req ) {
   const userHeader = ( req.headers['x-user'] || '' ).toString().trim().toLowerCase();
@@ -44,11 +56,58 @@ function pruneRateBuckets() {
   }
 }
 
+async function fetchAllCards() {
+  const response = await axios.get( `http://localhost:${process.env.PORT || 3000}/api/cards` );
+  return Array.isArray( response.data ) ? response.data : [];
+}
+
+function detectCardTypeInventoryIntent( message ) {
+  if ( typeof message !== 'string' ) return null;
+  const normalized = message.trim().toLowerCase();
+  const asksCount = /(quante|quanti|conteggio|numero totale)/i.test( normalized );
+  const asksFullList = /(tutte|tutti|elencamele|elencali|lista completa|elenco completo)/i.test( normalized );
+  const asksCards = /(carta|carte|tipo)/i.test( normalized );
+
+  if ( !( asksCount || asksFullList ) || !asksCards ) {
+    return null;
+  }
+
+  const sortedAliases = Object.keys( CARD_TYPE_ALIASES ).sort( ( a, b ) => b.length - a.length );
+  const match = sortedAliases.find( alias => normalized.includes( alias ) );
+  if ( !match ) return null;
+
+  return {
+    normalizedType: CARD_TYPE_ALIASES[match]
+  };
+}
+
+function formatCardInventoryResponse( typeName, cards ) {
+  if ( cards.length === 0 ) {
+    return `Dato non presente negli Archivi del Punto Zero per il tipo ${typeName}.`;
+  }
+
+  const lines = [
+    `Costruttore, nel set sono presenti ${cards.length} carte di tipo ${typeName}.`,
+    '',
+    'Elenco completo:'
+  ];
+
+  for ( const card of cards ) {
+    lines.push(
+      `- ${card.name}`,
+      `  - ET: ${card.cost_et ?? 'N/D'}`,
+      `  - PEP: ${card.pep ?? 'N/D'}`,
+      `  - RP: ${card.rp ?? 'N/D'}`
+    );
+  }
+
+  return lines.join( '\n' );
+}
+
 // Estrazione carte precisa — ricerca per Nome, poi Tipo/Ruolo, poi statistiche numeriche
 async function queryCardsFromDatabase( query ) {
   try {
-    const response = await axios.get( `http://localhost:${process.env.PORT || 3000}/api/cards` );
-    const cards = response.data;
+    const cards = await fetchAllCards();
 
     const q = query.toLowerCase().trim();
     const keywords = q.split( ' ' ).filter( k => k.length > 2 );
@@ -143,6 +202,20 @@ router.post( '/chat', async ( req, res ) => {
 
   try {
     let currentThreadId = threadId;
+
+    const inventoryIntent = detectCardTypeInventoryIntent( message );
+    if ( inventoryIntent ) {
+      const cards = await fetchAllCards();
+      const matchedCards = cards
+        .filter( c => ( c.type || '' ).trim().toLowerCase() === inventoryIntent.normalizedType.toLowerCase() )
+        .sort( ( a, b ) => ( a.name || '' ).localeCompare( b.name || '' ) );
+
+      return res.json( {
+        reply: formatCardInventoryResponse( inventoryIntent.normalizedType, matchedCards ),
+        threadId: null,
+        source: 'deterministic-card-inventory'
+      } );
+    }
 
     // Gestione della sessione di chat aperta
     if ( !currentThreadId ) {
