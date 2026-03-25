@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, nextTick, watch } from 'vue';
-import axios from 'axios';
+import axios from "axios";
+import { nextTick, ref, watch } from "vue";
 
 const props = defineProps<{
   isOpen: boolean;
 }>();
 
-const emit = defineEmits(['close']);
+const emit = defineEmits(["close"]);
 
 const inputMessage = ref("");
 const messages = ref<{ role: string; text: string }[]>([
@@ -18,6 +18,7 @@ const messages = ref<{ role: string; text: string }[]>([
 const loading = ref(false);
 const threadId = ref<string | null>(null);
 const chatBoxRow = ref<HTMLElement | null>(null);
+const MAX_MESSAGE_LENGTH = 1200;
 
 const scrollToBottom = async () => {
   await nextTick();
@@ -38,7 +39,13 @@ const resetChat = () => {
 
 const formatMessage = (text: string) => {
   if (!text) return "";
-  let html = text.replace(/\n/g, "<br/>");
+  const escaped = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+  let html = escaped.replace(/\n/g, "<br/>");
   html = html.replace(/\. ([A-Z])/g, ".<br/><br/>$1");
   html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/(?:^|<br\/>)\s*-\s+(.*?)(?=<br\/>|$)/g, "<br/>• $1");
@@ -47,6 +54,14 @@ const formatMessage = (text: string) => {
 
 const sendMessage = async () => {
   if (!inputMessage.value.trim()) return;
+
+  if (inputMessage.value.length > MAX_MESSAGE_LENGTH) {
+    messages.value.push({
+      role: "error",
+      text: `Messaggio troppo lungo (max ${MAX_MESSAGE_LENGTH} caratteri).`,
+    });
+    return;
+  }
 
   const userText = inputMessage.value;
   messages.value.push({ role: "user", text: userText });
@@ -65,7 +80,9 @@ const sendMessage = async () => {
   } catch (error: any) {
     messages.value.push({
       role: "error",
-      text: error.response?.data?.error || "Interferenza Quantica. Impossibile connettersi al server IA.",
+      text:
+        error.response?.data?.error ||
+        "Interferenza Quantica. Impossibile connettersi al server IA.",
     });
   } finally {
     loading.value = false;
@@ -74,11 +91,14 @@ const sendMessage = async () => {
 };
 
 // Auto-scroll when modal opens
-watch(() => props.isOpen, (newVal) => {
-  if (newVal) {
-    scrollToBottom();
-  }
-});
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (newVal) {
+      scrollToBottom();
+    }
+  },
+);
 
 // Direttiva click-outside per chiudere il modal (opzionale, ma utile)
 const vClickOutside = {
@@ -88,25 +108,37 @@ const vClickOutside = {
         binding.value(event);
       }
     };
-    document.body.addEventListener('click', el.clickOutsideEvent);
+    document.body.addEventListener("click", el.clickOutsideEvent);
   },
   unmounted(el: any) {
-    document.body.removeEventListener('click', el.clickOutsideEvent);
-  }
+    document.body.removeEventListener("click", el.clickOutsideEvent);
+  },
 };
 </script>
 
 <template>
   <Transition name="terminal-slide">
-    <div v-if="isOpen" class="terminal-modal glass-panel" v-click-outside="() => $emit('close')">
+    <div
+      v-if="isOpen"
+      class="terminal-modal glass-panel"
+      v-click-outside="() => $emit('close')"
+    >
       <div class="terminal-header">
         <div class="terminal-title">
           <span class="pulse-dot"></span>
           TERMINALE PUNTO ZERO
         </div>
         <div class="terminal-actions">
-          <button @click="resetChat" class="action-btn" title="Reset Sincronizzazione">⟳</button>
-          <button @click="$emit('close')" class="action-btn close-btn">✕</button>
+          <button
+            @click="resetChat"
+            class="action-btn"
+            title="Reset Sincronizzazione"
+          >
+            ⟳
+          </button>
+          <button @click="$emit('close')" class="action-btn close-btn">
+            ✕
+          </button>
         </div>
       </div>
 
@@ -116,7 +148,15 @@ const vClickOutside = {
           :key="index"
           :class="['chat-bubble', msg.role]"
         >
-          <span class="sender">{{ msg.role === "user" ? "COSTRUTTORE" : msg.role === "error" ? "SISTEMA" : "TERMINALE" }}:</span>
+          <span class="sender"
+            >{{
+              msg.role === "user"
+                ? "COSTRUTTORE"
+                : msg.role === "error"
+                  ? "SISTEMA"
+                  : "TERMINALE"
+            }}:</span
+          >
           <div class="message-content" v-html="formatMessage(msg.text)"></div>
         </div>
 
@@ -133,8 +173,13 @@ const vClickOutside = {
           class="glass-input"
           placeholder="Inserisci direttiva..."
           :disabled="loading"
+          :maxlength="MAX_MESSAGE_LENGTH"
         />
-        <button type="submit" class="btn-primary send-btn" :disabled="loading || !inputMessage.trim()">
+        <button
+          type="submit"
+          class="btn-primary send-btn"
+          :disabled="loading || !inputMessage.trim()"
+        >
           ➤
         </button>
       </form>
@@ -155,7 +200,9 @@ const vClickOutside = {
   flex-direction: column;
   padding: 0;
   overflow: hidden;
-  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 240, 255, 0.1);
+  box-shadow:
+    0 10px 50px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(0, 240, 255, 0.1);
   border: 1px solid var(--glass-border);
   background: rgba(10, 15, 20, 0.95);
   backdrop-filter: blur(15px);
@@ -191,9 +238,18 @@ const vClickOutside = {
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .terminal-actions {
@@ -276,8 +332,12 @@ const vClickOutside = {
   opacity: 0.7;
 }
 
-.user .sender { color: var(--accent-cyan); }
-.ai .sender { color: var(--accent-magenta); }
+.user .sender {
+  color: var(--accent-cyan);
+}
+.ai .sender {
+  color: var(--accent-magenta);
+}
 
 .chat-input-area {
   padding: 1rem;
@@ -317,8 +377,13 @@ const vClickOutside = {
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 @media (max-width: 500px) {

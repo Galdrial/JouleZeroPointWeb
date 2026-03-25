@@ -1,16 +1,21 @@
 <script setup lang="ts">
-import { ref, nextTick, onMounted } from 'vue';
-import axios from 'axios';
-import { useRouter } from 'vue-router';
+import axios from "axios";
+import { nextTick, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const router = useRouter();
-const userInput = ref('');
+const userInput = ref("");
 const messages = ref([
-  { role: 'assistant', content: 'PROTOCOLLO DI ACCESSO DIRETTO ATTIVATO. Sono il Terminale del Punto Zero.\n\nInserisci la tua direttiva, Costruttore.' }
+  {
+    role: "assistant",
+    content:
+      "PROTOCOLLO DI ACCESSO DIRETTO ATTIVATO. Sono il Terminale del Punto Zero.\n\nInserisci la tua direttiva, Costruttore.",
+  },
 ]);
 const isLoading = ref(false);
 const threadId = ref<string | null>(null);
 const chatContainer = ref<HTMLElement | null>(null);
+const MAX_MESSAGE_LENGTH = 1200;
 
 const scrollToBottom = async () => {
   await nextTick();
@@ -22,22 +27,34 @@ const scrollToBottom = async () => {
 const sendMessage = async () => {
   if (!userInput.value.trim() || isLoading.value) return;
 
+  if (userInput.value.length > MAX_MESSAGE_LENGTH) {
+    messages.value.push({
+      role: "assistant",
+      content: `ERRORE INPUT: Messaggio troppo lungo (max ${MAX_MESSAGE_LENGTH} caratteri).`,
+    });
+    return;
+  }
+
   const text = userInput.value;
-  messages.value.push({ role: 'user', content: text });
-  userInput.value = '';
+  messages.value.push({ role: "user", content: text });
+  userInput.value = "";
   isLoading.value = true;
   await scrollToBottom();
 
   try {
-    const response = await axios.post('/api/chat', { 
+    const response = await axios.post("/api/chat", {
       message: text,
-      threadId: threadId.value 
+      threadId: threadId.value,
     });
-    
+
     threadId.value = response.data.threadId;
-    messages.value.push({ role: 'assistant', content: response.data.reply });
+    messages.value.push({ role: "assistant", content: response.data.reply });
   } catch (error) {
-    messages.value.push({ role: 'assistant', content: 'ERRORE DI SINCRONIZZAZIONE: Connessione alla Matrice interrotta. Verifica lo stato del database.' });
+    messages.value.push({
+      role: "assistant",
+      content:
+        "ERRORE DI SINCRONIZZAZIONE: Connessione alla Matrice interrotta. Verifica lo stato del database.",
+    });
   } finally {
     isLoading.value = false;
     await scrollToBottom();
@@ -46,11 +63,17 @@ const sendMessage = async () => {
 
 const resetChat = () => {
   threadId.value = null;
-  messages.value = [{ role: 'assistant', content: 'MEMORIA RESETTATA. Connessione ripristinata.\n\nIn attesa di nuove direttive...' }];
+  messages.value = [
+    {
+      role: "assistant",
+      content:
+        "MEMORIA RESETTATA. Connessione ripristinata.\n\nIn attesa di nuove direttive...",
+    },
+  ];
 };
 
 const goBack = () => {
-  router.push('/');
+  router.push("/");
 };
 
 onMounted(scrollToBottom);
@@ -71,11 +94,19 @@ onMounted(scrollToBottom);
       </div>
 
       <div class="chat-area" ref="chatContainer">
-        <div v-for="(msg, index) in messages" :key="index" 
-             :class="['message-row', msg.role]">
+        <div
+          v-for="(msg, index) in messages"
+          :key="index"
+          :class="['message-row', msg.role]"
+        >
           <div class="message-bubble">
-            <span :class="['author-tag', msg.role === 'assistant' ? 'terminal-tag' : 'constructor-tag']">
-              {{ msg.role === 'assistant' ? 'TERMINALE:' : 'COSTRUTTORE:' }}
+            <span
+              :class="[
+                'author-tag',
+                msg.role === 'assistant' ? 'terminal-tag' : 'constructor-tag',
+              ]"
+            >
+              {{ msg.role === "assistant" ? "TERMINALE:" : "COSTRUTTORE:" }}
             </span>
             <div class="message-content">{{ msg.content }}</div>
           </div>
@@ -90,14 +121,19 @@ onMounted(scrollToBottom);
       </div>
 
       <div class="input-area">
-        <input 
-          v-model="userInput" 
+        <input
+          v-model="userInput"
           @keyup.enter="sendMessage"
           placeholder="Inserisci direttiva..."
           :disabled="isLoading"
+          :maxlength="MAX_MESSAGE_LENGTH"
           autofocus
         />
-        <button @click="sendMessage" :disabled="isLoading || !userInput.trim()" class="cyber-btn btn-primary send-btn">
+        <button
+          @click="sendMessage"
+          :disabled="isLoading || !userInput.trim()"
+          class="cyber-btn btn-primary send-btn"
+        >
           ➤
         </button>
       </div>
@@ -130,8 +166,17 @@ onMounted(scrollToBottom);
   flex-direction: column;
   border-left: 1px solid rgba(0, 240, 255, 0.1);
   border-right: 1px solid rgba(0, 240, 255, 0.1);
-  background: radial-gradient(circle at top right, rgba(255, 0, 60, 0.05) 0%, transparent 40%),
-              radial-gradient(circle at bottom left, rgba(0, 240, 255, 0.05) 0%, transparent 40%);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(255, 0, 60, 0.05) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at bottom left,
+      rgba(0, 240, 255, 0.05) 0%,
+      transparent 40%
+    );
 }
 
 .terminal-header {
@@ -163,9 +208,15 @@ onMounted(scrollToBottom);
 }
 
 @keyframes pulse {
-  0% { opacity: 0.4; }
-  50% { opacity: 1; }
-  100% { opacity: 0.4; }
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }
 
 .header-actions {
@@ -205,7 +256,9 @@ onMounted(scrollToBottom);
   width: 100%;
 }
 
-.message-row.user { justify-content: flex-end; }
+.message-row.user {
+  justify-content: flex-end;
+}
 
 .message-bubble {
   max-width: 85%;
@@ -232,8 +285,14 @@ onMounted(scrollToBottom);
   text-transform: uppercase;
 }
 
-.terminal-tag { color: var(--accent-magenta); opacity: 1; }
-.constructor-tag { color: var(--accent-cyan); opacity: 1; }
+.terminal-tag {
+  color: var(--accent-magenta);
+  opacity: 1;
+}
+.constructor-tag {
+  color: var(--accent-cyan);
+  opacity: 1;
+}
 
 .message-content {
   line-height: 1.6;
@@ -317,11 +376,22 @@ input:focus {
   animation: typing 1.4s infinite;
 }
 
-.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
 
 @keyframes typing {
-  0%, 100% { transform: translateY(0); opacity: 0.3; }
-  50% { transform: translateY(-5px); opacity: 1; }
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
 }
 </style>

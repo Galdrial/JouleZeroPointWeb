@@ -1,5 +1,37 @@
-# Vue 3 + TypeScript + Vite
+# Joule Zero Point - Frontend
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## Setup locale rapido
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+1. Crea il file environment backend:
+
+```bash
+cp ../backend/.env.example ../backend/.env
+```
+
+2. Apri `../backend/.env` e imposta almeno:
+
+- `OPENAI_API_KEY`
+- `ASSISTANT_ID`
+- `JWT_SECRET`
+
+3. Installa dipendenze:
+
+```bash
+cd ../backend && npm install
+cd ../frontend && npm install
+```
+
+4. Avvia backend e frontend in due terminali separati:
+
+```bash
+cd ../backend && node server.js
+cd ../frontend && npm run dev --host
+```
+
+## Variabili chat opzionali
+
+Nel file `../backend/.env` puoi regolare:
+
+- `CHAT_MAX_MESSAGE_LENGTH` (default: `1200`)
+- `CHAT_RATE_WINDOW_MS` (default: `60000`)
+- `CHAT_RATE_MAX_REQUESTS` (default: `12`)
