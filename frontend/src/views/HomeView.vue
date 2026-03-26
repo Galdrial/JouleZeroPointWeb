@@ -7,7 +7,7 @@ const fragmentCount = ref(120); // Default placeholder
 const tabletopGuideUrl = "#";
 const discordInviteUrl = "#";
 
-const particleStyles = Array.from({ length: 64 }, () => ({
+const particleStyles = Array.from({ length: 96 }, () => ({
   left: `${Math.random() * 100}%`,
   top: `${Math.random() * 100}%`,
   "--size": `${(1.4 + Math.random() * 2.8).toFixed(2)}px`,
@@ -196,15 +196,15 @@ onMounted(async () => {
 .hero-content {
   position: absolute;
   top: clamp(16px, 2.5vw, 40px);
-  bottom: clamp(2px, 1vw, 18px);
+  bottom: clamp(40px, 1.5vw, 30px);
   left: clamp(140px, 18vw, 420px);
-  width: min(760px, 48vw);
+  width: min(1000px, 62vw);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  gap: clamp(0.5rem, 1vw, 1rem);
+  gap: clamp(0.5rem, 1.8vw, 10rem);
   text-align: left;
 }
 
@@ -216,9 +216,9 @@ onMounted(async () => {
 
 .hero-headline {
   margin: 0;
-  max-width: 900px;
+  max-width: 100%;
   font-family: var(--font-display);
-  font-size: clamp(1.4rem, 2.8vw, 3rem);
+  font-size: clamp(1.4rem, 2.8vw, 6rem);
   line-height: 1.1;
   color: #f7fbff;
   text-shadow: 0 8px 28px rgba(0, 0, 0, 0.7);
@@ -227,10 +227,12 @@ onMounted(async () => {
 
 .hero-subtitle {
   margin: 0;
-  max-width: 780px;
-  font-size: clamp(0.9rem, 1.2vw, 1.15rem);
+  max-width: 680px;
+  font-size: clamp(0.9rem, 1.2vw, 1.8rem);
   line-height: 1.45;
   color: rgba(226, 232, 240, 0.92);
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .hero-actions {
@@ -268,7 +270,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  margin-top: 0.35rem;
+  margin-top: 1.6rem;
 }
 
 .hero-status {
