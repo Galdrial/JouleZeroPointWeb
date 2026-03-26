@@ -83,7 +83,10 @@ watch(
       </nav>
     </header>
 
-    <main class="content-wrapper">
+    <main
+      class="content-wrapper"
+      :class="{ 'content-wrapper--flush-top': route.path === '/' }"
+    >
       <RouterView />
     </main>
 
@@ -153,6 +156,10 @@ watch(
 
 .logo-link:hover {
   opacity: 0.8;
+}
+
+.content-wrapper--flush-top {
+  padding-top: 0;
 }
 
 /* Float Trigger Styles */
