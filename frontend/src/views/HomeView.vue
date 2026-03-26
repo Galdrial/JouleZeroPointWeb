@@ -4,10 +4,10 @@ import { onMounted, ref } from "vue";
 import heroImg from "../assets/hero.png";
 
 const fragmentCount = ref(120); // Default placeholder
-const tabletopGuideUrl = "#";
-const discordInviteUrl = "#";
+const tabletopGuideUrl = "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
+const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 
-const particleStyles = Array.from({ length: 96 }, () => ({
+const particleStyles = Array.from({ length: 150 }, () => ({
   left: `${Math.random() * 100}%`,
   top: `${Math.random() * 100}%`,
   "--size": `${(1.4 + Math.random() * 2.8).toFixed(2)}px`,
