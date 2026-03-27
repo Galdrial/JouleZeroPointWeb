@@ -2,7 +2,7 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 
-type NewsPreview = {
+type StoryPreview = {
   id: number;
   slug: string;
   title: string;
@@ -15,7 +15,7 @@ type NewsPreview = {
   featuredOrder: number | null;
 };
 
-const newsItems = ref<NewsPreview[]>([]);
+const storyItems = ref<StoryPreview[]>([]);
 const isLoading = ref(true);
 const errorMessage = ref("");
 
@@ -26,17 +26,14 @@ const formatNewsDate = (value: string) =>
     year: "numeric",
   });
 
-const getNewsCategoryLabel = (category?: "news" | "storia" | "lore") =>
-  category === "storia" || category === "lore" ? "STORIA" : "NEWS";
-
 onMounted(async () => {
   try {
     const response = await axios.get("/api/news", {
-      params: { category: "news" },
+      params: { category: "storia" },
     });
-    newsItems.value = response.data;
+    storyItems.value = response.data;
   } catch (_error) {
-    errorMessage.value = "Impossibile caricare l'archivio news.";
+    errorMessage.value = "Impossibile caricare l'archivio storia.";
   } finally {
     isLoading.value = false;
   }
@@ -44,14 +41,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="news-archive-page fade-in">
+  <div class="story-archive-page fade-in">
     <header class="archive-header">
       <div>
-        <p class="archive-kicker">ARCHIVIO NEWS</p>
-        <h1>Tutte le notizie dal Punto Zero</h1>
+        <p class="archive-kicker">ARCHIVIO STORIA</p>
+        <h1>La storia del Punto Zero</h1>
         <p class="archive-subtitle">
-          Eventi, roadmap, bilanciamenti e annunci ufficiali ordinati con
-          priorità alle comunicazioni in evidenza.
+          Approfondimenti narrativi, contesto del mondo di gioco e frammenti
+          lore ordinati in timeline.
         </p>
       </div>
       <RouterLink to="/" class="archive-link archive-link--back">
@@ -70,47 +67,40 @@ onMounted(async () => {
     </header>
 
     <div v-if="isLoading" class="glass-panel archive-state">
-      Caricamento news…
+      Caricamento storia…
     </div>
     <div v-else-if="errorMessage" class="glass-panel archive-state">
       {{ errorMessage }}
     </div>
-    <div v-else-if="!newsItems.length" class="glass-panel archive-state">
-      Nessuna news disponibile.
+    <div v-else-if="!storyItems.length" class="glass-panel archive-state">
+      Nessun contenuto storia disponibile.
     </div>
 
     <section v-else class="archive-grid">
       <article
-        v-for="news in newsItems"
-        :key="news.id"
+        v-for="story in storyItems"
+        :key="story.id"
         class="glass-panel archive-card"
-        :class="{ 'archive-card--featured': news.isFeatured }"
+        :class="{ 'archive-card--featured': story.isFeatured }"
       >
         <div class="archive-badges-row">
-          <div
-            class="archive-category-badge"
-            :class="
-              news.category === 'storia' || news.category === 'lore'
-                ? 'archive-category-badge--lore'
-                : 'archive-category-badge--news'
-            "
-          >
-            {{ getNewsCategoryLabel(news.category) }}
+          <div class="archive-category-badge archive-category-badge--storia">
+            STORIA
           </div>
-          <div v-if="news.isFeatured" class="archive-badge">IN EVIDENZA</div>
+          <div v-if="story.isFeatured" class="archive-badge">IN EVIDENZA</div>
         </div>
         <img
-          v-if="news.imageUrl"
-          :src="news.imageUrl"
-          :alt="news.title"
+          v-if="story.imageUrl"
+          :src="story.imageUrl"
+          :alt="story.title"
           class="archive-cover"
         />
-        <p class="archive-date">{{ formatNewsDate(news.publishedAt) }}</p>
-        <h2>{{ news.title }}</h2>
-        <p class="archive-summary">{{ news.summary }}</p>
+        <p class="archive-date">{{ formatNewsDate(story.publishedAt) }}</p>
+        <h2>{{ story.title }}</h2>
+        <p class="archive-summary">{{ story.summary }}</p>
         <div class="archive-actions">
-          <RouterLink :to="`/news/${news.slug}`" class="archive-primary-link">
-            <span>Leggi la news completa</span>
+          <RouterLink :to="`/news/${story.slug}`" class="archive-primary-link">
+            <span>Leggi la storia completa</span>
             <svg
               viewBox="0 0 16 16"
               class="archive-link-icon"
@@ -127,8 +117,8 @@ onMounted(async () => {
             </svg>
           </RouterLink>
           <a
-            v-if="news.sourceUrl"
-            :href="news.sourceUrl"
+            v-if="story.sourceUrl"
+            :href="story.sourceUrl"
             target="_blank"
             rel="noopener noreferrer"
             class="archive-secondary-link"
@@ -142,7 +132,7 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.news-archive-page {
+.story-archive-page {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1.6rem 2rem 2.4rem;
@@ -159,7 +149,7 @@ onMounted(async () => {
 
 .archive-kicker {
   margin: 0 0 0.45rem;
-  color: var(--accent-cyan);
+  color: #00ff96;
   letter-spacing: 2px;
   font-family: var(--font-display);
   font-size: 0.8rem;
@@ -234,13 +224,7 @@ onMounted(async () => {
   padding: 0.18rem 0.52rem;
 }
 
-.archive-category-badge--news {
-  color: var(--accent-cyan);
-  background: rgba(254, 220, 104, 0.12);
-  border: 1px solid rgba(254, 220, 104, 0.26);
-}
-
-.archive-category-badge--lore {
+.archive-category-badge--storia {
   color: #00ff96;
   background: rgba(0, 255, 150, 0.12);
   border: 1px solid rgba(0, 255, 150, 0.26);
@@ -315,7 +299,7 @@ onMounted(async () => {
 }
 
 @media (max-width: 640px) {
-  .news-archive-page {
+  .story-archive-page {
     padding: 1.2rem 1rem 1.8rem;
   }
 

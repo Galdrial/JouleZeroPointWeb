@@ -153,4 +153,10 @@ const submitForm = async () => {
   text-decoration: underline;
   text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
 }
+
+.auth-panel .btn-primary,
+.auth-panel .btn-primary:hover,
+.auth-panel .btn-primary:disabled {
+  color: #0a0e1a !important;
+}
 </style>

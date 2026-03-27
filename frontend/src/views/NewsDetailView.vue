@@ -9,6 +9,7 @@ type NewsDetail = {
   title: string;
   summary: string;
   content: string;
+  category: "news" | "storia" | "lore";
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -27,6 +28,9 @@ const formatNewsDate = (value: string) =>
     month: "long",
     year: "numeric",
   });
+
+const getNewsCategoryLabel = (category?: "news" | "storia" | "lore") =>
+  category === "storia" || category === "lore" ? "Storia" : "News";
 
 const paragraphs = computed(() =>
   (news.value?.content || "")
@@ -59,7 +63,19 @@ onMounted(async () => {
   <div class="news-detail-page fade-in">
     <article v-if="news && !isLoading" class="glass-panel news-detail-card">
       <p class="news-meta">{{ formatNewsDate(news.publishedAt) }}</p>
-      <div v-if="news.isFeatured" class="news-badge">NEWS IN EVIDENZA</div>
+      <div class="news-badges-row">
+        <div
+          class="news-category-badge"
+          :class="
+            news.category === 'storia' || news.category === 'lore'
+              ? 'news-category-badge--lore'
+              : 'news-category-badge--news'
+          "
+        >
+          {{ getNewsCategoryLabel(news.category) }}
+        </div>
+        <div v-if="news.isFeatured" class="news-badge">NEWS IN EVIDENZA</div>
+      </div>
       <h1>{{ news.title }}</h1>
       <p class="news-summary">{{ news.summary }}</p>
       <img
@@ -93,8 +109,18 @@ onMounted(async () => {
             </svg>
             <span>Torna alla Home</span>
           </RouterLink>
-          <RouterLink to="/news" class="news-archive-link"
-            >Archivio news</RouterLink
+          <RouterLink
+            :to="
+              news.category === 'storia' || news.category === 'lore'
+                ? '/storia'
+                : '/news'
+            "
+            class="news-archive-link"
+            >{{
+              news.category === "storia" || news.category === "lore"
+                ? "Archivio storia"
+                : "Archivio news"
+            }}</RouterLink
           >
         </div>
         <a
@@ -174,7 +200,6 @@ onMounted(async () => {
 }
 
 .news-badge {
-  align-self: flex-start;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.8px;
@@ -183,6 +208,34 @@ onMounted(async () => {
   border: 1px solid rgba(255, 205, 120, 0.2);
   border-radius: 999px;
   padding: 0.18rem 0.55rem;
+}
+
+.news-badges-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.news-category-badge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+}
+
+.news-category-badge--news {
+  color: var(--accent-cyan);
+  background: rgba(254, 220, 104, 0.12);
+  border: 1px solid rgba(254, 220, 104, 0.26);
+}
+
+.news-category-badge--lore {
+  color: #00ff96;
+  background: rgba(0, 255, 150, 0.12);
+  border: 1px solid rgba(0, 255, 150, 0.26);
 }
 
 .news-image {

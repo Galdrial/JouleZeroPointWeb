@@ -8,6 +8,7 @@ type NewsPreview = {
   slug: string;
   title: string;
   summary: string;
+  category: "news" | "storia" | "lore";
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -28,6 +29,9 @@ const formatNewsDate = (value: string) =>
     month: "long",
     year: "numeric",
   });
+
+const getNewsCategoryLabel = (category?: "news" | "storia" | "lore") =>
+  category === "storia" || category === "lore" ? "STORIA" : "NEWS";
 
 const particleStyles = Array.from({ length: 150 }, () => ({
   left: `${Math.random() * 100}%`,
@@ -122,7 +126,7 @@ onMounted(async () => {
 
     <div class="dashboard-grid">
       <div class="glass-panel info-card">
-        <h3>LORE: IL PUNTO ZERO</h3>
+        <h3>STORIA: IL PUNTO ZERO</h3>
         <p>
           In un futuro dove la realtà è stata frammentata da un collasso
           temporale, i Costruttori utilizzano i Frammenti di Joule per
@@ -215,7 +219,19 @@ onMounted(async () => {
           class="glass-panel news-card"
           :class="{ 'news-card--featured': news.isFeatured }"
         >
-          <div v-if="news.isFeatured" class="news-badge">IN EVIDENZA</div>
+          <div class="news-badges-row">
+            <div
+              class="news-category-badge"
+              :class="
+                news.category === 'storia' || news.category === 'lore'
+                  ? 'news-category-badge--lore'
+                  : 'news-category-badge--news'
+              "
+            >
+              {{ getNewsCategoryLabel(news.category) }}
+            </div>
+            <div v-if="news.isFeatured" class="news-badge">IN EVIDENZA</div>
+          </div>
           <img
             v-if="news.imageUrl"
             :src="news.imageUrl"
@@ -262,7 +278,7 @@ onMounted(async () => {
 .home-view {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 2rem 2rem;
+  padding: 0 clamp(0.5rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2rem);
 }
 
 .hero-section {
@@ -273,16 +289,18 @@ onMounted(async () => {
   align-items: stretch;
   justify-content: center;
   overflow: hidden;
-  margin-bottom: 3.6rem;
+  margin-bottom: clamp(2rem, 5vw, 3.6rem);
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .hero-image-stage {
   position: relative;
   width: 100vw;
+  height: auto;
   text-align: center;
   overflow: hidden;
   isolation: isolate;
+  background: #05070c;
 }
 
 .hero-bg-image {
@@ -291,6 +309,8 @@ onMounted(async () => {
   display: block;
   width: 100%;
   height: auto;
+  object-fit: contain;
+  object-position: center bottom;
 }
 
 .hero-particles {
@@ -324,16 +344,16 @@ onMounted(async () => {
 
 .hero-content {
   position: absolute;
-  top: clamp(16px, 2.5vw, 40px);
-  bottom: clamp(40px, 1.5vw, 30px);
-  left: clamp(140px, 18vw, 420px);
+  top: clamp(1rem, 2.5vw, 2.5rem);
+  bottom: clamp(1rem, 3vw, 2.2rem);
+  left: clamp(1rem, 18vw, 420px);
   width: min(1000px, 62vw);
   z-index: 2;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-end;
-  gap: clamp(0.5rem, 1.8vw, 10rem);
+  gap: clamp(0.75rem, 1.8vw, 1.8rem);
   text-align: left;
 }
 
@@ -357,7 +377,7 @@ onMounted(async () => {
 .hero-subtitle {
   margin: 0;
   max-width: 680px;
-  font-size: clamp(0.9rem, 1.2vw, 1.8rem);
+  font-size: clamp(0.95rem, 1.3vw, 1.25rem);
   line-height: 1.45;
   color: rgba(226, 232, 240, 0.92);
   margin-top: 0.5rem;
@@ -366,14 +386,14 @@ onMounted(async () => {
 
 .hero-actions {
   display: flex;
-  gap: 0.9rem;
+  gap: clamp(0.75rem, 1.8vw, 0.9rem);
   justify-content: flex-start;
   flex-wrap: wrap;
   margin-top: 0.3rem;
 }
 
 .hero-btn {
-  min-width: 260px;
+  min-width: min(260px, 100%);
   text-align: center;
 }
 
@@ -399,7 +419,7 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
-  margin-top: 1.6rem;
+  margin-top: clamp(0.8rem, 2vw, 1.6rem);
 }
 
 .hero-status {
@@ -412,8 +432,8 @@ onMounted(async () => {
 
 .dashboard-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
 }
 
 .news-section {
@@ -456,8 +476,8 @@ onMounted(async () => {
 
 .news-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: clamp(0.85rem, 2vw, 1rem);
 }
 
 .news-card {
@@ -473,7 +493,6 @@ onMounted(async () => {
 }
 
 .news-badge {
-  align-self: flex-start;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.8px;
@@ -482,6 +501,34 @@ onMounted(async () => {
   border: 1px solid rgba(255, 205, 120, 0.2);
   border-radius: 999px;
   padding: 0.18rem 0.5rem;
+}
+
+.news-badges-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.news-category-badge {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.85px;
+  border-radius: 999px;
+  padding: 0.18rem 0.52rem;
+}
+
+.news-category-badge--news {
+  color: var(--accent-cyan);
+  background: rgba(254, 220, 104, 0.12);
+  border: 1px solid rgba(254, 220, 104, 0.26);
+}
+
+.news-category-badge--lore {
+  color: #00ff96;
+  background: rgba(0, 255, 150, 0.12);
+  border: 1px solid rgba(0, 255, 150, 0.26);
 }
 
 .news-cover {
@@ -612,21 +659,16 @@ onMounted(async () => {
   border-top: 2px solid var(--accent-cyan);
 }
 
-@media (max-width: 768px) {
-  .home-view {
-    padding: 0 0.5rem 1.2rem;
-  }
-
+@media (max-width: 1480px) {
   .hero-section {
     width: calc(100% + 2rem);
     margin-left: -1rem;
     margin-right: -1rem;
-    margin-bottom: 2rem;
   }
 
   .hero-image-stage {
     width: 100%;
-    min-height: clamp(420px, 68svh, 560px);
+    height: clamp(420px, 68svh, 560px);
   }
 
   .hero-bg-image {
@@ -634,10 +676,6 @@ onMounted(async () => {
     height: 100%;
     object-fit: cover;
     object-position: center 18%;
-  }
-
-  .news-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hero-content {
@@ -649,8 +687,10 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    gap: 1.1rem;
-    padding: 1.2rem 1rem calc(1.2rem + env(safe-area-inset-bottom));
+    align-items: stretch;
+    gap: clamp(0.95rem, 3vw, 1.2rem);
+    padding: clamp(1rem, 3vw, 1.2rem) clamp(0.9rem, 3vw, 1rem)
+      calc(clamp(1rem, 3vw, 1.2rem) + env(safe-area-inset-bottom));
     background: linear-gradient(
       180deg,
       rgba(4, 8, 14, 0) 0%,
@@ -660,23 +700,25 @@ onMounted(async () => {
   }
 
   .hero-headline {
-    font-size: 1.5rem !important;
+    font-size: clamp(1.35rem, 5.2vw, 1.8rem) !important;
     line-height: 1.18;
-    transform: translateY(-4rem);
+    transform: translateY(-3.2rem);
   }
 
   .hero-subtitle {
-    font-size: clamp(1rem, 2.9vw, 0.95rem);
+    font-size: clamp(0.95rem, 3vw, 1.05rem);
     line-height: 1.35;
     margin: 0;
-    transform: translateY(-4rem);
+    transform: translateY(-3.2rem);
   }
 
   .hero-actions {
     width: 100%;
-    gap: 0.85rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: clamp(0.75rem, 2.5vw, 0.9rem);
     margin-top: 0;
-    transform: translateY(-3rem);
+    transform: translateY(-2.4rem);
   }
 
   .hero-meta {
@@ -688,7 +730,7 @@ onMounted(async () => {
 
   .hero-status {
     letter-spacing: 0.35px;
-    font-size: 0.72rem;
+    font-size: clamp(0.72rem, 2.2vw, 0.82rem);
     text-align: center;
     width: 100%;
     max-width: 100%;
@@ -698,38 +740,17 @@ onMounted(async () => {
     min-width: 0;
     width: min(100%, 320px);
   }
-
-  .dashboard-grid {
-    gap: 1rem;
-  }
 }
 
-@media (max-width: 560px) {
-  .hero-content {
-    gap: 0.95rem;
-    padding: 1.05rem 0.9rem calc(1.15rem + env(safe-area-inset-bottom));
-  }
-
+@media (max-width: 326px) {
   .hero-headline {
-    font-size: 1.35rem;
+    font-size: 1.12rem !important;
+    line-height: 1.16;
   }
 
-  .news-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-image-stage {
-    min-height: clamp(420px, 74svh, 620px);
-  }
-
-  .hero-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .hero-btn {
-    width: 100%;
-    text-align: center;
+  .hero-subtitle {
+    font-size: 0.84rem;
+    line-height: 1.28;
   }
 }
 

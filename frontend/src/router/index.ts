@@ -36,6 +36,11 @@ const router = createRouter( {
       component: () => import( '../views/NewsArchiveView.vue' )
     },
     {
+      path: '/storia',
+      name: 'storia-archive',
+      component: () => import( '../views/StoriaArchiveView.vue' )
+    },
+    {
       path: '/news/:slug',
       name: 'news-detail',
       component: () => import( '../views/NewsDetailView.vue' )

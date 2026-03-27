@@ -8,6 +8,7 @@ type NewsItem = {
   title: string;
   summary: string;
   content: string;
+  category: "news" | "storia" | "lore";
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -21,6 +22,7 @@ type FormData = {
   title: string;
   summary: string;
   content: string;
+  category: "news" | "storia";
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -61,7 +63,13 @@ async function loadNews() {
     const res = await axios.get("/api/admin/news", {
       headers: { "X-Admin-Key": adminKey.value },
     });
-    newsList.value = res.data;
+    newsList.value = res.data.map((item: NewsItem) => ({
+      ...item,
+      category:
+        item.category === "storia" || item.category === "lore"
+          ? "storia"
+          : "news",
+    }));
   } catch (e: any) {
     if (e?.response?.status === 401) {
       authError.value = "Chiave non valida.";
@@ -81,6 +89,7 @@ const emptyForm = (): FormData => ({
   title: "",
   summary: "",
   content: "",
+  category: "news",
   imageUrl: "",
   sourceUrl: "",
   publishedAt: new Date().toISOString().slice(0, 16),
@@ -203,6 +212,10 @@ function openEdit(item: NewsItem) {
     title: item.title,
     summary: item.summary,
     content: item.content,
+    category:
+      item.category === "storia" || item.category === "lore"
+        ? "storia"
+        : "news",
     imageUrl: item.imageUrl,
     sourceUrl: item.sourceUrl,
     publishedAt: item.publishedAt.slice(0, 16),
@@ -320,6 +333,10 @@ function formatDate(value: string) {
   });
 }
 
+function getCategoryLabel(category: "news" | "storia" | "lore") {
+  return category === "storia" || category === "lore" ? "Storia" : "News";
+}
+
 onMounted(() => {
   if (isAuthenticated.value) loadNews();
 });
@@ -414,6 +431,14 @@ onMounted(() => {
               ></label
             >
             <textarea v-model="form.content" class="admin-textarea" rows="8" />
+          </div>
+
+          <div class="form-row">
+            <label>Categoria</label>
+            <select v-model="form.category" class="admin-input">
+              <option value="news">News</option>
+              <option value="storia">Storia</option>
+            </select>
           </div>
 
           <div class="form-row">
@@ -582,6 +607,16 @@ onMounted(() => {
                   :class="item.isPublished ? 'badge-pub' : 'badge-draft'"
                 >
                   {{ item.isPublished ? "Pubblicata" : "Bozza" }}
+                </span>
+                <span
+                  class="news-badge"
+                  :class="
+                    item.category === 'storia' || item.category === 'lore'
+                      ? 'badge-storia'
+                      : 'badge-news'
+                  "
+                >
+                  {{ getCategoryLabel(item.category || "news") }}
                 </span>
                 <span v-if="item.isFeatured" class="news-badge badge-featured">
                   Evidenza
@@ -946,6 +981,18 @@ onMounted(() => {
   background: rgba(255, 190, 92, 0.12);
   color: #ffd892;
   border: 1px solid rgba(255, 205, 120, 0.25);
+}
+
+.badge-news {
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--accent-cyan, #00e5ff);
+  border: 1px solid rgba(0, 229, 255, 0.28);
+}
+
+.badge-storia {
+  background: rgba(0, 255, 150, 0.12);
+  color: #00ff96;
+  border: 1px solid rgba(0, 255, 150, 0.28);
 }
 
 .delete-confirm-text {

@@ -2,12 +2,25 @@ const express = require( 'express' );
 const sqlite3 = require( 'sqlite3' ).verbose();
 const bcrypt = require( 'bcryptjs' );
 const jwt = require( 'jsonwebtoken' );
+const path = require( 'path' );
+const fs = require( 'fs' );
 
 const router = express.Router();
 const SECRET_KEY = process.env.JWT_SECRET || 'punto_zero_super_secret';
 
 // Inizializza Database SQLite locale per gli utenti
-const db = new sqlite3.Database( './users.sqlite', ( err ) => {
+const USERS_DB_PATH = path.join( __dirname, 'users.sqlite' );
+const LEGACY_USERS_DB_PATH = path.resolve( process.cwd(), 'users.sqlite' );
+
+if ( !fs.existsSync( USERS_DB_PATH ) && fs.existsSync( LEGACY_USERS_DB_PATH ) ) {
+  try {
+    fs.copyFileSync( LEGACY_USERS_DB_PATH, USERS_DB_PATH );
+  } catch ( copyErr ) {
+    console.error( 'Errore migrazione DB utenti legacy:', copyErr );
+  }
+}
+
+const db = new sqlite3.Database( USERS_DB_PATH, ( err ) => {
   if ( err ) console.error( 'Errore DB Utenti:', err );
   else {
     db.run( `CREATE TABLE IF NOT EXISTS users (
@@ -87,18 +100,18 @@ router.post( '/login', ( req, res ) => {
 } );
 
 // Endpoint: Cerca Utenti
-router.get('/search', (req, res) => {
+router.get( '/search', ( req, res ) => {
   const { q, current } = req.query;
-  if (!q) return res.json([]);
-  
-  db.all(`SELECT username FROM users WHERE username LIKE ? AND username != ? LIMIT 10`, 
-    [`%${q}%`, current], 
-    (err, rows) => {
-      if (err) return res.status(500).json({ error: 'Errore durante la ricerca neurale.' });
-      res.json(rows);
+  if ( !q ) return res.json( [] );
+
+  db.all( `SELECT username FROM users WHERE username LIKE ? AND username != ? LIMIT 10`,
+    [`%${q}%`, current],
+    ( err, rows ) => {
+      if ( err ) return res.status( 500 ).json( { error: 'Errore durante la ricerca neurale.' } );
+      res.json( rows );
     }
   );
-});
+} );
 
 // Endpoint: Elimina Account
 router.delete( '/account/:username', ( req, res ) => {

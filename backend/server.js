@@ -97,6 +97,15 @@ const uploadNewsImage = multer( {
 } );
 
 function normalizeNews( news ) {
+  const rawCategory = typeof news.category === 'string'
+    ? news.category.trim().toLowerCase()
+    : '';
+
+  const normalizedCategory =
+    rawCategory === 'storia' || rawCategory === 'lore'
+      ? 'storia'
+      : 'news';
+
   const parsedFeaturedOrder = Number.isFinite( Number( news.featuredOrder ) )
     ? Number( news.featuredOrder )
     : null;
@@ -107,6 +116,7 @@ function normalizeNews( news ) {
     title: news.title,
     summary: news.summary,
     content: news.content,
+    category: normalizedCategory,
     imageUrl: news.imageUrl || '',
     sourceUrl: news.sourceUrl || '',
     publishedAt: news.publishedAt,
@@ -195,11 +205,19 @@ app.get( '/api/cards', async ( req, res ) => {
 
 app.get( '/api/news', ( req, res ) => {
   try {
-    const { limit } = req.query;
+    const { limit, category } = req.query;
     const parsedLimit = parseInt( limit, 10 );
+    const normalizedCategory =
+      typeof category === 'string'
+        ? ( category.trim().toLowerCase() === 'storia' || category.trim().toLowerCase() === 'lore'
+          ? 'storia'
+          : category.trim().toLowerCase() === 'news'
+            ? 'news'
+            : null )
+        : null;
 
     let news = sortNewsItems(
-      readNews().filter( item => item.isPublished )
+      readNews().filter( item => item.isPublished && ( !normalizedCategory || item.category === normalizedCategory ) )
     );
 
     if ( Number.isFinite( parsedLimit ) && parsedLimit > 0 ) {
@@ -262,7 +280,7 @@ app.post( '/api/admin/news/upload-image', requireAdmin, ( req, res ) => {
 
 app.post( '/api/admin/news', requireAdmin, ( req, res ) => {
   try {
-    const { slug, title, summary, content, imageUrl, sourceUrl, publishedAt, isPublished, isFeatured, featuredOrder } = req.body;
+    const { slug, title, summary, content, category, imageUrl, sourceUrl, publishedAt, isPublished, isFeatured, featuredOrder } = req.body;
 
     if ( !slug || !title || !summary || !content ) {
       return res.status( 400 ).json( { error: 'Campi obbligatori: slug, title, summary, content.' } );
@@ -279,6 +297,7 @@ app.post( '/api/admin/news', requireAdmin, ( req, res ) => {
       title: title.trim(),
       summary: summary.trim(),
       content: content.trim(),
+      category,
       imageUrl: ( imageUrl || '' ).trim(),
       sourceUrl: ( sourceUrl || '' ).trim(),
       publishedAt: publishedAt || new Date().toISOString(),

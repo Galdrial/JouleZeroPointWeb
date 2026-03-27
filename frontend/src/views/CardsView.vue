@@ -461,19 +461,19 @@ const vClickOutside = {
   max-width: 1400px;
   margin: 0 auto;
   text-align: center;
-  padding: 2rem;
-  padding-bottom: 4rem;
+  padding: clamp(1rem, 3vw, 2rem);
+  padding-bottom: clamp(2rem, 6vw, 4rem);
   min-height: calc(100vh - 120px);
 }
 .cards-view h1 {
-  font-size: 3.5rem;
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-family: var(--font-display);
-  letter-spacing: 0.5rem;
+  letter-spacing: clamp(0.18rem, 1vw, 0.5rem);
   background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 3.5rem;
+  margin-bottom: clamp(2rem, 5vw, 3.5rem);
   text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
 }
 .subtitle {
@@ -487,26 +487,11 @@ const vClickOutside = {
 }
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
   width: 100%;
   max-width: 1400px;
   margin: 0 auto 3rem auto;
-}
-@media (max-width: 1200px) {
-  .cards-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 900px) {
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 600px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
 }
 .card-item {
   padding: 1rem;
@@ -543,27 +528,32 @@ const vClickOutside = {
   display: flex;
   justify-content: center;
   align-items: stretch;
-  gap: 1rem;
-  max-width: 800px;
-  margin: 1rem auto 4rem auto;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 2vw, 1rem);
+  max-width: 900px;
+  margin: 1rem auto clamp(2rem, 6vw, 4rem) auto;
+  padding-inline: clamp(0rem, 1vw, 0.5rem);
 }
 .search-box {
   position: relative;
-  flex-grow: 1;
+  flex: 1 1 320px;
+  min-width: min(100%, 280px);
 }
 .search-icon {
   display: none;
 }
 .search-input {
   padding-left: 1.5rem !important;
-  font-size: 1.1rem;
-  height: 50px;
+  font-size: clamp(1rem, 2vw, 1.1rem);
+  height: var(--control-height);
   width: 100%;
 }
 .toggle-filters-btn {
-  height: 50px;
-  padding: 0 1.5rem;
+  height: var(--control-height);
+  padding: 0 clamp(1rem, 3vw, 1.5rem);
   white-space: nowrap;
+  flex: 0 1 220px;
+  width: min(100%, 260px);
 }
 
 .fade-slide-enter-active,
@@ -577,45 +567,27 @@ const vClickOutside = {
 }
 
 .filter-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  padding: 1.5rem;
-  margin: -4rem auto 4rem auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 170px), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  padding: clamp(1rem, 2.5vw, 1.5rem);
+  margin: calc(clamp(2rem, 6vw, 4rem) * -1) auto clamp(2rem, 6vw, 4rem) auto;
   max-width: 1200px;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
-  align-items: flex-end;
+  align-items: stretch;
   border-radius: 12px;
   border: 1px solid rgba(212, 175, 55, 0.22);
   position: relative;
   z-index: 100;
   text-align: left;
 }
-
-@media (max-width: 1024px) {
-  .filter-group {
-    min-width: calc(50% - 0.5rem);
-  }
-}
-@media (max-width: 600px) {
-  .search-container {
-    flex-direction: column;
-    padding: 0 0.5rem;
-  }
-  .toggle-filters-btn {
-    width: 100%;
-  }
-  .filter-group {
-    min-width: 100%;
-  }
-}
 .filter-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   flex: 1;
-  min-width: 150px;
+  min-width: 0;
 }
 .filter-group label {
   font-family: var(--font-display);
@@ -815,11 +787,6 @@ const vClickOutside = {
   }
 }
 
-@media (max-width: 768px) {
-  .modal-body {
-    grid-template-columns: 1fr;
-  }
-}
 .modal-role {
   font-size: 0.9rem;
   color: var(--text-muted);
@@ -831,20 +798,21 @@ const vClickOutside = {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
-  margin: 4rem 0;
-  padding: 1.5rem;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 3vw, 2rem);
+  margin: clamp(2rem, 6vw, 4rem) 0;
+  padding: clamp(1rem, 2.5vw, 1.5rem) clamp(0.5rem, 2vw, 1.5rem);
 }
 .page-info {
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: clamp(0.4rem, 1vw, 0.8rem);
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: clamp(0.75rem, 2vw, 0.9rem);
   letter-spacing: 1px;
 }
 .current-page {
-  font-size: 1.4rem;
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
   color: #fff;
   text-shadow: 0 0 10px var(--accent-cyan);
   padding: 0 0.5rem;
@@ -858,17 +826,5 @@ const vClickOutside = {
   width: 0.85rem;
   height: 0.85rem;
   flex: 0 0 auto;
-}
-
-@media (max-width: 560px) {
-  .pagination-controls {
-    gap: 1rem;
-    padding: 1rem 0.5rem;
-  }
-
-  .page-info {
-    font-size: 0.75rem;
-    gap: 0.4rem;
-  }
 }
 </style>

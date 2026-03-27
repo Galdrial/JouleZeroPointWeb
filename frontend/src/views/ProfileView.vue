@@ -235,7 +235,7 @@ const goToDeck = (deckId: number) => {
 
 <style scoped>
 .profile-page {
-  padding: 4rem 2rem;
+  padding: clamp(1rem, 4vw, 4rem) clamp(0.5rem, 3vw, 2rem);
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -243,16 +243,17 @@ const goToDeck = (deckId: number) => {
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 3rem;
-  padding: 3rem;
-  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  gap: clamp(1.25rem, 4vw, 3rem);
+  padding: clamp(1.25rem, 4vw, 3rem);
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
   border-left: 5px solid var(--accent-cyan);
 }
 
 .cyber-avatar {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: clamp(96px, 18vw, 150px);
+  height: clamp(96px, 18vw, 150px);
   border-radius: 50%;
   background: rgba(212, 175, 55, 0.08);
   border: 2px solid var(--accent-cyan);
@@ -288,23 +289,26 @@ const goToDeck = (deckId: number) => {
 
 .avatar-symbol {
   font-family: var(--font-display);
-  font-size: 5rem;
+  font-size: clamp(3rem, 7vw, 5rem);
   color: var(--accent-cyan);
   text-shadow: 0 0 20px var(--accent-cyan);
 }
 
 .username-title {
-  font-size: 4rem;
+  font-size: clamp(2rem, 6vw, 4rem);
   margin: 0;
   text-transform: uppercase;
   color: #fff;
   text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+  line-height: 1.05;
+  word-break: break-word;
 }
 
 .user-badges {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  flex-wrap: wrap;
 }
 
 .badge {
@@ -323,13 +327,13 @@ const goToDeck = (deckId: number) => {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-  margin-bottom: 4rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
+  margin-bottom: clamp(2rem, 5vw, 4rem);
 }
 
 .stat-card {
-  padding: 2rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -343,7 +347,7 @@ const goToDeck = (deckId: number) => {
 }
 
 .stat-value {
-  font-size: 3.5rem;
+  font-size: clamp(2.4rem, 6vw, 3.5rem);
   font-family: var(--font-display);
   font-weight: 900;
   color: #fff;
@@ -356,8 +360,8 @@ const goToDeck = (deckId: number) => {
 }
 
 .cyber-subtitle {
-  font-size: 1.2rem;
-  letter-spacing: 5px;
+  font-size: clamp(0.95rem, 2.5vw, 1.2rem);
+  letter-spacing: clamp(2px, 0.6vw, 5px);
   color: var(--accent-cyan);
   margin: 0;
 }
@@ -369,8 +373,9 @@ const goToDeck = (deckId: number) => {
 .section-header {
   display: flex;
   align-items: center;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: clamp(0.75rem, 2vw, 2rem);
+  margin-bottom: clamp(1rem, 3vw, 2rem);
+  flex-wrap: wrap;
 }
 
 .header-line {
@@ -385,13 +390,13 @@ const goToDeck = (deckId: number) => {
 
 .decks-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem;
-  margin-bottom: 4rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
+  margin-bottom: clamp(2rem, 5vw, 4rem);
 }
 
 .deck-card {
-  padding: 1.5rem;
+  padding: clamp(1rem, 2.5vw, 1.5rem);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -415,7 +420,7 @@ const goToDeck = (deckId: number) => {
 }
 
 .deck-hero-container {
-  height: 200px;
+  height: clamp(180px, 24vw, 200px);
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
@@ -489,14 +494,16 @@ const goToDeck = (deckId: number) => {
 }
 
 .danger-zone {
-  margin-top: 4rem;
+  margin-top: clamp(2rem, 5vw, 4rem);
 }
 
 .danger-panel {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 2.5rem;
+  flex-wrap: wrap;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(1.25rem, 3vw, 2.5rem);
   border: 1px solid rgba(255, 0, 80, 0.3);
   background: rgba(255, 0, 80, 0.02);
 }
@@ -519,77 +526,21 @@ const goToDeck = (deckId: number) => {
 
 .modal-actions {
   display: flex;
-  gap: 1.5rem;
-  margin-top: 2.5rem;
-}
-
-@media (max-width: 900px) {
-  .stats-grid,
-  .decks-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .profile-header {
-    flex-direction: column;
-    text-align: center;
-    padding: 2rem;
-  }
-
-  .danger-panel {
-    flex-direction: column;
-    gap: 2rem;
-    text-align: center;
-  }
+  gap: clamp(1rem, 3vw, 1.5rem);
+  margin-top: clamp(1.5rem, 4vw, 2.5rem);
+  flex-wrap: wrap;
 }
 
 @media (max-width: 640px) {
-  .profile-page {
-    padding: 1rem 0.5rem;
-  }
-
   .profile-header {
-    gap: 1.25rem;
-    padding: 1.25rem 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .cyber-avatar {
-    width: 96px;
-    height: 96px;
-  }
-
-  .avatar-symbol {
-    font-size: 3rem;
-  }
-
-  .username-title {
-    font-size: 2rem;
-    line-height: 1.05;
-    word-break: break-word;
+    text-align: center;
+    justify-content: center;
   }
 
   .user-info,
   .user-badges {
     width: 100%;
     justify-content: center;
-  }
-
-  .stats-grid {
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .stat-card {
-    padding: 1.25rem;
-  }
-
-  .stat-value {
-    font-size: 2.4rem;
-  }
-
-  .cyber-subtitle {
-    font-size: 0.95rem;
-    letter-spacing: 2px;
   }
 
   .section-header {
@@ -602,21 +553,8 @@ const goToDeck = (deckId: number) => {
     width: 100%;
   }
 
-  .decks-grid {
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .deck-card {
-    padding: 1rem;
-  }
-
   .deck-name {
     font-size: 1rem;
-  }
-
-  .deck-hero-container {
-    height: 180px;
   }
 
   .caption-name {
@@ -626,15 +564,6 @@ const goToDeck = (deckId: number) => {
   .deck-footer {
     display: flex;
     justify-content: flex-end;
-  }
-
-  .danger-zone {
-    margin-top: 2rem;
-  }
-
-  .danger-panel {
-    padding: 1.25rem 1rem;
-    gap: 1.25rem;
   }
 
   .danger-panel .cyber-btn {

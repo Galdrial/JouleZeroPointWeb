@@ -80,6 +80,9 @@ watch(
         <RouterLink to="/news" class="cyber-btn btn-secondary nav-item"
           >News</RouterLink
         >
+        <RouterLink to="/storia" class="cyber-btn btn-secondary nav-item"
+          >Storia</RouterLink
+        >
         <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
           >Mazzi pubblici</RouterLink
         >
@@ -379,10 +382,10 @@ watch(
 /* Float Trigger Styles */
 .terminal-trigger {
   position: fixed;
-  bottom: max(1.2rem, env(safe-area-inset-bottom));
-  right: max(1.2rem, env(safe-area-inset-right));
-  width: 3.5rem;
-  height: 3.5rem;
+  bottom: max(clamp(0.9rem, 2vw, 1.2rem), env(safe-area-inset-bottom));
+  right: max(clamp(0.9rem, 2vw, 1.2rem), env(safe-area-inset-right));
+  width: clamp(4rem, 8vw, 4.5rem);
+  height: clamp(4rem, 8vw, 4.5rem);
   border-radius: 50%;
   background: rgba(10, 15, 20, 0.8);
   border: 1px solid var(--accent-cyan);
@@ -398,8 +401,8 @@ watch(
 }
 
 .terminal-trigger-logo {
-  width: 3.5rem;
-  height: 3.5rem;
+  width: 88%;
+  height: 88%;
   object-fit: contain;
   transition: all 0.3s ease;
   z-index: 2;
@@ -486,10 +489,6 @@ watch(
 
 /* ── Mobile nav drawer ── */
 @media (max-width: 768px) {
-  .glass-navbar {
-    padding: 0.8rem 1.2rem;
-  }
-
   .hamburger {
     display: flex;
   }
@@ -544,22 +543,6 @@ watch(
   .logout-btn {
     margin-left: 0 !important;
     margin-top: 0.4rem;
-  }
-
-  .terminal-trigger {
-    bottom: max(0.9rem, env(safe-area-inset-bottom));
-    right: max(0.9rem, env(safe-area-inset-right));
-    width: 4rem;
-    height: 4rem;
-  }
-
-  .terminal-trigger.active {
-    transform: scale(1.03) rotate(6deg);
-  }
-
-  .terminal-trigger-logo {
-    width: 4rem;
-    height: 4rem;
   }
 }
 
