@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
+import logo2 from "./assets/logo2.png";
 import TerminalOracle from "./components/TerminalOracle.vue";
 
 const router = useRouter();
@@ -214,25 +215,11 @@ watch(
       @click.stop="isTerminalOpen = !isTerminalOpen"
       title="Terminale Punto Zero"
     >
-      <svg
-        class="icon-svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M12 2C6.477 2 2 6.477 2 12C2 17.523 6.477 22 12 22C17.523 22 22 17.523 22 12C22 6.477 17.523 22 12 2Z"
-          fill="currentColor"
-          opacity="0.1"
-        />
-        <path
-          d="M7 8L3 12L7 16M11 16H15M17 8L21 12L17 16"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
+      <img
+        :src="logo2"
+        alt="Terminale Punto Zero"
+        class="terminal-trigger-logo"
+      />
       <span class="pulse-ring"></span>
     </button>
 
@@ -410,12 +397,13 @@ watch(
   transform-origin: center;
 }
 
-.terminal-trigger .icon-svg {
-  width: 1.8rem;
-  height: 1.8rem;
-  color: var(--accent-cyan);
+.terminal-trigger-logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: contain;
   transition: all 0.3s ease;
   z-index: 2;
+  filter: drop-shadow(0 0 6px rgba(254, 220, 104, 0.35));
 }
 
 @media (hover: hover) and (pointer: fine) {
@@ -432,9 +420,8 @@ watch(
   transform: scale(1.06) rotate(6deg);
 }
 
-.terminal-trigger.active .icon-svg {
-  color: var(--accent-magenta);
-  filter: drop-shadow(0 0 5px var(--accent-magenta));
+.terminal-trigger.active .terminal-trigger-logo {
+  filter: drop-shadow(0 0 6px var(--accent-magenta));
 }
 
 .pulse-ring {
@@ -562,17 +549,17 @@ watch(
   .terminal-trigger {
     bottom: max(0.9rem, env(safe-area-inset-bottom));
     right: max(0.9rem, env(safe-area-inset-right));
-    width: 3rem;
-    height: 3rem;
+    width: 4rem;
+    height: 4rem;
   }
 
   .terminal-trigger.active {
-    transform: scale(1.03);
+    transform: scale(1.03) rotate(6deg);
   }
 
-  .terminal-trigger .icon-svg {
-    width: 1.5rem;
-    height: 1.5rem;
+  .terminal-trigger-logo {
+    width: 4rem;
+    height: 4rem;
   }
 }
 

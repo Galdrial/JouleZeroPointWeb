@@ -662,28 +662,28 @@ onMounted(async () => {
   .hero-headline {
     font-size: 1.5rem !important;
     line-height: 1.18;
-    transform: translateY(-3rem);
+    transform: translateY(-4rem);
   }
 
   .hero-subtitle {
     font-size: clamp(1rem, 2.9vw, 0.95rem);
     line-height: 1.35;
     margin: 0;
-    transform: translateY(-3rem);
+    transform: translateY(-4rem);
   }
 
   .hero-actions {
     width: 100%;
     gap: 0.85rem;
     margin-top: 0;
-    transform: translateY(-2rem);
+    transform: translateY(-3rem);
   }
 
   .hero-meta {
     width: 100%;
     margin-top: 0;
     align-items: center;
-    transform: translateY(0.2rem);
+    transform: translateY(-0.4rem);
   }
 
   .hero-status {
