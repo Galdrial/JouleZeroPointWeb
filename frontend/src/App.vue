@@ -246,6 +246,13 @@ watch(
   height: fit-content;
 }
 
+.auth-btn,
+.auth-btn:hover,
+.auth-btn.router-link-active {
+  color: #0a0e1a !important;
+  text-shadow: none !important;
+}
+
 .user-btn {
   border-color: var(--accent-cyan) !important;
   color: var(--accent-cyan) !important;

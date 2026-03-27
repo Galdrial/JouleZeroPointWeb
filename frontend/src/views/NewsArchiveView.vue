@@ -1,13 +1,18 @@
 <script setup lang="ts">
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import {
+  getNewsCategoryLabel,
+  isStoryCategory,
+  type NewsCategory,
+} from "../utils/newsCategory";
 
 type NewsPreview = {
   id: number;
   slug: string;
   title: string;
   summary: string;
-  category: "news" | "storia" | "lore";
+  category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -25,9 +30,6 @@ const formatNewsDate = (value: string) =>
     month: "long",
     year: "numeric",
   });
-
-const getNewsCategoryLabel = (category?: "news" | "storia" | "lore") =>
-  category === "storia" || category === "lore" ? "STORIA" : "NEWS";
 
 onMounted(async () => {
   try {
@@ -90,12 +92,12 @@ onMounted(async () => {
           <div
             class="archive-category-badge"
             :class="
-              news.category === 'storia' || news.category === 'lore'
+              isStoryCategory(news.category)
                 ? 'archive-category-badge--lore'
                 : 'archive-category-badge--news'
             "
           >
-            {{ getNewsCategoryLabel(news.category) }}
+            {{ getNewsCategoryLabel(news.category, { uppercase: true }) }}
           </div>
           <div v-if="news.isFeatured" class="archive-badge">IN EVIDENZA</div>
         </div>

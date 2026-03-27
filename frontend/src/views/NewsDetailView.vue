@@ -2,6 +2,11 @@
 import axios from "axios";
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
+import {
+  getNewsCategoryLabel,
+  isStoryCategory,
+  type NewsCategory,
+} from "../utils/newsCategory";
 
 type NewsDetail = {
   id: number;
@@ -9,7 +14,7 @@ type NewsDetail = {
   title: string;
   summary: string;
   content: string;
-  category: "news" | "storia" | "lore";
+  category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -28,9 +33,6 @@ const formatNewsDate = (value: string) =>
     month: "long",
     year: "numeric",
   });
-
-const getNewsCategoryLabel = (category?: "news" | "storia" | "lore") =>
-  category === "storia" || category === "lore" ? "Storia" : "News";
 
 const paragraphs = computed(() =>
   (news.value?.content || "")
@@ -67,7 +69,7 @@ onMounted(async () => {
         <div
           class="news-category-badge"
           :class="
-            news.category === 'storia' || news.category === 'lore'
+            isStoryCategory(news.category)
               ? 'news-category-badge--lore'
               : 'news-category-badge--news'
           "
@@ -110,14 +112,10 @@ onMounted(async () => {
             <span>Torna alla Home</span>
           </RouterLink>
           <RouterLink
-            :to="
-              news.category === 'storia' || news.category === 'lore'
-                ? '/storia'
-                : '/news'
-            "
+            :to="isStoryCategory(news.category) ? '/storia' : '/news'"
             class="news-archive-link"
             >{{
-              news.category === "storia" || news.category === "lore"
+              isStoryCategory(news.category)
                 ? "Archivio storia"
                 : "Archivio news"
             }}</RouterLink

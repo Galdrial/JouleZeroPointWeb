@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import { type NewsCategory } from "../utils/newsCategory";
 
 type StoryPreview = {
   id: number;
   slug: string;
   title: string;
   summary: string;
-  category: "news" | "storia" | "lore";
+  category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;

@@ -1286,26 +1286,27 @@ onMounted(async () => {
 }
 
 .small-delete.cyber-btn.mini {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 32px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
   font-size: 1.2rem;
-  border-radius: 3px;
-  background: rgba(255, 159, 28, 0.14);
+  font-weight: 900;
+  border-radius: 0;
+  background: var(--accent-magenta);
   border: 1px solid var(--accent-magenta);
-  color: var(--accent-magenta);
+  color: #fff;
   transition: all 0.3s;
   cursor: pointer;
 }
 
 .small-delete.cyber-btn.mini:hover {
-  background: var(--accent-magenta);
+  background: #ff1f55;
   color: #fff;
-  box-shadow: 0 0 15px var(--accent-magenta);
+  box-shadow: 0 0 10px currentColor;
   transform: scale(1.1);
 }
 
@@ -1764,12 +1765,8 @@ onMounted(async () => {
 }
 
 .small-delete {
-  opacity: 0;
-  transition: 0.3s;
-}
-
-.deck-card:hover .small-delete {
   opacity: 1;
+  transition: 0.3s;
 }
 
 .deck-stats-bar {
@@ -1813,10 +1810,6 @@ onMounted(async () => {
 .warning {
   color: var(--accent-magenta);
   text-shadow: 0 0 10px var(--accent-magenta);
-}
-
-.small-delete:hover {
-  transform: scale(1.2);
 }
 
 /* Alert Modal Styles */

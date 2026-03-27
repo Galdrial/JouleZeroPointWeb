@@ -2,13 +2,18 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import heroImg from "../assets/hero.png";
+import {
+  getNewsCategoryLabel,
+  isStoryCategory,
+  type NewsCategory,
+} from "../utils/newsCategory";
 
 type NewsPreview = {
   id: number;
   slug: string;
   title: string;
   summary: string;
-  category: "news" | "storia" | "lore";
+  category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -29,9 +34,6 @@ const formatNewsDate = (value: string) =>
     month: "long",
     year: "numeric",
   });
-
-const getNewsCategoryLabel = (category?: "news" | "storia" | "lore") =>
-  category === "storia" || category === "lore" ? "STORIA" : "NEWS";
 
 const particleStyles = Array.from({ length: 150 }, () => ({
   left: `${Math.random() * 100}%`,
@@ -97,15 +99,7 @@ onMounted(async () => {
             >
               GIOCA SU TABLETOP
             </a>
-            <RouterLink
-              v-if="isAuthenticated"
-              to="/public-decks"
-              class="cyber-btn btn-secondary hero-btn hero-btn-community"
-            >
-              ESPLORA I MAZZI PUBBLICI
-            </RouterLink>
             <a
-              v-else
               :href="discordInviteUrl"
               class="cyber-btn btn-secondary hero-btn hero-btn-community"
               target="_blank"
@@ -223,12 +217,12 @@ onMounted(async () => {
             <div
               class="news-category-badge"
               :class="
-                news.category === 'storia' || news.category === 'lore'
+                isStoryCategory(news.category)
                   ? 'news-category-badge--lore'
                   : 'news-category-badge--news'
               "
             >
-              {{ getNewsCategoryLabel(news.category) }}
+              {{ getNewsCategoryLabel(news.category, { uppercase: true }) }}
             </div>
             <div v-if="news.isFeatured" class="news-badge">IN EVIDENZA</div>
           </div>

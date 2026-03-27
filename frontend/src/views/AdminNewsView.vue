@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import axios from "axios";
 import { computed, onMounted, reactive, ref, watch } from "vue";
+import {
+  getNewsCategoryLabel,
+  isStoryCategory,
+  normalizeNewsCategory,
+  type NewsCategory,
+} from "../utils/newsCategory";
 
 type NewsItem = {
   id: number;
@@ -8,7 +14,7 @@ type NewsItem = {
   title: string;
   summary: string;
   content: string;
-  category: "news" | "storia" | "lore";
+  category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
@@ -65,10 +71,7 @@ async function loadNews() {
     });
     newsList.value = res.data.map((item: NewsItem) => ({
       ...item,
-      category:
-        item.category === "storia" || item.category === "lore"
-          ? "storia"
-          : "news",
+      category: normalizeNewsCategory(item.category),
     }));
   } catch (e: any) {
     if (e?.response?.status === 401) {
@@ -212,10 +215,7 @@ function openEdit(item: NewsItem) {
     title: item.title,
     summary: item.summary,
     content: item.content,
-    category:
-      item.category === "storia" || item.category === "lore"
-        ? "storia"
-        : "news",
+    category: normalizeNewsCategory(item.category),
     imageUrl: item.imageUrl,
     sourceUrl: item.sourceUrl,
     publishedAt: item.publishedAt.slice(0, 16),
@@ -331,10 +331,6 @@ function formatDate(value: string) {
     month: "short",
     year: "numeric",
   });
-}
-
-function getCategoryLabel(category: "news" | "storia" | "lore") {
-  return category === "storia" || category === "lore" ? "Storia" : "News";
 }
 
 onMounted(() => {
@@ -611,12 +607,12 @@ onMounted(() => {
                 <span
                   class="news-badge"
                   :class="
-                    item.category === 'storia' || item.category === 'lore'
+                    isStoryCategory(item.category)
                       ? 'badge-storia'
                       : 'badge-news'
                   "
                 >
-                  {{ getCategoryLabel(item.category || "news") }}
+                  {{ getNewsCategoryLabel(item.category || "news") }}
                 </span>
                 <span v-if="item.isFeatured" class="news-badge badge-featured">
                   Evidenza
