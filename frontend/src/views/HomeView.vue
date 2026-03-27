@@ -687,7 +687,7 @@ onMounted(async () => {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    align-items: stretch;
+    align-items: center;
     gap: clamp(0.95rem, 3vw, 1.2rem);
     padding: clamp(1rem, 3vw, 1.2rem) clamp(0.9rem, 3vw, 1rem)
       calc(clamp(1rem, 3vw, 1.2rem) + env(safe-area-inset-bottom));
@@ -697,12 +697,14 @@ onMounted(async () => {
       rgba(4, 8, 14, 0.64) 38%,
       rgba(4, 8, 14, 0.88) 100%
     );
+    text-align: center;
   }
 
   .hero-headline {
     font-size: clamp(1.35rem, 5.2vw, 1.8rem) !important;
     line-height: 1.18;
     transform: translateY(-3.2rem);
+    width: 100%;
   }
 
   .hero-subtitle {
@@ -710,12 +712,13 @@ onMounted(async () => {
     line-height: 1.35;
     margin: 0;
     transform: translateY(-3.2rem);
+    width: 100%;
   }
 
   .hero-actions {
     width: 100%;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     gap: clamp(0.75rem, 2.5vw, 0.9rem);
     margin-top: 0;
     transform: translateY(-2.4rem);

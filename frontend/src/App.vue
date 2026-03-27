@@ -28,6 +28,15 @@ const isTerminalOpen = ref(false);
 const isMenuOpen = ref(false);
 const hideUI = computed(() => route.meta.hideUI === true);
 
+// Previene lo scrolling della pagina quando il menu mobile è aperto
+watch(isMenuOpen, (val) => {
+  if (val) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+});
+
 onMounted(() => {
   if (route.query.terminal === "1") {
     isTerminalOpen.value = true;
@@ -74,29 +83,54 @@ watch(
       </Transition>
 
       <nav :class="{ 'nav--open': isMenuOpen }">
-        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
+        <RouterLink
+          to="/"
+          class="cyber-btn btn-secondary nav-item"
+          @click="isMenuOpen = false"
+          >Home</RouterLink
+        >
+        <RouterLink
+          to="/cards"
+          class="cyber-btn btn-secondary nav-item"
+          @click="isMenuOpen = false"
           >Database</RouterLink
         >
-        <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item"
+        <RouterLink
+          to="/come-iniziare"
+          class="cyber-btn btn-secondary nav-item"
+          @click="isMenuOpen = false"
           >Come iniziare</RouterLink
         >
-        <RouterLink to="/news" class="cyber-btn btn-secondary nav-item"
+        <RouterLink
+          to="/news"
+          class="cyber-btn btn-secondary nav-item"
+          @click="isMenuOpen = false"
           >News</RouterLink
         >
-        <RouterLink to="/storia" class="cyber-btn btn-secondary nav-item"
+        <RouterLink
+          to="/storia"
+          class="cyber-btn btn-secondary nav-item"
+          @click="isMenuOpen = false"
           >Storia</RouterLink
         >
-        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
+        <RouterLink
+          to="/public-decks"
+          class="cyber-btn btn-secondary nav-item"
+          @click="isMenuOpen = false"
           >Mazzi pubblici</RouterLink
         >
 
         <template v-if="username">
-          <RouterLink to="/deckbuilder" class="cyber-btn btn-secondary nav-item"
+          <RouterLink
+            to="/deckbuilder"
+            class="cyber-btn btn-secondary nav-item"
+            @click="isMenuOpen = false"
             >I miei mazzi</RouterLink
           >
           <RouterLink
             to="/profile"
             class="cyber-btn btn-secondary nav-item user-btn"
+            @click="isMenuOpen = false"
             >{{ username }}</RouterLink
           >
           <button
@@ -110,6 +144,7 @@ watch(
           <RouterLink
             to="/login"
             class="cyber-btn btn-primary nav-item auth-btn"
+            @click="isMenuOpen = false"
             >Accedi</RouterLink
           >
         </template>
@@ -507,32 +542,32 @@ watch(
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(2px);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
     z-index: 150;
+    cursor: pointer;
   }
 
   nav {
     position: fixed;
     top: 0;
     right: 0;
-    width: min(280px, 82vw);
+    width: 100vw;
     height: 100dvh;
-    background: rgba(10, 15, 22, 0.97);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-left: 1px solid var(--glass-border);
+    background: #0a0f16;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-left: none;
     flex-direction: column;
-    align-items: stretch;
-    padding: 5rem 1.2rem 2rem;
-    gap: 0.4rem;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 6rem 2rem 4rem;
+    gap: 1.2rem;
     z-index: 200;
-    transform: translateX(110%);
+    transform: translateX(100%);
     visibility: hidden;
     pointer-events: none;
-    transition:
-      transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
-      visibility 0.32s;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
   }
 
@@ -543,11 +578,28 @@ watch(
   }
 
   .nav-item {
-    width: 100% !important;
+    width: min(100%, 320px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 60px !important;
     text-align: center !important;
-    clip-path: none !important;
-    border-radius: 6px !important;
-    padding: 0.7rem 1rem !important;
+    padding: 0.5rem 1rem !important;
+    margin-bottom: 0px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    font-size: 1.1rem !important;
+  }
+
+  .nav-item.btn-primary {
+    background: var(--accent-cyan) !important;
+    color: #000 !important;
+  }
+
+  .nav-item.user-btn {
+    border-color: var(--accent-cyan) !important;
+    color: var(--accent-cyan) !important;
+    background: rgba(254, 220, 104, 0.1) !important;
   }
 
   .logout-btn {
