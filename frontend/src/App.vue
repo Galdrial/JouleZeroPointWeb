@@ -85,7 +85,7 @@ watch(
       <nav :class="{ 'nav--open': isMenuOpen }">
         <RouterLink
           to="/"
-          class="cyber-btn btn-secondary nav-item"
+          class="cyber-btn btn-secondary nav-item nav-home-link"
           @click="isMenuOpen = false"
           >Home</RouterLink
         >
@@ -121,12 +121,6 @@ watch(
         >
 
         <template v-if="username">
-          <RouterLink
-            to="/deckbuilder"
-            class="cyber-btn btn-secondary nav-item"
-            @click="isMenuOpen = false"
-            >I miei mazzi</RouterLink
-          >
           <RouterLink
             to="/profile"
             class="cyber-btn btn-secondary nav-item user-btn"
@@ -278,6 +272,12 @@ watch(
 
 <style scoped>
 /* Nav Customizations */
+@media (min-width: 1691px) {
+  .nav-home-link {
+    display: none;
+  }
+}
+
 .nav-item {
   padding: 0.5rem 1.5rem !important;
   font-size: 0.8rem !important;
