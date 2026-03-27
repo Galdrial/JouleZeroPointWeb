@@ -53,6 +53,9 @@ watch(
         <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
           >Database</RouterLink
         >
+        <RouterLink to="/news" class="cyber-btn btn-secondary nav-item"
+          >News</RouterLink
+        >
         <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
           >Mazzi pubblici</RouterLink
         >
