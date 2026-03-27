@@ -55,6 +55,19 @@ const sortOptions = [
   { value: "imports", label: "Più importati" },
 ] as const;
 
+const selectedCostruttoreLabel = computed(() => {
+  if (filterCostruttore.value === "") return "COSTRUTTORE";
+  return (
+    costruttori.value
+      .find((costruttore) => costruttore.id === filterCostruttore.value)
+      ?.name.split(",")[0] || "COSTRUTTORE"
+  );
+});
+
+const selectedSortLabel = computed(
+  () => sortOptions.find((option) => option.value === sortBy.value)?.label,
+);
+
 const totalPages = computed(() => Math.ceil(totalDecks.value / limit));
 
 const vClickOutside = {
@@ -248,11 +261,7 @@ onBeforeUnmount(() => {
           class="dropdown-trigger"
           @click.stop="isCostruttoreDropdownOpen = !isCostruttoreDropdownOpen"
         >
-          {{
-            costruttori
-              .find((c) => c.id === filterCostruttore)
-              ?.name.split(",")[0] || "COSTRUTTORE"
-          }}
+          {{ selectedCostruttoreLabel }}
           <span class="arrow" :class="{ open: isCostruttoreDropdownOpen }"
             >▼</span
           >
@@ -267,10 +276,7 @@ onBeforeUnmount(() => {
               :class="{ active: filterCostruttore === '' }"
               @click.stop="filterCostruttore = ''"
             >
-              <span
-                class="dot"
-                style="background: transparent; opacity: 0"
-              ></span>
+              <span class="dot dot--hidden"></span>
               TUTTI
             </div>
             <div
@@ -280,10 +286,7 @@ onBeforeUnmount(() => {
               :class="{ active: filterCostruttore === c.id }"
               @click.stop="filterCostruttore = c.id"
             >
-              <span
-                class="dot"
-                style="background: #ffd700; box-shadow: 0 0 5px #ffd700"
-              ></span>
+              <span class="dot dot--gold"></span>
               {{ c.name.split(",")[0] }}
             </div>
           </div>
@@ -298,7 +301,7 @@ onBeforeUnmount(() => {
           class="dropdown-trigger"
           @click.stop="isSortDropdownOpen = !isSortDropdownOpen"
         >
-          {{ sortOptions.find((s) => s.value === sortBy)?.label }}
+          {{ selectedSortLabel }}
           <span class="arrow" :class="{ open: isSortDropdownOpen }">▼</span>
         </div>
         <Transition name="slide-up">
@@ -486,11 +489,9 @@ onBeforeUnmount(() => {
   justify-content: center;
   gap: 1rem;
   align-items: center;
-  margin-bottom: 1rem;
+  margin: 0 auto 1rem;
   width: 100%;
   max-width: 1000px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 .search-box {
@@ -593,6 +594,16 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   flex-shrink: 0;
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dot--hidden {
+  background: transparent;
+  opacity: 0;
+}
+
+.dot--gold {
+  background: #ffd700;
+  box-shadow: 0 0 5px #ffd700;
 }
 
 .error-banner {

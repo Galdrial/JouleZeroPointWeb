@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
+import {
+  CARDS_VIEW_TYPE_OPTIONS,
+  type CardTypeOption,
+} from "../constants/cardTypes";
 
 const cards = ref<any[]>([]);
 const loading = ref(true);
@@ -23,17 +27,11 @@ const isTypeDropdownOpen = ref(false);
 // Paginazione
 const currentPage = ref(1);
 const itemsPerPage = 20;
-const types = [
-  { value: "", label: "Tutti", color: "transparent" },
-  { value: "Solido", label: "Solido", color: "#007bff" },
-  { value: "Liquido", label: "Liquido", color: "#28a745" },
-  { value: "Gas", label: "Gas", color: "#fd7e14" },
-  { value: "Plasma", label: "Plasma", color: "#ff9f1c" },
-  { value: "Materia Oscura", label: "Materia Oscura", color: "#bf00ff" }, // Neon Purple
-  { value: "Evento", label: "Evento", color: "#cd7f32" },
-  { value: "Anomalia", label: "Anomalia", color: "#e0e0e0" }, // Lighter Silver
-  { value: "Costruttore", label: "Costruttore", color: "#ffd700" },
-];
+const types: CardTypeOption[] = CARDS_VIEW_TYPE_OPTIONS;
+
+const selectedTypeOption = computed(() =>
+  types.find((typeOption) => typeOption.value === selectedType.value),
+);
 
 const selectType = (type: string) => {
   selectedType.value = type;
@@ -198,14 +196,11 @@ const vClickOutside = {
                 class="dot"
                 :style="{
                   backgroundColor:
-                    types.find((t) => t.value === selectedType)?.color ||
-                    'transparent',
+                    selectedTypeOption?.color || 'transparent',
                   opacity: selectedType ? 1 : 0,
                 }"
               ></span>
-              {{
-                types.find((t) => t.value === selectedType)?.label || "Tutti"
-              }}
+              {{ selectedTypeOption?.label || "Tutti" }}
               <span class="arrow" :class="{ open: isTypeDropdownOpen }">▼</span>
             </div>
             <Transition name="slide-up">
@@ -436,6 +431,9 @@ const vClickOutside = {
 </template>
 
 <style scoped>
+@import "../assets/card-badge-types.css";
+@import "../assets/card-modal-shared.css";
+
 .glitch-text {
   margin-bottom: 3.5rem !important;
 }
@@ -443,7 +441,7 @@ const vClickOutside = {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  text-align: center; /* Centra Titolo e Sottotitolo */
+  text-align: center;
   padding: 2rem;
   padding-bottom: 4rem;
   min-height: calc(100vh - 120px);
@@ -474,7 +472,7 @@ const vClickOutside = {
   gap: 1.5rem;
   width: 100%;
   max-width: 1400px;
-  margin: 0 auto 3rem auto; /* Centrato, reset margine superiore gestito da container */
+  margin: 0 auto 3rem auto;
 }
 @media (max-width: 1200px) {
   .cards-grid {
@@ -512,7 +510,7 @@ const vClickOutside = {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 1rem; /* Uguale al gap della .card-item per simmetria */
+  gap: 1rem;
 }
 .card-header h3 {
   margin: 0;
@@ -521,25 +519,24 @@ const vClickOutside = {
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 
-/* Filtri Styles */
-/* Search Bar Styles */
+/* Filters */
 .search-container {
   display: flex;
   justify-content: center;
   align-items: stretch;
   gap: 1rem;
   max-width: 800px;
-  margin: 1rem auto 4rem auto; /* Più respiro sotto al titolo */
+  margin: 1rem auto 4rem auto;
 }
 .search-box {
   position: relative;
   flex-grow: 1;
 }
 .search-icon {
-  display: none; /* Rimosso icona interna */
+  display: none;
 }
 .search-input {
-  padding-left: 1.5rem !important; /* Ridotto padding dato che non c'è icona */
+  padding-left: 1.5rem !important;
   font-size: 1.1rem;
   height: 50px;
   width: 100%;
@@ -550,7 +547,6 @@ const vClickOutside = {
   white-space: nowrap;
 }
 
-/* Transitions per i filtri */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: all 0.4s ease;
@@ -566,8 +562,8 @@ const vClickOutside = {
   flex-wrap: wrap;
   gap: 1.5rem;
   padding: 1.5rem;
-  margin: -4rem auto 4rem auto; /* Offset del margine search per stare attaccato */
-  max-width: 1200px; /* Limite larghezza per coerenza con la griglia */
+  margin: -4rem auto 4rem auto;
+  max-width: 1200px;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
   align-items: flex-end;
@@ -575,12 +571,12 @@ const vClickOutside = {
   border: 1px solid rgba(212, 175, 55, 0.22);
   position: relative;
   z-index: 100;
-  text-align: left; /* Mantieni contenuti dei filtri allineati a sinistra */
+  text-align: left;
 }
 
 @media (max-width: 1024px) {
   .filter-group {
-    min-width: calc(50% - 0.5rem); /* Due colonne su tablet */
+    min-width: calc(50% - 0.5rem);
   }
 }
 @media (max-width: 600px) {
@@ -592,7 +588,7 @@ const vClickOutside = {
     width: 100%;
   }
   .filter-group {
-    min-width: 100%; /* Una colonna su mobile */
+    min-width: 100%;
   }
 }
 .filter-group {
@@ -640,40 +636,10 @@ const vClickOutside = {
   font-weight: 800;
   letter-spacing: 1px;
 }
-.badge.solido {
-  background: rgba(0, 123, 255, 0.2);
-  border-bottom: 2px solid #007bff;
-  color: #80cfff;
-}
-.badge.liquido {
-  background: rgba(40, 167, 69, 0.2);
-  border-bottom: 2px solid #28a745;
-  color: #80ffc0;
-}
-.badge.gas {
-  background: rgba(253, 126, 20, 0.2);
-  border-bottom: 2px solid #fd7e14;
-  color: #ffc080;
-}
 .badge.plasma {
   background: rgba(220, 53, 69, 0.2);
   border-bottom: 2px solid #dc3545;
   color: #ff80a0;
-}
-.badge.materia {
-  background: rgba(138, 43, 226, 0.3);
-  border-bottom: 2px solid #8a2be2;
-  color: #d0a0ff;
-}
-.badge.evento {
-  background: rgba(205, 127, 50, 0.2);
-  border-bottom: 2px solid #cd7f32;
-  color: #dfaf80;
-}
-.badge.anomalia {
-  background: rgba(192, 192, 192, 0.2);
-  border-bottom: 2px solid #c0c0c0;
-  color: #e0e0e0;
 }
 .badge.costruttore {
   background: rgba(255, 215, 0, 0.2);
@@ -681,22 +647,8 @@ const vClickOutside = {
   color: #fff080;
 }
 
-.card-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-.card-stats p {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  font-family: var(--font-display);
-  color: var(--accent-cyan);
-}
 .card-stats strong {
-  color: var(--text-muted);
   font-size: 0.8rem;
-  margin-right: 4px;
 }
 .card-effect p {
   font-size: 0.95rem;
@@ -726,11 +678,10 @@ const vClickOutside = {
   border: 1px dashed rgba(255, 255, 255, 0.05);
 }
 
-/* Custom Dropdown Styles */
 .custom-dropdown {
   position: relative;
   width: 100%;
-  min-width: 180px; /* Misura fissa per stabilità layout */
+  min-width: 180px;
 }
 .dropdown-trigger {
   background: rgba(255, 255, 255, 0.05);
@@ -745,7 +696,7 @@ const vClickOutside = {
   font-family: var(--font-body);
   transition: all 0.3s ease;
   user-select: none;
-  white-space: nowrap; /* Impedisce il salto su due righe */
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -756,7 +707,7 @@ const vClickOutside = {
   margin-left: auto;
   font-size: 0.7rem;
   transition: transform 0.3s;
-  color: #fff; /* Aumentato contrasto freccia */
+  color: #fff;
 }
 .dropdown-trigger .arrow.open {
   transform: rotate(180deg);
@@ -765,17 +716,17 @@ const vClickOutside = {
   position: absolute;
   top: calc(100% + 8px);
   left: 0;
-  width: 100%; /* Larghezza esatta del selettore */
-  z-index: 999; /* Sotto il modal, sopra la griglia */
-  background: rgba(10, 15, 25, 0.98); /* Meno trasparente per leggibilità */
+  width: 100%;
+  z-index: 999;
+  background: rgba(10, 15, 25, 0.98);
   backdrop-filter: blur(15px);
-  border: 1px solid var(--accent-cyan); /* Bordo ciano per separazione netta */
+  border: 1px solid var(--accent-cyan);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
 }
 .dropdown-item {
-  padding: 1rem 1.2rem; /* Più spazio per il tocco */
+  padding: 1rem 1.2rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -798,7 +749,7 @@ const vClickOutside = {
   border-radius: 50%;
   display: inline-block;
   flex-shrink: 0;
-  border: 1px solid rgba(255, 255, 255, 0.3); /* Bordo per visibilità su sfondo scuro */
+  border: 1px solid rgba(255, 255, 255, 0.3);
   box-shadow: 0 0 5px currentColor;
 }
 
@@ -845,132 +796,10 @@ const vClickOutside = {
   }
 }
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 9999; /* Alto valore per sovrastare tutto */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-/* Transitions */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-active .modal-content {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.fade-enter-from .modal-content {
-  transform: scale(0.9) translateY(20px);
-}
-.modal-content {
-  max-width: 900px;
-  width: 100%;
-  background: rgba(10, 15, 25, 0.9);
-  padding: 2rem;
-  position: relative;
-  border: 1px solid var(--accent-cyan);
-  box-shadow: 0 0 50px rgba(212, 175, 55, 0.22);
-}
-.close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 2.5rem;
-  cursor: pointer;
-  transition: color 0.3s;
-  line-height: 1;
-}
-.close-btn:hover {
-  color: var(--accent-magenta);
-}
-.modal-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
 @media (max-width: 768px) {
   .modal-body {
     grid-template-columns: 1fr;
   }
-}
-.modal-image-container img {
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-.modal-info h2 {
-  font-family: var(--font-display);
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
-  color: var(--text-main);
-  background: linear-gradient(to right, #fff, var(--accent-cyan));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.badge-row {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-.rarity-badge {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-}
-.modal-effect {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: #ccd6f6;
-  margin-bottom: 2rem;
-  font-style: italic;
-}
-.modal-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-.stat-box {
-  background: rgba(212, 175, 55, 0.08);
-  padding: 0.8rem 1.2rem;
-  border-radius: 10px;
-  border: 1px solid rgba(212, 175, 55, 0.14);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-}
-.stat-box strong {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  margin-bottom: 0.3rem;
-}
-.stat-box span {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  color: var(--accent-cyan);
 }
 .modal-role {
   font-size: 0.9rem;

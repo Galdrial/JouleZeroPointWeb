@@ -1,0 +1,35 @@
+.badge.solido {
+  background: rgba(0, 123, 255, 0.2);
+  border-bottom: 2px solid #007bff;
+  color: #80cfff;
+}
+
+.badge.liquido {
+  background: rgba(40, 167, 69, 0.2);
+  border-bottom: 2px solid #28a745;
+  color: #80ffc0;
+}
+
+.badge.gas {
+  background: rgba(253, 126, 20, 0.2);
+  border-bottom: 2px solid #fd7e14;
+  color: #ffc080;
+}
+
+.badge.materia {
+  background: rgba(138, 43, 226, 0.3);
+  border-bottom: 2px solid #8a2be2;
+  color: #d0a0ff;
+}
+
+.badge.evento {
+  background: rgba(205, 127, 50, 0.2);
+  border-bottom: 2px solid #cd7f32;
+  color: #dfaf80;
+}
+
+.badge.anomalia {
+  background: rgba(192, 192, 192, 0.2);
+  border-bottom: 2px solid #c0c0c0;
+  color: #e0e0e0;
+}

@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
+import {
+  DECKBUILDER_TYPE_OPTIONS,
+  EVENT_TYPES,
+  FRAGMENT_TYPES,
+  TYPE_COLOR_GRADIENTS,
+  TYPE_GLOWS,
+} from "../constants/cardTypes";
 
 interface Card {
   id: number;
@@ -67,16 +74,7 @@ const deckName = ref("Nuovo Mazzo");
 const editorSearchQuery = ref("");
 const editorSelectedType = ref("");
 
-const typeOptions = [
-  { label: "TUTTI I TIPI", value: "", color: "transparent" },
-  { label: "Solido", value: "Solido", color: "#007bff" },
-  { label: "Liquido", value: "Liquido", color: "#28a745" },
-  { label: "Gas", value: "Gas", color: "#fd7e14" },
-  { label: "Plasma", value: "Plasma", color: "#dc3545" },
-  { label: "Materia Oscura", value: "Materia Oscura", color: "#8a2be2" },
-  { label: "Evento", value: "Evento", color: "#cd7f32" },
-  { label: "Anomalia", value: "Anomalia", color: "#c0c0c0" },
-];
+const typeOptions = DECKBUILDER_TYPE_OPTIONS;
 
 // Dashboard State
 const decks = ref<SavedDeck[]>([]);
@@ -107,19 +105,17 @@ const totalCards = computed(() =>
 );
 const totalFrammenti = computed(() => {
   return currentDeck.value.reduce((sum, item) => {
-    const isFrammento = [
-      "Solido",
-      "Liquido",
-      "Gas",
-      "Plasma",
-      "Materia Oscura",
-    ].includes(item.card.type);
+    const isFrammento = FRAGMENT_TYPES.includes(
+      item.card.type as (typeof FRAGMENT_TYPES)[number],
+    );
     return isFrammento ? sum + item.count : sum;
   }, 0);
 });
 const totalEvents = computed(() => {
   return currentDeck.value.reduce((sum, item) => {
-    const isEvent = ["Evento", "Anomalia"].includes(item.card.type);
+    const isEvent = EVENT_TYPES.includes(
+      item.card.type as (typeof EVENT_TYPES)[number],
+    );
     return isEvent ? sum + item.count : sum;
   }, 0);
 });
@@ -167,34 +163,11 @@ const typeDistribution = computed(() => {
 });
 
 const getTypeColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    Solido: "linear-gradient(90deg, #007bff, #0099ff)",
-    Liquido: "linear-gradient(90deg, #28a745, #00e676)",
-    Gas: "linear-gradient(90deg, #fd7e14, #ffaa44)",
-    Plasma: "linear-gradient(90deg, #dc3545, #ff5566)",
-    "Materia Oscura": "linear-gradient(90deg, #8a2be2, #bb55ff)",
-    Evento: "linear-gradient(90deg, #cd7f32, #f0a050)",
-    Anomalia: "linear-gradient(90deg, #888, #c0c0c0)",
-    Costruttore: "linear-gradient(90deg, #ffd700, #ffe94d)",
-  };
-  return colors[type] || "linear-gradient(90deg, #fff, #ccc)";
+  return TYPE_COLOR_GRADIENTS[type] || "linear-gradient(90deg, #fff, #ccc)";
 };
 
 const getTypeGlow = (type: string): string => {
-  const glows: Record<string, string> = {
-    Solido: "0 0 12px rgba(0, 123, 255, 0.9), 0 0 4px rgba(0, 153, 255, 0.7)",
-    Liquido: "0 0 12px rgba(40, 167, 69, 0.9), 0 0 4px rgba(0, 230, 118, 0.7)",
-    Gas: "0 0 12px rgba(253, 126, 20, 0.9), 0 0 4px rgba(255, 170, 68, 0.7)",
-    Plasma: "0 0 12px rgba(220, 53, 69, 0.9), 0 0 4px rgba(255, 85, 102, 0.7)",
-    "Materia Oscura":
-      "0 0 12px rgba(138, 43, 226, 0.9), 0 0 4px rgba(187, 85, 255, 0.7)",
-    Evento: "0 0 12px rgba(205, 127, 50, 0.9), 0 0 4px rgba(240, 160, 80, 0.7)",
-    Anomalia:
-      "0 0 12px rgba(192, 192, 192, 0.6), 0 0 4px rgba(255, 255, 255, 0.4)",
-    Costruttore:
-      "0 0 12px rgba(255, 215, 0, 0.9), 0 0 4px rgba(255, 233, 77, 0.7)",
-  };
-  return glows[type] || "none";
+  return TYPE_GLOWS[type] || "none";
 };
 
 const getLimit = (rarity: string) => {
@@ -984,6 +957,9 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+@import "../assets/card-badge-types.css";
+@import "../assets/card-modal-shared.css";
+
 .deck-view {
   width: 100%;
   max-width: 1400px;
@@ -1005,7 +981,7 @@ onMounted(async () => {
   text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
 }
 
-/* Dashboard Styles */
+/* Dashboard */
 .dashboard-container {
   display: flex;
   flex-direction: column;
@@ -1026,14 +1002,14 @@ onMounted(async () => {
   box-shadow: 0 0 30px rgba(212, 175, 55, 0.22);
 }
 
-/* Search Area Unified with Database */
+/* Search */
 .search-container {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 1rem;
   width: 100%;
-  max-width: 1000px; /* Un po' più larga per ospitare tutto orizzontalmente */
+  max-width: 1000px;
   margin: 0 auto;
 }
 
@@ -1049,7 +1025,7 @@ onMounted(async () => {
   margin-bottom: 0 !important;
 }
 
-/* Custom Dropdown Styles (Identical to Database) */
+/* Dropdown */
 .custom-dropdown {
   position: relative;
   min-width: 220px;
@@ -1156,7 +1132,6 @@ onMounted(async () => {
   white-space: nowrap;
 }
 
-/* Transitions */
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: all 0.3s ease-out;
@@ -1220,7 +1195,7 @@ onMounted(async () => {
 
 .deck-hero-container {
   width: 100%;
-  height: 280px; /* Aumentato per immagini più grandi */
+  height: 280px;
   border-radius: 8px;
   overflow: hidden;
   position: relative;
@@ -1234,7 +1209,7 @@ onMounted(async () => {
 .deck-hero-img {
   max-width: 100%;
   max-height: 100%;
-  object-fit: contain; /* Garantisce visibilità totale senza ritagli */
+  object-fit: contain;
   transition: transform 0.5s ease;
 }
 
@@ -1281,47 +1256,10 @@ onMounted(async () => {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.small-delete.cyber-btn.mini {
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  font-size: 1.2rem;
-  border-radius: 4px;
-  background: rgba(255, 159, 28, 0.14);
-  border: 1px solid var(--accent-magenta);
-  color: var(--accent-magenta);
-  transition: all 0.2s;
-}
-
-.small-delete.cyber-btn.mini:hover {
-  background: var(--accent-magenta);
-  color: #fff;
-  box-shadow: 0 0 15px var(--accent-magenta);
-}
-
 .deck-privacy {
   height: 32px;
   display: flex;
   align-items: center;
-  padding: 0 1rem;
-  font-size: 0.75rem;
-  border-radius: 4px;
-  font-weight: 800;
-  letter-spacing: 1px;
-}
-
-.deck-costruttore {
-  font-size: 0.7rem;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  color: var(--text-muted);
-}
-
-.deck-privacy {
   font-size: 0.65rem;
   letter-spacing: 1px;
   padding: 0.2rem 0.5rem;
@@ -1361,6 +1299,8 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
+  font-size: 1.2rem;
   border-radius: 3px;
   background: rgba(255, 159, 28, 0.14);
   border: 1px solid var(--accent-magenta);
@@ -1380,6 +1320,14 @@ onMounted(async () => {
   font-size: 1.4rem;
   line-height: 1;
   margin-top: -2px;
+}
+
+.deck-costruttore {
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  color: var(--text-muted);
 }
 
 .deck-body h3 {
@@ -1439,12 +1387,12 @@ onMounted(async () => {
   cursor: not-allowed;
 }
 
-/* Editor Refined Styles */
+/* Editor */
 .builder-layout {
   display: grid;
-  grid-template-columns: 1fr 380px; /* Ridotto da 450px per evitare overlap */
+  grid-template-columns: 1fr 380px;
   gap: 1.5rem;
-  height: calc(100vh - 180px); /* Altezza dinamica */
+  height: calc(100vh - 180px);
   min-height: 700px;
 }
 
@@ -1568,138 +1516,6 @@ onMounted(async () => {
   border-radius: 8px;
 }
 
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(8px);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-active .modal-content {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.fade-enter-from .modal-content {
-  transform: scale(0.9) translateY(20px);
-}
-
-.modal-content {
-  max-width: 900px;
-  width: 100%;
-  background: rgba(10, 15, 25, 0.9);
-  padding: 2rem;
-  position: relative;
-  border: 1px solid var(--accent-cyan);
-  box-shadow: 0 0 50px rgba(212, 175, 55, 0.22);
-}
-
-.close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
-  font-size: 2.5rem;
-  cursor: pointer;
-  transition: color 0.3s;
-  line-height: 1;
-}
-.close-btn:hover {
-  color: var(--accent-magenta);
-}
-
-.modal-body {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-
-.modal-image-container img {
-  width: 100%;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.modal-info h2 {
-  font-family: var(--font-display);
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
-  color: var(--text-main);
-  background: linear-gradient(to right, #fff, var(--accent-cyan));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.badge-row {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.rarity-badge {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-}
-
-.modal-effect {
-  font-size: 1.1rem;
-  line-height: 1.7;
-  color: #ccd6f6;
-  margin-bottom: 2rem;
-  font-style: italic;
-}
-
-.modal-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.stat-box {
-  background: rgba(212, 175, 55, 0.08);
-  padding: 0.8rem 1.2rem;
-  border-radius: 10px;
-  border: 1px solid rgba(212, 175, 55, 0.14);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-}
-.stat-box strong {
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  margin-bottom: 0.3rem;
-}
-.stat-box span {
-  font-family: var(--font-display);
-  font-size: 1.4rem;
-  color: var(--accent-cyan);
-}
-
 .modal-role {
   font-size: 0.9rem;
   color: var(--text-muted);
@@ -1760,7 +1576,6 @@ onMounted(async () => {
   box-shadow: 0 0 15px var(--accent-magenta);
 }
 
-/* Reusing badges and stats from Database */
 .badge {
   font-size: 0.75rem;
   padding: 0.35rem 0.8rem;
@@ -1768,57 +1583,10 @@ onMounted(async () => {
   font-family: var(--font-display);
   letter-spacing: 1px;
 }
-.badge.solido {
-  background: rgba(0, 123, 255, 0.2);
-  border-bottom: 2px solid #007bff;
-  color: #80cfff;
-}
-.badge.liquido {
-  background: rgba(40, 167, 69, 0.2);
-  border-bottom: 2px solid #28a745;
-  color: #80ffc0;
-}
-.badge.gas {
-  background: rgba(253, 126, 20, 0.2);
-  border-bottom: 2px solid #fd7e14;
-  color: #ffc080;
-}
 .badge.plasma {
   background: rgba(255, 159, 28, 0.2);
   border-bottom: 2px solid #ff9f1c;
   color: #ffd08a;
-}
-.badge.materia {
-  background: rgba(138, 43, 226, 0.3);
-  border-bottom: 2px solid #8a2be2;
-  color: #d0a0ff;
-}
-.badge.evento {
-  background: rgba(205, 127, 50, 0.2);
-  border-bottom: 2px solid #cd7f32;
-  color: #dfaf80;
-}
-.badge.anomalia {
-  background: rgba(192, 192, 192, 0.2);
-  border-bottom: 2px solid #c0c0c0;
-  color: #e0e0e0;
-}
-
-.card-stats {
-  display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-.card-stats p {
-  background: rgba(0, 0, 0, 0.3);
-  padding: 0.5rem 0.8rem;
-  border-radius: 8px;
-  font-family: var(--font-display);
-  color: var(--accent-cyan);
-}
-.card-stats strong {
-  color: var(--text-muted);
-  margin-right: 4px;
 }
 
 .card-effect h3 {
@@ -1962,7 +1730,7 @@ onMounted(async () => {
 }
 
 .extra-small {
-  width: 36px !important; /* Slightly larger to accommodate clip-path */
+  width: 36px !important;
   height: 32px !important;
   padding: 0 !important;
   display: flex !important;
@@ -1970,7 +1738,7 @@ onMounted(async () => {
   justify-content: center !important;
   font-size: 1.2rem !important;
   font-weight: 900 !important;
-  border-radius: 0 !important; /* Clip-path handles the shape */
+  border-radius: 0 !important;
 }
 
 .extra-small:hover {
