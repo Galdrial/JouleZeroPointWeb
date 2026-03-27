@@ -9,8 +9,11 @@ type NewsDetail = {
   title: string;
   summary: string;
   content: string;
+  imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
+  isFeatured: boolean;
+  featuredOrder: number | null;
 };
 
 const route = useRoute();
@@ -56,8 +59,15 @@ onMounted(async () => {
   <div class="news-detail-page fade-in">
     <article v-if="news && !isLoading" class="glass-panel news-detail-card">
       <p class="news-meta">{{ formatNewsDate(news.publishedAt) }}</p>
+      <div v-if="news.isFeatured" class="news-badge">NEWS IN EVIDENZA</div>
       <h1>{{ news.title }}</h1>
       <p class="news-summary">{{ news.summary }}</p>
+      <img
+        v-if="news.imageUrl"
+        :src="news.imageUrl"
+        :alt="news.title"
+        class="news-image"
+      />
 
       <div class="news-content">
         <p v-for="(paragraph, index) in paragraphs" :key="index">
@@ -66,7 +76,12 @@ onMounted(async () => {
       </div>
 
       <div class="news-detail-actions">
-        <RouterLink to="/" class="link-text">← Torna alla Home</RouterLink>
+        <div class="news-detail-links">
+          <RouterLink to="/" class="link-text">← Torna alla Home</RouterLink>
+          <RouterLink to="/news" class="news-archive-link"
+            >Archivio news</RouterLink
+          >
+        </div>
         <a
           v-if="news.sourceUrl"
           :href="news.sourceUrl"
@@ -128,6 +143,26 @@ onMounted(async () => {
   padding-left: 0.85rem;
 }
 
+.news-badge {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #ffd892;
+  background: rgba(255, 190, 92, 0.12);
+  border: 1px solid rgba(255, 205, 120, 0.2);
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+}
+
+.news-image {
+  width: 100%;
+  max-height: 430px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
 .news-content {
   display: flex;
   flex-direction: column;
@@ -147,6 +182,18 @@ onMounted(async () => {
   align-items: center;
   flex-wrap: wrap;
   gap: 0.8rem;
+}
+
+.news-detail-links {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.news-archive-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
 }
 
 .news-source-link {

@@ -8,8 +8,11 @@ type NewsPreview = {
   slug: string;
   title: string;
   summary: string;
+  imageUrl: string;
   sourceUrl: string;
   publishedAt: string;
+  isFeatured: boolean;
+  featuredOrder: number | null;
 };
 
 const fragmentCount = ref(120);
@@ -52,7 +55,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get("/api/news", { params: { limit: 2 } });
+    const response = await axios.get("/api/news", { params: { limit: 6 } });
     latestNews.value = response.data;
   } catch (err) {
     console.error("Errore caricamento news home:", err);
@@ -176,8 +179,8 @@ onMounted(async () => {
     <section class="news-section">
       <div class="news-section-header">
         <h3>ULTIME NEWS</h3>
-        <RouterLink to="/public-decks" class="news-header-link"
-          >Esplora anche i mazzi pubblici →</RouterLink
+        <RouterLink to="/news" class="news-header-link"
+          >Vai all'archivio completo →</RouterLink
         >
       </div>
 
@@ -186,7 +189,15 @@ onMounted(async () => {
           v-for="news in latestNews"
           :key="news.id"
           class="glass-panel news-card"
+          :class="{ 'news-card--featured': news.isFeatured }"
         >
+          <div v-if="news.isFeatured" class="news-badge">IN EVIDENZA</div>
+          <img
+            v-if="news.imageUrl"
+            :src="news.imageUrl"
+            :alt="news.title"
+            class="news-cover"
+          />
           <p class="news-date">{{ formatNewsDate(news.publishedAt) }}</p>
           <h4>{{ news.title }}</h4>
           <p class="news-summary">{{ news.summary }}</p>
@@ -402,7 +413,7 @@ onMounted(async () => {
 
 .news-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -411,6 +422,31 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+}
+
+.news-card--featured {
+  border-color: rgba(255, 205, 120, 0.24);
+  box-shadow: 0 0 0 1px rgba(255, 205, 120, 0.14) inset;
+}
+
+.news-badge {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #ffd892;
+  background: rgba(255, 190, 92, 0.12);
+  border: 1px solid rgba(255, 205, 120, 0.2);
+  border-radius: 999px;
+  padding: 0.18rem 0.5rem;
+}
+
+.news-cover {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .news-date {
@@ -529,6 +565,10 @@ onMounted(async () => {
     width: 100vw;
   }
 
+  .news-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .hero-content {
     top: clamp(10px, 3vw, 20px);
     bottom: clamp(12px, 3vw, 22px);
@@ -540,6 +580,12 @@ onMounted(async () => {
   .hero-btn {
     min-width: 0;
     width: min(100%, 340px);
+  }
+}
+
+@media (max-width: 560px) {
+  .news-grid {
+    grid-template-columns: 1fr;
   }
 }
 

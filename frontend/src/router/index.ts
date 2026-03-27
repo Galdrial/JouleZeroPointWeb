@@ -31,6 +31,11 @@ const router = createRouter( {
       component: () => import( '../views/PublicDecksView.vue' )
     },
     {
+      path: '/news',
+      name: 'news-archive',
+      component: () => import( '../views/NewsArchiveView.vue' )
+    },
+    {
       path: '/news/:slug',
       name: 'news-detail',
       component: () => import( '../views/NewsDetailView.vue' )
@@ -39,6 +44,12 @@ const router = createRouter( {
       path: '/terminale-punto-zero',
       name: 'oracle',
       component: () => import( '../views/TerminalView.vue' ),
+      meta: { hideUI: true }
+    },
+    {
+      path: '/admin/news',
+      name: 'admin-news',
+      component: () => import( '../views/AdminNewsView.vue' ),
       meta: { hideUI: true }
     },
     {

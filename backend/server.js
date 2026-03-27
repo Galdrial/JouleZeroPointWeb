@@ -2,6 +2,7 @@ require( 'dotenv' ).config();
 const express = require( 'express' );
 const cors = require( 'cors' );
 const axios = require( 'axios' );
+const multer = require( 'multer' );
 
 const app = express();
 app.use( cors() );
@@ -64,18 +65,74 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const DECKS_FILE = path.join( __dirname, 'decks.json' );
 const NEWS_FILE = path.join( __dirname, 'news.json' );
+const FRONTEND_PUBLIC_NEWS_DIR = path.join( __dirname, '..', 'frontend', 'public', 'news' );
+
+fs.mkdirSync( FRONTEND_PUBLIC_NEWS_DIR, { recursive: true } );
+
+const uploadStorage = multer.diskStorage( {
+  destination: ( _req, _file, cb ) => cb( null, FRONTEND_PUBLIC_NEWS_DIR ),
+  filename: ( _req, file, cb ) => {
+    const extension = path.extname( file.originalname || '' ).toLowerCase() || '.jpg';
+    const sanitizedBase = path
+      .basename( file.originalname || 'news-image', extension )
+      .toLowerCase()
+      .replace( /[^a-z0-9-_]/g, '-' )
+      .replace( /-+/g, '-' )
+      .replace( /^-|-$|_/g, '' ) || 'news-image';
+
+    cb( null, `${Date.now()}-${sanitizedBase}${extension}` );
+  }
+} );
+
+const uploadNewsImage = multer( {
+  storage: uploadStorage,
+  limits: { fileSize: 4 * 1024 * 1024 },
+  fileFilter: ( _req, file, cb ) => {
+    if ( file.mimetype && file.mimetype.startsWith( 'image/' ) ) {
+      cb( null, true );
+    } else {
+      cb( new Error( 'Solo immagini consentite.' ) );
+    }
+  }
+} );
 
 function normalizeNews( news ) {
+  const parsedFeaturedOrder = Number.isFinite( Number( news.featuredOrder ) )
+    ? Number( news.featuredOrder )
+    : null;
+
   return {
     id: news.id,
     slug: news.slug,
     title: news.title,
     summary: news.summary,
     content: news.content,
+    imageUrl: news.imageUrl || '',
     sourceUrl: news.sourceUrl || '',
     publishedAt: news.publishedAt,
-    isPublished: news.isPublished !== false
+    isPublished: news.isPublished !== false,
+    isFeatured: news.isFeatured === true || ( news.isFeatured !== false && parsedFeaturedOrder !== null ),
+    featuredOrder: news.isFeatured === false ? null : parsedFeaturedOrder
   };
+}
+
+function sortNewsItems( news ) {
+  return [...news].sort( ( a, b ) => {
+    if ( a.isFeatured !== b.isFeatured ) {
+      return a.isFeatured ? -1 : 1;
+    }
+
+    if ( a.isFeatured && b.isFeatured ) {
+      const aOrder = Number.isFinite( a.featuredOrder ) ? a.featuredOrder : Number.MAX_SAFE_INTEGER;
+      const bOrder = Number.isFinite( b.featuredOrder ) ? b.featuredOrder : Number.MAX_SAFE_INTEGER;
+
+      if ( aOrder !== bOrder ) {
+        return aOrder - bOrder;
+      }
+    }
+
+    return new Date( b.publishedAt ).getTime() - new Date( a.publishedAt ).getTime();
+  } );
 }
 
 function readNews() {
@@ -141,9 +198,9 @@ app.get( '/api/news', ( req, res ) => {
     const { limit } = req.query;
     const parsedLimit = parseInt( limit, 10 );
 
-    let news = readNews()
-      .filter( item => item.isPublished )
-      .sort( ( a, b ) => new Date( b.publishedAt ).getTime() - new Date( a.publishedAt ).getTime() );
+    let news = sortNewsItems(
+      readNews().filter( item => item.isPublished )
+    );
 
     if ( Number.isFinite( parsedLimit ) && parsedLimit > 0 ) {
       news = news.slice( 0, parsedLimit );
@@ -174,9 +231,38 @@ app.get( '/api/news/:slug', ( req, res ) => {
 } );
 
 // Gestione News (Admin)
+app.get( '/api/admin/news', requireAdmin, ( req, res ) => {
+  try {
+    const news = sortNewsItems( readNews() );
+    res.json( news );
+  } catch ( error ) {
+    console.error( 'Errore caricamento admin news:', error );
+    res.status( 500 ).json( { error: 'Errore caricamento news' } );
+  }
+} );
+
+app.post( '/api/admin/news/upload-image', requireAdmin, ( req, res ) => {
+  uploadNewsImage.single( 'image' )( req, res, ( error ) => {
+    if ( error ) {
+      const message = error.message === 'File too large'
+        ? 'Immagine troppo grande (max 4MB).'
+        : error.message || 'Errore upload immagine.';
+      return res.status( 400 ).json( { error: message } );
+    }
+
+    if ( !req.file ) {
+      return res.status( 400 ).json( { error: 'Nessun file ricevuto.' } );
+    }
+
+    return res.status( 201 ).json( {
+      imageUrl: `/news/${req.file.filename}`
+    } );
+  } );
+} );
+
 app.post( '/api/admin/news', requireAdmin, ( req, res ) => {
   try {
-    const { slug, title, summary, content, sourceUrl, publishedAt, isPublished } = req.body;
+    const { slug, title, summary, content, imageUrl, sourceUrl, publishedAt, isPublished, isFeatured, featuredOrder } = req.body;
 
     if ( !slug || !title || !summary || !content ) {
       return res.status( 400 ).json( { error: 'Campi obbligatori: slug, title, summary, content.' } );
@@ -193,9 +279,14 @@ app.post( '/api/admin/news', requireAdmin, ( req, res ) => {
       title: title.trim(),
       summary: summary.trim(),
       content: content.trim(),
+      imageUrl: ( imageUrl || '' ).trim(),
       sourceUrl: ( sourceUrl || '' ).trim(),
       publishedAt: publishedAt || new Date().toISOString(),
-      isPublished: isPublished !== false
+      isPublished: isPublished !== false,
+      isFeatured: isFeatured === true,
+      featuredOrder: isFeatured === true && Number.isFinite( Number( featuredOrder ) )
+        ? Number( featuredOrder )
+        : null
     } );
 
     news.push( newItem );
@@ -217,12 +308,18 @@ app.put( '/api/admin/news/:slug', requireAdmin, ( req, res ) => {
       return res.status( 404 ).json( { error: 'News non trovata.' } );
     }
 
-    const updated = normalizeNews( {
+    const rawUpdated = {
       ...news[index],
       ...req.body,
       slug,
       id: news[index].id
-    } );
+    };
+
+    if ( req.body.isFeatured === false ) {
+      rawUpdated.featuredOrder = null;
+    }
+
+    const updated = normalizeNews( rawUpdated );
 
     news[index] = updated;
     writeNews( news );
