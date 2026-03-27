@@ -202,7 +202,7 @@ const vClickOutside = {
   overflow: hidden;
   box-shadow:
     0 10px 50px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(0, 240, 255, 0.1);
+    0 0 20px rgba(212, 175, 55, 0.14);
   border: 1px solid var(--glass-border);
   background: rgba(10, 15, 20, 0.95);
   backdrop-filter: blur(15px);
@@ -306,7 +306,7 @@ const vClickOutside = {
 .chat-bubble.user {
   border-left: none;
   border-right: 2px solid var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   align-self: flex-end;
   text-align: right;
   width: auto;
@@ -316,7 +316,7 @@ const vClickOutside = {
 
 .chat-bubble.ai {
   border-left-color: var(--accent-magenta);
-  background: rgba(255, 0, 60, 0.03);
+  background: rgba(255, 159, 28, 0.06);
   align-self: flex-start;
   width: 90%;
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue';
-import axios from 'axios';
-import { useRouter, useRoute } from 'vue-router';
+import axios from "axios";
+import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 interface Card {
   id: number;
@@ -22,32 +22,37 @@ interface SavedDeck {
 
 const router = useRouter();
 const route = useRoute();
-const loggedInUser = localStorage.getItem('username') || '';
+const loggedInUser = localStorage.getItem("username") || "";
 const username = ref(route.query.user?.toString() || loggedInUser);
-const isOwnProfile = computed(() => !route.query.user || route.query.user === loggedInUser);
+const isOwnProfile = computed(
+  () => !route.query.user || route.query.user === loggedInUser,
+);
 const loading = ref(true);
 const userDecks = ref<SavedDeck[]>([]);
 const allCards = ref<Card[]>([]);
 const showDeleteConfirm = ref(false);
 
-watch(() => route.query.user, (newVal) => {
-  username.value = newVal?.toString() || loggedInUser;
-  fetchProfileData();
-});
+watch(
+  () => route.query.user,
+  (newVal) => {
+    username.value = newVal?.toString() || loggedInUser;
+    fetchProfileData();
+  },
+);
 
 const fetchProfileData = async () => {
   try {
     loading.value = true;
     const [decksRes, cardsRes] = await Promise.all([
       axios.get(`http://localhost:3000/api/decks?creator=${username.value}`, {
-        headers: { 'x-user': loggedInUser }
+        headers: { "x-user": loggedInUser },
       }),
-      axios.get('http://localhost:3000/api/cards')
+      axios.get("http://localhost:3000/api/cards"),
     ]);
     userDecks.value = decksRes.data.decks;
     allCards.value = cardsRes.data;
   } catch (error) {
-    console.error('Errore caricamento profilo:', error);
+    console.error("Errore caricamento profilo:", error);
   } finally {
     loading.value = false;
   }
@@ -56,16 +61,20 @@ const fetchProfileData = async () => {
 const deleteAccount = async () => {
   try {
     // 1. Purge Decks
-    await axios.delete(`http://localhost:3000/api/decks/user/${username.value}`);
+    await axios.delete(
+      `http://localhost:3000/api/decks/user/${username.value}`,
+    );
     // 2. Delete User
-    await axios.delete(`http://localhost:3000/api/auth/account/${username.value}`);
-    
+    await axios.delete(
+      `http://localhost:3000/api/auth/account/${username.value}`,
+    );
+
     // 3. Cleanup and redirect
     localStorage.clear();
-    router.push('/login');
+    router.push("/login");
     window.location.reload(); // Force refresh to clear app state
   } catch (error) {
-    alert('Errore critico durante la rimozione dei dati.');
+    alert("Errore critico durante la rimozione dei dati.");
   }
 };
 
@@ -78,17 +87,17 @@ const totalCardsInDecks = computed(() => {
 });
 
 const getCostruttoreImage = (deck: SavedDeck) => {
-  const costruttore = allCards.value.find(c => c.id === deck.costruttoreId);
-  return costruttore ? costruttore.image_url : '/assets/cards/placeholder.png';
+  const costruttore = allCards.value.find((c) => c.id === deck.costruttoreId);
+  return costruttore ? costruttore.image_url : "/assets/cards/placeholder.png";
 };
 
 const getCostruttoreName = (deck: SavedDeck) => {
-  const costruttore = allCards.value.find(c => c.id === deck.costruttoreId);
-  return costruttore ? costruttore.name : 'Sconosciuto';
+  const costruttore = allCards.value.find((c) => c.id === deck.costruttoreId);
+  return costruttore ? costruttore.name : "Sconosciuto";
 };
 
 const goToDeck = (deckId: number) => {
-  router.push({ path: '/deckbuilder', query: { edit: deckId } });
+  router.push({ path: "/deckbuilder", query: { edit: deckId } });
 };
 </script>
 
@@ -135,9 +144,9 @@ const goToDeck = (deckId: number) => {
       </div>
 
       <div v-else class="decks-grid">
-        <div 
-          v-for="deck in userDecks" 
-          :key="deck.id" 
+        <div
+          v-for="deck in userDecks"
+          :key="deck.id"
           class="deck-card glass-panel hover-glow"
           @click="goToDeck(deck.id)"
         >
@@ -146,14 +155,18 @@ const goToDeck = (deckId: number) => {
           </div>
 
           <div class="deck-hero-container">
-            <img :src="getCostruttoreImage(deck)" :alt="getCostruttoreName(deck)" class="deck-hero">
+            <img
+              :src="getCostruttoreImage(deck)"
+              :alt="getCostruttoreName(deck)"
+              class="deck-hero"
+            />
           </div>
 
           <div class="deck-hero-caption">
             <span class="caption-name">{{ getCostruttoreName(deck) }}</span>
             <div class="tag-row mt-spacing">
-              <span class="privacy-tag" :class="{ 'public': deck.isPublic }">
-                {{ deck.isPublic ? 'PUBBLICO' : 'PRIVATO' }}
+              <span class="privacy-tag" :class="{ public: deck.isPublic }">
+                {{ deck.isPublic ? "PUBBLICO" : "PRIVATO" }}
               </span>
             </div>
           </div>
@@ -174,9 +187,14 @@ const goToDeck = (deckId: number) => {
       <div class="danger-panel glass-panel">
         <div class="danger-content">
           <h3>ELIMINAZIONE DATI GENETICI</h3>
-          <p>L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi mazzi sincronizzati e i tuoi record dal database del Punto Zero.</p>
+          <p>
+            L'eliminazione dell'account rimuoverà permanentemente tutti i tuoi
+            mazzi sincronizzati e i tuoi record dal database del Punto Zero.
+          </p>
         </div>
-        <button class="cyber-btn btn-danger" @click="showDeleteConfirm = true">ELIMINA ACCOUNT</button>
+        <button class="cyber-btn btn-danger" @click="showDeleteConfirm = true">
+          ELIMINA ACCOUNT
+        </button>
       </div>
     </section>
 
@@ -187,10 +205,20 @@ const goToDeck = (deckId: number) => {
           <span class="warning-icon">⚠️</span>
           <h2>CONFERMA ELIMINAZIONE?</h2>
         </div>
-        <p>Questa azione è irreversibile. Tutta la tua sincronizzazione verrà persa nei flussi del tempo.</p>
+        <p>
+          Questa azione è irreversibile. Tutta la tua sincronizzazione verrà
+          persa nei flussi del tempo.
+        </p>
         <div class="modal-actions">
-          <button class="cyber-btn btn-secondary" @click="showDeleteConfirm = false">ANNULLA</button>
-          <button class="cyber-btn btn-danger" @click="deleteAccount">CONFERMA ELIMINAZIONE</button>
+          <button
+            class="cyber-btn btn-secondary"
+            @click="showDeleteConfirm = false"
+          >
+            ANNULLA
+          </button>
+          <button class="cyber-btn btn-danger" @click="deleteAccount">
+            CONFERMA ELIMINAZIONE
+          </button>
         </div>
       </div>
     </div>
@@ -218,7 +246,7 @@ const goToDeck = (deckId: number) => {
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   border: 2px solid var(--accent-cyan);
   display: flex;
   align-items: center;
@@ -230,13 +258,24 @@ const goToDeck = (deckId: number) => {
   position: absolute;
   inset: -10px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.2) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(212, 175, 55, 0.22) 0%,
+    transparent 70%
+  );
   animation: pulse-avatar 4s infinite;
 }
 
 @keyframes pulse-avatar {
-  0%, 100% { opacity: 0.5; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.1); }
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
 }
 
 .avatar-symbol {
@@ -353,7 +392,7 @@ const goToDeck = (deckId: number) => {
 .deck-card:hover {
   transform: translateY(-10px);
   border-color: var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
 }
 
 .deck-header {
@@ -369,11 +408,11 @@ const goToDeck = (deckId: number) => {
 
 .deck-hero-container {
   height: 200px;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid rgba(255,255,255,0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .deck-hero {
@@ -420,7 +459,7 @@ const goToDeck = (deckId: number) => {
 .deck-footer {
   margin-top: 1.5rem;
   padding-top: 1rem;
-  border-top: 1px solid rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -468,10 +507,11 @@ const goToDeck = (deckId: number) => {
 }
 
 @media (max-width: 900px) {
-  .stats-grid, .decks-grid {
+  .stats-grid,
+  .decks-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .profile-header {
     flex-direction: column;
     text-align: center;

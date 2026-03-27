@@ -28,7 +28,7 @@ const types = [
   { value: "Solido", label: "Solido", color: "#007bff" },
   { value: "Liquido", label: "Liquido", color: "#28a745" },
   { value: "Gas", label: "Gas", color: "#fd7e14" },
-  { value: "Plasma", label: "Plasma", color: "#dc3545" },
+  { value: "Plasma", label: "Plasma", color: "#ff9f1c" },
   { value: "Materia Oscura", label: "Materia Oscura", color: "#bf00ff" }, // Neon Purple
   { value: "Evento", label: "Evento", color: "#cd7f32" },
   { value: "Anomalia", label: "Anomalia", color: "#e0e0e0" }, // Lighter Silver
@@ -457,7 +457,7 @@ const vClickOutside = {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 3.5rem;
-  text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
 }
 .subtitle {
   margin-bottom: 2rem;
@@ -501,7 +501,7 @@ const vClickOutside = {
 .card-item:hover {
   transform: translateY(-8px);
   border-color: var(--accent-cyan);
-  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
 }
 .card-header {
   display: flex;
@@ -572,7 +572,7 @@ const vClickOutside = {
   backdrop-filter: blur(10px);
   align-items: flex-end;
   border-radius: 12px;
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.22);
   position: relative;
   z-index: 100;
   text-align: left; /* Mantieni contenuti dei filtri allineati a sinistra */
@@ -789,7 +789,7 @@ const vClickOutside = {
   color: var(--text-main);
 }
 .dropdown-item.active {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 175, 55, 0.12);
   color: var(--accent-cyan);
 }
 .dot {
@@ -884,7 +884,7 @@ const vClickOutside = {
   padding: 2rem;
   position: relative;
   border: 1px solid var(--accent-cyan);
-  box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 50px rgba(212, 175, 55, 0.22);
 }
 .close-btn {
   position: absolute;
@@ -952,10 +952,10 @@ const vClickOutside = {
   margin-bottom: 2rem;
 }
 .stat-box {
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   padding: 0.8rem 1.2rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.14);
   display: flex;
   flex-direction: column;
   align-items: center;

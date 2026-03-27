@@ -1023,7 +1023,7 @@ onMounted(async () => {
   padding: 1.2rem 3rem;
   font-size: 1.2rem;
   letter-spacing: 0.15rem;
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 30px rgba(212, 175, 55, 0.22);
 }
 
 /* Search Area Unified with Database */
@@ -1125,7 +1125,7 @@ onMounted(async () => {
 }
 
 .dropdown-item.active {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 175, 55, 0.12);
   color: var(--accent-cyan);
 }
 
@@ -1143,7 +1143,7 @@ onMounted(async () => {
 }
 
 .count-tag {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 175, 55, 0.12);
   border: 1px solid var(--accent-cyan);
   padding: 0 1.2rem;
   height: 50px;
@@ -1188,7 +1188,7 @@ onMounted(async () => {
 .deck-card:hover {
   transform: translateY(-8px);
   border-color: var(--accent-cyan);
-  box-shadow: 0 15px 40px rgba(0, 240, 255, 0.15);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.18);
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -1215,7 +1215,7 @@ onMounted(async () => {
   -webkit-box-orient: vertical;
   overflow: hidden;
   color: var(--accent-cyan);
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .deck-hero-container {
@@ -1290,7 +1290,7 @@ onMounted(async () => {
   line-height: 1;
   font-size: 1.2rem;
   border-radius: 4px;
-  background: rgba(255, 0, 110, 0.1);
+  background: rgba(255, 159, 28, 0.14);
   border: 1px solid var(--accent-magenta);
   color: var(--accent-magenta);
   transition: all 0.2s;
@@ -1329,12 +1329,12 @@ onMounted(async () => {
   font-weight: bold;
 }
 .deck-privacy.public {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 175, 55, 0.12);
   color: var(--accent-cyan);
   border: 1px solid var(--accent-cyan);
 }
 .deck-privacy.private {
-  background: rgba(255, 0, 110, 0.1);
+  background: rgba(255, 159, 28, 0.14);
   color: var(--accent-magenta);
   border: 1px solid var(--accent-magenta);
 }
@@ -1362,7 +1362,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: center;
   border-radius: 3px;
-  background: rgba(255, 0, 110, 0.1);
+  background: rgba(255, 159, 28, 0.14);
   border: 1px solid var(--accent-magenta);
   color: var(--accent-magenta);
   transition: all 0.3s;
@@ -1503,7 +1503,7 @@ onMounted(async () => {
   width: 0;
 }
 .library-grid-container::-webkit-scrollbar-track {
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   border-radius: 10px;
 }
 .library-grid-container::-webkit-scrollbar-thumb {
@@ -1532,7 +1532,7 @@ onMounted(async () => {
 .card-item:hover {
   transform: translateY(-8px);
   border-color: var(--accent-cyan);
-  box-shadow: 0 10px 30px rgba(0, 240, 255, 0.15);
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
   position: relative;
   z-index: 10;
   transform-origin: center;
@@ -1607,7 +1607,7 @@ onMounted(async () => {
   padding: 2rem;
   position: relative;
   border: 1px solid var(--accent-cyan);
-  box-shadow: 0 0 50px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 50px rgba(212, 175, 55, 0.22);
 }
 
 .close-btn {
@@ -1679,10 +1679,10 @@ onMounted(async () => {
 }
 
 .stat-box {
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   padding: 0.8rem 1.2rem;
   border-radius: 10px;
-  border: 1px solid rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(212, 175, 55, 0.14);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1784,9 +1784,9 @@ onMounted(async () => {
   color: #ffc080;
 }
 .badge.plasma {
-  background: rgba(220, 53, 69, 0.2);
-  border-bottom: 2px solid #dc3545;
-  color: #ff80a0;
+  background: rgba(255, 159, 28, 0.2);
+  border-bottom: 2px solid #ff9f1c;
+  color: #ffd08a;
 }
 .badge.materia {
   background: rgba(138, 43, 226, 0.3);
@@ -1929,7 +1929,7 @@ onMounted(async () => {
   width: 0;
 }
 .current-deck-list::-webkit-scrollbar-track {
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   border-radius: 10px;
 }
 .current-deck-list::-webkit-scrollbar-thumb {
@@ -2054,7 +2054,7 @@ onMounted(async () => {
   max-width: 450px;
   padding: 2.5rem;
   border: 1px solid var(--accent-magenta);
-  box-shadow: 0 0 30px rgba(255, 0, 110, 0.2);
+  box-shadow: 0 0 30px rgba(255, 159, 28, 0.24);
   text-align: center;
 }
 
@@ -2084,7 +2084,7 @@ onMounted(async () => {
 .btn-primary.danger:hover:not(:disabled) {
   background: var(--accent-magenta);
   color: #fff;
-  box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
+  box-shadow: 0 0 20px rgba(255, 159, 28, 0.4);
 }
 
 .alert-content {
@@ -2134,7 +2134,7 @@ onMounted(async () => {
   width: 6px;
 }
 .stats-modal-body::-webkit-scrollbar-track {
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   border-radius: 10px;
 }
 .stats-modal-body::-webkit-scrollbar-thumb {
@@ -2143,7 +2143,7 @@ onMounted(async () => {
 }
 
 .stats-section {
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border: 1px solid rgba(212, 175, 55, 0.22);
   padding: 1.5rem;
   border-radius: 10px;
   background: rgba(0, 0, 0, 0.3);
@@ -2187,7 +2187,7 @@ onMounted(async () => {
   border-radius: 4px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .cost-count {
@@ -2209,10 +2209,10 @@ onMounted(async () => {
 }
 
 .avg-stat {
-  background: rgba(0, 240, 255, 0.08);
+  background: rgba(212, 175, 55, 0.1);
   padding: 1.2rem;
   border-radius: 8px;
-  border: 1px solid rgba(0, 240, 255, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.18);
   text-align: center;
 }
 
@@ -2229,7 +2229,7 @@ onMounted(async () => {
   font-family: var(--font-display);
   font-size: 2rem;
   color: var(--accent-cyan);
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
 }
 
 /* Type Distribution */
@@ -2255,10 +2255,10 @@ onMounted(async () => {
 
 .type-bar {
   height: 24px;
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 175, 55, 0.12);
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid rgba(0, 240, 255, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.18);
   position: relative;
 }
 

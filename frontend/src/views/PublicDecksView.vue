@@ -478,7 +478,7 @@ onBeforeUnmount(() => {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   margin-bottom: 3.5rem;
-  text-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+  text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
 }
 
 .search-container {
@@ -564,7 +564,7 @@ onBeforeUnmount(() => {
 
 .dropdown-item:hover,
 .dropdown-item.active {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 175, 55, 0.12);
   color: var(--accent-cyan);
 }
 
@@ -574,7 +574,7 @@ onBeforeUnmount(() => {
 }
 
 .count-tag {
-  background: rgba(0, 240, 255, 0.1);
+  background: rgba(212, 175, 55, 0.12);
   border: 1px solid var(--accent-cyan);
   padding: 0 1.2rem;
   height: 50px;
@@ -599,7 +599,7 @@ onBeforeUnmount(() => {
   margin: 0;
   border: 1px solid var(--accent-magenta);
   color: var(--accent-magenta);
-  background: rgba(255, 0, 110, 0.08);
+  background: rgba(255, 159, 28, 0.1);
   border-radius: 8px;
   padding: 0.75rem 1rem;
 }
@@ -651,7 +651,7 @@ onBeforeUnmount(() => {
 .deck-card:hover {
   transform: translateY(-8px);
   border-color: var(--accent-cyan);
-  box-shadow: 0 15px 40px rgba(0, 240, 255, 0.15);
+  box-shadow: 0 15px 40px rgba(212, 175, 55, 0.18);
   background: rgba(255, 255, 255, 0.05);
 }
 
@@ -679,7 +679,7 @@ onBeforeUnmount(() => {
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .deck-creator {
@@ -749,8 +749,8 @@ onBeforeUnmount(() => {
   min-height: 30px;
   padding: 0.35rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid rgba(0, 240, 255, 0.18);
-  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  background: rgba(212, 175, 55, 0.08);
 }
 
 .stat-key {

@@ -4,7 +4,8 @@ import { onMounted, ref } from "vue";
 import heroImg from "../assets/hero.png";
 
 const fragmentCount = ref(120); // Default placeholder
-const tabletopGuideUrl = "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
+const tabletopGuideUrl =
+  "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 
 const particleStyles = Array.from({ length: 150 }, () => ({
@@ -211,7 +212,7 @@ onMounted(async () => {
 .hero-logo {
   width: min(420px, 60vw);
   height: auto;
-  filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.35));
+  filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.35));
 }
 
 .hero-headline {

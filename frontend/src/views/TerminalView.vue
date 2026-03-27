@@ -164,17 +164,17 @@ onMounted(scrollToBottom);
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(0, 240, 255, 0.1);
-  border-right: 1px solid rgba(0, 240, 255, 0.1);
+  border-left: 1px solid rgba(212, 175, 55, 0.12);
+  border-right: 1px solid rgba(212, 175, 55, 0.12);
   background:
     radial-gradient(
       circle at top right,
-      rgba(255, 0, 60, 0.05) 0%,
+      rgba(255, 159, 28, 0.08) 0%,
       transparent 40%
     ),
     radial-gradient(
       circle at bottom left,
-      rgba(0, 240, 255, 0.05) 0%,
+      rgba(212, 175, 55, 0.08) 0%,
       transparent 40%
     );
 }
@@ -264,7 +264,7 @@ onMounted(scrollToBottom);
   max-width: 85%;
   padding: 1.2rem;
   border-radius: 4px;
-  background: rgba(255, 0, 60, 0.05);
+  background: rgba(255, 159, 28, 0.08);
   border-left: 2px solid var(--accent-magenta);
   position: relative;
 }
@@ -272,7 +272,7 @@ onMounted(scrollToBottom);
 .user .message-bubble {
   border-left: none;
   border-right: 2px solid var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
   text-align: right;
 }
 
@@ -324,7 +324,7 @@ input {
 input:focus {
   outline: none;
   border-color: var(--accent-cyan);
-  background: rgba(0, 240, 255, 0.05);
+  background: rgba(212, 175, 55, 0.08);
 }
 
 .send-btn {
