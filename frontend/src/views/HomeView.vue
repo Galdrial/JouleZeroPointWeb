@@ -4,6 +4,7 @@ import { onMounted, ref } from "vue";
 import heroImg from "../assets/hero.png";
 
 const fragmentCount = ref(120); // Default placeholder
+const isAuthenticated = ref(false);
 const tabletopGuideUrl =
   "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
@@ -24,6 +25,7 @@ const particleStyles = Array.from({ length: 150 }, () => ({
 }));
 
 onMounted(async () => {
+  isAuthenticated.value = !!localStorage.getItem("username");
   try {
     const response = await axios.get("http://localhost:3000/api/cards");
     fragmentCount.value = response.data.length;
@@ -61,20 +63,28 @@ onMounted(async () => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              ACCEDI AL PUNTO ZERO
+              GIOCA SU TABLETOP
             </a>
+            <RouterLink
+              v-if="isAuthenticated"
+              to="/public-decks"
+              class="cyber-btn btn-secondary hero-btn hero-btn-community"
+            >
+              ESPLORA I MAZZI PUBBLICI
+            </RouterLink>
             <a
+              v-else
               :href="discordInviteUrl"
               class="cyber-btn btn-secondary hero-btn hero-btn-community"
               target="_blank"
               rel="noopener noreferrer"
             >
-              UNISCITI ALLA COMMUNITY
+              ENTRA NELLA COMMUNITY
             </a>
           </div>
           <div class="hero-meta">
             <span class="hero-status"
-              >⚡ BETA APERTA SU TABLETOP + DISCORD</span
+              >⚡ BETA APERTA SU TABLETOP SIMULATOR + CANALE DISCORD DEDICATO</span
             >
           </div>
         </div>
@@ -92,7 +102,7 @@ onMounted(async () => {
           linea temporale.
         </p>
         <RouterLink to="/cards" class="link-text"
-          >Scopri la Matrice →</RouterLink
+          >Esplora la Matrice →</RouterLink
         >
       </div>
 
@@ -115,16 +125,27 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Deckbuilder Shortcut -->
+      <!-- Deckbuilder / Registration CTA -->
       <div class="glass-panel info-card highlight">
-        <h3>COSTRUZIONE MAZZI</h3>
-        <p>
-          Assembla i tuoi Frammenti per forgiare la tua strategia. Ricorda: 40
-          carte, 3 copie per frammento stabile.
-        </p>
-        <RouterLink to="/deckbuilder" class="cyber-btn btn-primary mini-btn"
-          >DECKBUILDER</RouterLink
-        >
+        <template v-if="isAuthenticated">
+          <h3>COSTRUZIONE MAZZI</h3>
+          <p>
+            Assembla i Frammenti per forgiare la tua strategia, condividi i tuoi mazzi con la community e ricorda: Il caos è un'arma. Usalo.
+          </p>
+          <RouterLink to="/deckbuilder" class="cyber-btn btn-primary mini-btn"
+            >COSTRUISCI IL TUO MAZZO</RouterLink
+          >
+        </template>
+        <template v-else>
+          <h3>REGISTRATI AL PUNTO ZERO</h3>
+          <p>
+            Crea un account per salvare i tuoi mazzi e iniziare a costruire la
+            tua strategia nel Punto Zero.
+          </p>
+          <RouterLink to="/login" class="cyber-btn btn-primary mini-btn"
+            >REGISTRATI ORA</RouterLink
+          >
+        </template>
       </div>
     </div>
   </div>

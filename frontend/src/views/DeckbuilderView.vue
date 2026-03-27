@@ -368,7 +368,7 @@ onMounted(async () => {
   <div class="deck-view fade-in">
     <!-- DASHBOARD MODE -->
     <div v-if="viewMode === 'dashboard'" class="dashboard-container">
-      <h1 class="main-title">MAZZI</h1>
+      <h1 class="main-title">I MIEI MAZZI</h1>
 
       <div class="top-actions">
         <button @click="createNewDeck" class="cyber-btn btn-primary huge">
