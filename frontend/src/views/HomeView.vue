@@ -3,11 +3,28 @@ import axios from "axios";
 import { onMounted, ref } from "vue";
 import heroImg from "../assets/hero.png";
 
-const fragmentCount = ref(120); // Default placeholder
+type NewsPreview = {
+  id: number;
+  slug: string;
+  title: string;
+  summary: string;
+  sourceUrl: string;
+  publishedAt: string;
+};
+
+const fragmentCount = ref(120);
 const isAuthenticated = ref(false);
+const latestNews = ref<NewsPreview[]>([]);
 const tabletopGuideUrl =
   "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
+
+const formatNewsDate = (value: string) =>
+  new Date(value).toLocaleDateString("it-IT", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 
 const particleStyles = Array.from({ length: 150 }, () => ({
   left: `${Math.random() * 100}%`,
@@ -26,11 +43,19 @@ const particleStyles = Array.from({ length: 150 }, () => ({
 
 onMounted(async () => {
   isAuthenticated.value = !!localStorage.getItem("username");
+
   try {
-    const response = await axios.get("http://localhost:3000/api/cards");
+    const response = await axios.get("/api/cards");
     fragmentCount.value = response.data.length;
   } catch (err) {
     console.error("Errore sincronizzazione frammenti:", err);
+  }
+
+  try {
+    const response = await axios.get("/api/news", { params: { limit: 2 } });
+    latestNews.value = response.data;
+  } catch (err) {
+    console.error("Errore caricamento news home:", err);
   }
 });
 </script>
@@ -84,7 +109,8 @@ onMounted(async () => {
           </div>
           <div class="hero-meta">
             <span class="hero-status"
-              >⚡ BETA APERTA SU TABLETOP SIMULATOR + CANALE DISCORD DEDICATO</span
+              >⚡ BETA APERTA SU TABLETOP SIMULATOR + CANALE DISCORD
+              DEDICATO</span
             >
           </div>
         </div>
@@ -92,7 +118,6 @@ onMounted(async () => {
     </section>
 
     <div class="dashboard-grid">
-      <!-- Lore Section -->
       <div class="glass-panel info-card">
         <h3>LORE: IL PUNTO ZERO</h3>
         <p>
@@ -106,7 +131,6 @@ onMounted(async () => {
         >
       </div>
 
-      <!-- Quick Stats / News -->
       <div class="glass-panel info-card">
         <h3>STATO MATRICE</h3>
         <div class="stats-list">
@@ -125,12 +149,12 @@ onMounted(async () => {
         </div>
       </div>
 
-      <!-- Deckbuilder / Registration CTA -->
       <div class="glass-panel info-card highlight">
         <template v-if="isAuthenticated">
           <h3>COSTRUZIONE MAZZI</h3>
           <p>
-            Assembla i Frammenti per forgiare la tua strategia, condividi i tuoi mazzi con la community e ricorda: Il caos è un'arma. Usalo.
+            Assembla i Frammenti per forgiare la tua strategia, condividi i tuoi
+            mazzi con la community e ricorda: Il caos è un'arma. Usalo.
           </p>
           <RouterLink to="/deckbuilder" class="cyber-btn btn-primary mini-btn"
             >COSTRUISCI IL TUO MAZZO</RouterLink
@@ -148,6 +172,44 @@ onMounted(async () => {
         </template>
       </div>
     </div>
+
+    <section class="news-section">
+      <div class="news-section-header">
+        <h3>ULTIME NEWS</h3>
+        <RouterLink to="/public-decks" class="news-header-link"
+          >Esplora anche i mazzi pubblici →</RouterLink
+        >
+      </div>
+
+      <div v-if="latestNews.length" class="news-grid">
+        <article
+          v-for="news in latestNews"
+          :key="news.id"
+          class="glass-panel news-card"
+        >
+          <p class="news-date">{{ formatNewsDate(news.publishedAt) }}</p>
+          <h4>{{ news.title }}</h4>
+          <p class="news-summary">{{ news.summary }}</p>
+          <div class="news-actions">
+            <RouterLink :to="`/news/${news.slug}`" class="link-text"
+              >Leggi la news completa →</RouterLink
+            >
+            <a
+              v-if="news.sourceUrl"
+              :href="news.sourceUrl"
+              class="news-source-link"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Fonte esterna</a
+            >
+          </div>
+        </article>
+      </div>
+
+      <div v-else class="glass-panel news-empty">
+        Nessuna news disponibile al momento.
+      </div>
+    </section>
   </div>
 </template>
 
@@ -307,6 +369,90 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+}
+
+.news-section {
+  margin-top: 2.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.news-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.news-section-header h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+  color: var(--accent-cyan);
+  font-size: 1rem;
+}
+
+.news-header-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.news-card {
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.news-date {
+  margin: 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.6px;
+  color: rgba(226, 232, 240, 0.72);
+}
+
+.news-card h4 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--text-light);
+  line-height: 1.4;
+}
+
+.news-summary {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-size: 0.92rem;
+}
+
+.news-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.7rem;
+  flex-wrap: wrap;
+}
+
+.news-source-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.8rem;
+}
+
+.news-empty {
+  padding: 1.2rem 1.4rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
 }
 
 .info-card {

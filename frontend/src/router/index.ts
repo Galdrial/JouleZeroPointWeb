@@ -31,6 +31,11 @@ const router = createRouter( {
       component: () => import( '../views/PublicDecksView.vue' )
     },
     {
+      path: '/news/:slug',
+      name: 'news-detail',
+      component: () => import( '../views/NewsDetailView.vue' )
+    },
+    {
       path: '/terminale-punto-zero',
       name: 'oracle',
       component: () => import( '../views/TerminalView.vue' ),

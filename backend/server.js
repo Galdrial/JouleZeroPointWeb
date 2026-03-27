@@ -63,6 +63,43 @@ function parseCSV( fileContent ) {
 const fs = require( 'fs' );
 const path = require( 'path' );
 const DECKS_FILE = path.join( __dirname, 'decks.json' );
+const NEWS_FILE = path.join( __dirname, 'news.json' );
+
+function normalizeNews( news ) {
+  return {
+    id: news.id,
+    slug: news.slug,
+    title: news.title,
+    summary: news.summary,
+    content: news.content,
+    sourceUrl: news.sourceUrl || '',
+    publishedAt: news.publishedAt,
+    isPublished: news.isPublished !== false
+  };
+}
+
+function readNews() {
+  const raw = fs.readFileSync( NEWS_FILE, 'utf8' );
+  const parsed = JSON.parse( raw );
+  if ( !Array.isArray( parsed ) ) return [];
+  return parsed.map( normalizeNews );
+}
+
+function writeNews( news ) {
+  fs.writeFileSync( NEWS_FILE, JSON.stringify( news, null, 2 ) );
+}
+
+function requireAdmin( req, res, next ) {
+  const adminKey = process.env.ADMIN_KEY;
+  if ( !adminKey ) {
+    return res.status( 503 ).json( { error: 'Gestione news non configurata (ADMIN_KEY mancante).' } );
+  }
+  const provided = req.headers['x-admin-key'] || '';
+  if ( provided !== adminKey ) {
+    return res.status( 401 ).json( { error: 'Accesso non autorizzato.' } );
+  }
+  next();
+}
 
 function normalizeDeck( deck ) {
   return {
@@ -96,6 +133,121 @@ app.get( '/api/cards', async ( req, res ) => {
   } catch ( error ) {
     console.error( 'Errore nel fetch delle carte da Google Sheets:', error );
     res.status( 500 ).json( { error: 'Errore durante la lettura della Matrice Dati (Server Error)' } );
+  }
+} );
+
+app.get( '/api/news', ( req, res ) => {
+  try {
+    const { limit } = req.query;
+    const parsedLimit = parseInt( limit, 10 );
+
+    let news = readNews()
+      .filter( item => item.isPublished )
+      .sort( ( a, b ) => new Date( b.publishedAt ).getTime() - new Date( a.publishedAt ).getTime() );
+
+    if ( Number.isFinite( parsedLimit ) && parsedLimit > 0 ) {
+      news = news.slice( 0, parsedLimit );
+    }
+
+    const payload = news.map( ( { content, ...item } ) => item );
+    res.json( payload );
+  } catch ( error ) {
+    console.error( 'Errore caricamento news:', error );
+    res.status( 500 ).json( { error: 'Errore caricamento news' } );
+  }
+} );
+
+app.get( '/api/news/:slug', ( req, res ) => {
+  try {
+    const { slug } = req.params;
+    const news = readNews().find( item => item.slug === slug && item.isPublished );
+
+    if ( !news ) {
+      return res.status( 404 ).json( { error: 'News non trovata' } );
+    }
+
+    res.json( news );
+  } catch ( error ) {
+    console.error( 'Errore dettaglio news:', error );
+    res.status( 500 ).json( { error: 'Errore dettaglio news' } );
+  }
+} );
+
+// Gestione News (Admin)
+app.post( '/api/admin/news', requireAdmin, ( req, res ) => {
+  try {
+    const { slug, title, summary, content, sourceUrl, publishedAt, isPublished } = req.body;
+
+    if ( !slug || !title || !summary || !content ) {
+      return res.status( 400 ).json( { error: 'Campi obbligatori: slug, title, summary, content.' } );
+    }
+
+    const news = readNews();
+    if ( news.find( n => n.slug === slug ) ) {
+      return res.status( 409 ).json( { error: `Esiste già una news con slug "${slug}".` } );
+    }
+
+    const newItem = normalizeNews( {
+      id: Date.now(),
+      slug: slug.trim(),
+      title: title.trim(),
+      summary: summary.trim(),
+      content: content.trim(),
+      sourceUrl: ( sourceUrl || '' ).trim(),
+      publishedAt: publishedAt || new Date().toISOString(),
+      isPublished: isPublished !== false
+    } );
+
+    news.push( newItem );
+    writeNews( news );
+    res.status( 201 ).json( newItem );
+  } catch ( error ) {
+    console.error( 'Errore creazione news:', error );
+    res.status( 500 ).json( { error: 'Errore creazione news' } );
+  }
+} );
+
+app.put( '/api/admin/news/:slug', requireAdmin, ( req, res ) => {
+  try {
+    const { slug } = req.params;
+    const news = readNews();
+    const index = news.findIndex( n => n.slug === slug );
+
+    if ( index === -1 ) {
+      return res.status( 404 ).json( { error: 'News non trovata.' } );
+    }
+
+    const updated = normalizeNews( {
+      ...news[index],
+      ...req.body,
+      slug,
+      id: news[index].id
+    } );
+
+    news[index] = updated;
+    writeNews( news );
+    res.json( updated );
+  } catch ( error ) {
+    console.error( 'Errore aggiornamento news:', error );
+    res.status( 500 ).json( { error: 'Errore aggiornamento news' } );
+  }
+} );
+
+app.delete( '/api/admin/news/:slug', requireAdmin, ( req, res ) => {
+  try {
+    const { slug } = req.params;
+    const news = readNews();
+    const filtered = news.filter( n => n.slug !== slug );
+
+    if ( filtered.length === news.length ) {
+      return res.status( 404 ).json( { error: 'News non trovata.' } );
+    }
+
+    writeNews( filtered );
+    res.json( { message: `News "${slug}" eliminata.` } );
+  } catch ( error ) {
+    console.error( 'Errore eliminazione news:', error );
+    res.status( 500 ).json( { error: 'Errore eliminazione news' } );
   }
 } );
 

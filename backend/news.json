@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "slug": "beta-aperta-tabletop-discord",
+    "title": "Joule Zero Point entra in beta aperta su Tabletop Simulator",
+    "summary": "La beta è ora disponibile: puoi provare i mazzi iniziali, testare il ritmo delle partite e inviare feedback direttamente su Discord.",
+    "content": "La fase di beta aperta di Joule Zero Point è ufficialmente iniziata su Tabletop Simulator. In questa versione puoi sperimentare i mazzi base, prendere confidenza con i Frammenti e contribuire all'equilibrio generale del sistema con i tuoi feedback.\n\nL'obiettivo di questa fase è validare la chiarezza delle regole, il ritmo di partita e la varietà strategica dei Costruttori disponibili. Ogni partita giocata e ogni suggerimento ricevuto ci aiuta a stabilizzare il Punto Zero.\n\nPer partecipare attivamente, entra nel server Discord ufficiale e condividi test, dubbi e idee con la community.",
+    "sourceUrl": "https://discord.gg/kjFWC5Uj",
+    "publishedAt": "2026-03-25T10:00:00.000Z",
+    "isPublished": true
+  },
+  {
+    "id": 2,
+    "slug": "aggiornamento-bilanciamento-frammenti",
+    "title": "Aggiornamento bilanciamento: ritoccati i Frammenti Evento",
+    "summary": "Abbiamo aggiornato alcuni valori chiave dei Frammenti Evento per migliorare la leggibilità delle combo e ridurre i picchi troppo esplosivi.",
+    "content": "Con l'ultimo aggiornamento abbiamo ritoccato diversi Frammenti Evento per rendere le decisioni più leggibili durante i turni centrali. Alcuni effetti con alta volatilità sono stati ridimensionati per evitare sbilanciamenti nelle linee temporali più aggressive.\n\nIl focus è mantenere l'identità dei mazzi senza sacrificare interazione e controgioco. Continueremo a monitorare le performance dei deck più usati nella community e applicheremo ulteriori aggiustamenti se necessario.\n\nSe vuoi vedere il dettaglio delle modifiche, consulta il post completo nella nostra bacheca aggiornamenti.",
+    "sourceUrl": "https://joulezeropoint.example.com/news/aggiornamento-bilanciamento",
+    "publishedAt": "2026-03-20T14:30:00.000Z",
+    "isPublished": true
+  },
+  {
+    "id": 3,
+    "slug": "roadmap-stagione-zero",
+    "title": "Roadmap Stagione Zero: prossimi obiettivi del progetto",
+    "summary": "Nuove funzionalità in arrivo: miglioramenti al deckbuilder, estensione del database carte e supporto a eventi community.",
+    "content": "La Roadmap Stagione Zero definisce le priorità delle prossime settimane: completare il ciclo di creazione e condivisione dei mazzi, aumentare la copertura della Matrice Dati e introdurre strumenti dedicati agli eventi organizzati dalla community.\n\nQuesta fase punta a consolidare l'esperienza di gioco e a rendere più semplice il contributo dei giocatori al bilanciamento. Pubblicheremo aggiornamenti periodici con lo stato delle milestone principali.",
+    "sourceUrl": "https://joulezeropoint.example.com/news/roadmap-stagione-zero",
+    "publishedAt": "2026-03-15T09:15:00.000Z",
+    "isPublished": true
+  }
+]
