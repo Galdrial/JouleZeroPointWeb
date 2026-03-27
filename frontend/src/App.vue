@@ -46,7 +46,7 @@ watch(
     <header v-if="!hideUI" class="glass-navbar">
       <RouterLink to="/" class="logo-link">
         <div class="logo">
-          <span class="joule">JOULE:</span> <span class="zp">ZERO POINT</span>
+          <span class="joule">JOULE</span> <span class="zp">ZERO POINT</span>
         </div>
       </RouterLink>
       <nav>
@@ -158,6 +158,15 @@ watch(
   opacity: 0.8;
 }
 
+.logo .joule {
+  color: #fedc68;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+}
+
+.logo .zp {
+  color: #ffffff;
+}
+
 .content-wrapper--flush-top {
   padding-top: 0;
 }
@@ -178,7 +187,7 @@ watch(
   cursor: pointer;
   z-index: 999;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.22);
   backdrop-filter: blur(10px);
 }
 
@@ -192,12 +201,12 @@ watch(
 
 .terminal-trigger:hover {
   transform: scale(1.1) rotate(10deg);
-  box-shadow: 0 0 25px rgba(0, 240, 255, 0.4);
+  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
   border-color: #fff;
 }
 
 .terminal-trigger.active {
-  background: rgba(255, 0, 60, 0.1);
+  background: rgba(255, 159, 28, 0.14);
   border-color: var(--accent-magenta);
   transform: scale(1.1) rotate(10deg);
 }
