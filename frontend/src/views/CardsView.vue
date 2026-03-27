@@ -195,8 +195,7 @@ const vClickOutside = {
               <span
                 class="dot"
                 :style="{
-                  backgroundColor:
-                    selectedTypeOption?.color || 'transparent',
+                  backgroundColor: selectedTypeOption?.color || 'transparent',
                   opacity: selectedType ? 1 : 0,
                 }"
               ></span>
