@@ -56,11 +56,11 @@ const sortOptions = [
 ] as const;
 
 const selectedCostruttoreLabel = computed(() => {
-  if (filterCostruttore.value === "") return "COSTRUTTORE";
+  if (filterCostruttore.value === "") return "Costruttore";
   return (
     costruttori.value
       .find((costruttore) => costruttore.id === filterCostruttore.value)
-      ?.name.split(",")[0] || "COSTRUTTORE"
+      ?.name.split(",")[0] || "Costruttore"
   );
 });
 
@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
               @click.stop="filterCostruttore = ''"
             >
               <span class="dot dot--hidden"></span>
-              TUTTI
+              Tutti
             </div>
             <div
               v-for="c in costruttori"
@@ -324,7 +324,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div v-if="error" class="error-banner">{{ error }}</div>
     <div v-if="successMessage" class="success-banner">
       <span>{{ successMessage }}</span>
       <button class="success-close" @click="clearSuccessMessage">×</button>
@@ -456,6 +455,24 @@ onBeforeUnmount(() => {
       </button>
     </div>
   </div>
+
+  <!-- ALERT ERRORE -->
+  <Transition name="fade">
+    <div v-if="error" class="alert-overlay" @click="error = ''">
+      <div class="alert-box glass-panel" @click.stop>
+        <div class="alert-header">
+          <span class="alert-icon">⚠️</span>
+          NOTIFICA TERMINALE
+        </div>
+        <div class="alert-content">{{ error }}</div>
+        <div class="alert-actions">
+          <button class="cyber-btn btn-primary small-btn" @click="error = ''">
+            RICEVUTO
+          </button>
+        </div>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <style scoped>
@@ -606,13 +623,57 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 5px #ffd700;
 }
 
-.error-banner {
-  margin: 0;
+.alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.alert-box {
+  width: 90%;
+  max-width: 450px;
+  padding: 2.5rem;
   border: 1px solid var(--accent-magenta);
+  box-shadow: 0 0 30px rgba(255, 159, 28, 0.24);
+  text-align: center;
+}
+
+.alert-header {
+  font-family: var(--font-display);
   color: var(--accent-magenta);
-  background: rgba(255, 159, 28, 0.1);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.alert-content {
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  font-family: var(--font-body);
+}
+
+.alert-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.small-btn {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.8rem;
+  height: auto;
 }
 
 .success-banner {

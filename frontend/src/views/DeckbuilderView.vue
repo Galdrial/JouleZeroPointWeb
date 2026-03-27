@@ -396,7 +396,7 @@ onMounted(async () => {
             {{
               costruttori
                 .find((c) => c.id === filterCostruttore)
-                ?.name.split(",")[0] || "COSTRUTTORE"
+                ?.name.split(",")[0] || "Costruttore"
             }}
             <span class="arrow" :class="{ open: isCostruttoreDropdownOpen }"
               >▼</span
@@ -416,7 +416,7 @@ onMounted(async () => {
                   class="dot"
                   style="background: transparent; opacity: 0"
                 ></span>
-                TUTTI
+                Tutti
               </div>
               <div
                 v-for="c in costruttori"
@@ -544,7 +544,7 @@ onMounted(async () => {
                 class="dropdown-trigger small"
                 @click.stop="isTypeDropdownOpen = !isTypeDropdownOpen"
               >
-                {{ editorSelectedType || "TUTTI I TIPI" }}
+                {{ editorSelectedType || "Tutti i tipi" }}
                 <span class="arrow" :class="{ open: isTypeDropdownOpen }"
                   >▼</span
                 >
