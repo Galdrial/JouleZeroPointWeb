@@ -110,8 +110,7 @@ onMounted(async () => {
           </div>
           <div class="hero-meta">
             <span class="hero-status"
-              >⚡ BETA SU TABLETOP SIMULATOR + CANALE DISCORD
-              DEDICATO</span
+              >⚡ BETA SU TABLETOP SIMULATOR + CANALE DISCORD DEDICATO</span
             >
           </div>
         </div>
@@ -472,6 +471,13 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
   gap: clamp(0.85rem, 2vw, 1rem);
+  max-width: 100%;
+}
+
+@media (min-width: 900px) {
+  .news-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .news-card {
@@ -653,7 +659,7 @@ onMounted(async () => {
   border-top: 2px solid var(--accent-cyan);
 }
 
-@media (max-width: 1480px) {
+@media (max-width: 1500px) {
   .hero-section {
     width: calc(100% + 2rem);
     margin-left: -1rem;
@@ -787,6 +793,17 @@ onMounted(async () => {
   }
   62% {
     filter: brightness(0.78);
+  }
+}
+@media (max-height: 500px) {
+  .hero-content {
+    top: clamp(25rem, 4vw, 2.5rem);
+  }
+  .hero-headline {
+    font-size: clamp(1.2rem, 3.5vw, 1.6rem) !important;
+  }
+  .hero-subtitle {
+    font-size: clamp(0.5rem, 2.5vw, 0.85rem);
   }
 }
 </style>

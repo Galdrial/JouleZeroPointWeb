@@ -77,6 +77,9 @@ watch(
         <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
           >Database</RouterLink
         >
+        <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item"
+          >Come iniziare</RouterLink
+        >
         <RouterLink to="/news" class="cyber-btn btn-secondary nav-item"
           >News</RouterLink
         >
@@ -495,7 +498,7 @@ watch(
 }
 
 /* ── Mobile nav drawer ── */
-@media (max-width: 768px) {
+@media (max-width: 1690px) {
   .hamburger {
     display: flex;
   }
