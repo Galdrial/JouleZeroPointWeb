@@ -172,7 +172,19 @@ const goToDeck = (deckId: number) => {
           </div>
 
           <div v-if="isOwnProfile" class="deck-footer">
-            <span class="edit-btn">MODIFICA ARCHIVIO →</span>
+            <span class="edit-btn">
+              <span>MODIFICA ARCHIVIO</span>
+              <svg viewBox="0 0 16 16" class="edit-btn-icon" aria-hidden="true">
+                <path
+                  d="M6.5 3.5L11 8l-4.5 4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </span>
           </div>
         </div>
       </div>
@@ -466,9 +478,18 @@ const goToDeck = (deckId: number) => {
 }
 
 .edit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   font-size: 0.75rem;
   color: var(--accent-cyan);
   font-weight: 700;
+}
+
+.edit-btn-icon {
+  width: 0.8rem;
+  height: 0.8rem;
+  flex: 0 0 auto;
 }
 
 .danger-zone {

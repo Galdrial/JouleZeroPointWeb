@@ -330,7 +330,19 @@ onMounted(() => {
     <header class="admin-header">
       <span class="admin-logo">JOULE — PANNELLO NEWS</span>
       <div v-if="isAuthenticated" class="admin-header-right">
-        <a href="/" class="admin-link">← Torna al sito</a>
+        <a href="/" class="admin-link">
+          <svg viewBox="0 0 16 16" class="admin-link-icon" aria-hidden="true">
+            <path
+              d="M9.5 3.5L5 8l4.5 4.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <span>Torna al sito</span>
+        </a>
         <button class="admin-btn btn-ghost" @click="logout">Esci</button>
       </div>
     </header>
@@ -654,9 +666,18 @@ onMounted(() => {
 }
 
 .admin-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--text-muted, #94a3b8);
   text-decoration: none;
   font-size: 0.85rem;
+}
+
+.admin-link-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: 0 0 auto;
 }
 
 .admin-main {

@@ -77,7 +77,22 @@ onMounted(async () => {
 
       <div class="news-detail-actions">
         <div class="news-detail-links">
-          <RouterLink to="/" class="link-text">← Torna alla Home</RouterLink>
+          <RouterLink
+            to="/"
+            class="link-text detail-nav-link detail-nav-link--back"
+          >
+            <svg viewBox="0 0 16 16" class="detail-nav-icon" aria-hidden="true">
+              <path
+                d="M9.5 3.5L5 8l4.5 4.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>Torna alla Home</span>
+          </RouterLink>
           <RouterLink to="/news" class="news-archive-link"
             >Archivio news</RouterLink
           >
@@ -100,7 +115,22 @@ onMounted(async () => {
 
     <div v-else class="glass-panel news-state">
       <p>{{ errorMessage || "News non trovata." }}</p>
-      <RouterLink to="/" class="link-text">← Torna alla Home</RouterLink>
+      <RouterLink
+        to="/"
+        class="link-text detail-nav-link detail-nav-link--back"
+      >
+        <svg viewBox="0 0 16 16" class="detail-nav-icon" aria-hidden="true">
+          <path
+            d="M9.5 3.5L5 8l4.5 4.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span>Torna alla Home</span>
+      </RouterLink>
     </div>
   </div>
 </template>
@@ -188,6 +218,18 @@ onMounted(async () => {
   display: flex;
   gap: 0.9rem;
   flex-wrap: wrap;
+}
+
+.detail-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.detail-nav-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
 }
 
 .news-archive-link {

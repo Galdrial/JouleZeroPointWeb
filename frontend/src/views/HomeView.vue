@@ -129,9 +129,19 @@ onMounted(async () => {
           stabilizzare l'esistenza. Ogni carta è un ricordo, ogni mazzo una
           linea temporale.
         </p>
-        <RouterLink to="/cards" class="link-text"
-          >Esplora la Matrice →</RouterLink
-        >
+        <RouterLink to="/cards" class="link-text">
+          <span>Esplora la Matrice</span>
+          <svg viewBox="0 0 16 16" class="link-icon" aria-hidden="true">
+            <path
+              d="M6.5 3.5L11 8l-4.5 4.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </RouterLink>
       </div>
 
       <div class="glass-panel info-card">
@@ -179,9 +189,23 @@ onMounted(async () => {
     <section class="news-section">
       <div class="news-section-header">
         <h3>ULTIME NEWS</h3>
-        <RouterLink to="/news" class="news-header-link"
-          >Vai all'archivio completo →</RouterLink
-        >
+        <RouterLink to="/news" class="news-header-link">
+          <span>Vai all'archivio completo</span>
+          <svg
+            viewBox="0 0 16 16"
+            class="news-header-link-icon"
+            aria-hidden="true"
+          >
+            <path
+              d="M6.5 3.5L11 8l-4.5 4.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </RouterLink>
       </div>
 
       <div v-if="latestNews.length" class="news-grid">
@@ -202,9 +226,19 @@ onMounted(async () => {
           <h4>{{ news.title }}</h4>
           <p class="news-summary">{{ news.summary }}</p>
           <div class="news-actions">
-            <RouterLink :to="`/news/${news.slug}`" class="link-text"
-              >Leggi la news completa →</RouterLink
-            >
+            <RouterLink :to="`/news/${news.slug}`" class="link-text">
+              <span>Leggi la news completa</span>
+              <svg viewBox="0 0 16 16" class="link-icon" aria-hidden="true">
+                <path
+                  d="M6.5 3.5L11 8l-4.5 4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </RouterLink>
             <a
               v-if="news.sourceUrl"
               :href="news.sourceUrl"
@@ -409,6 +443,15 @@ onMounted(async () => {
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.news-header-link-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
 }
 
 .news-grid {
@@ -542,11 +585,20 @@ onMounted(async () => {
 }
 
 .link-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   color: var(--accent-cyan);
   text-decoration: none;
   font-weight: 700;
   font-size: 0.85rem;
   margin-top: auto;
+}
+
+.link-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
 }
 
 .mini-btn {

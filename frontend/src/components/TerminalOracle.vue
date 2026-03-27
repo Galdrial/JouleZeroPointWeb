@@ -177,10 +177,10 @@ const vClickOutside = {
         />
         <button
           type="submit"
-          class="btn-primary send-btn"
+          class="cyber-btn btn-primary send-btn"
           :disabled="loading || !inputMessage.trim()"
         >
-          ➤
+          INVIA
         </button>
       </form>
     </div>
@@ -355,9 +355,11 @@ const vClickOutside = {
 }
 
 .send-btn {
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 1.2rem;
   width: auto;
-  font-size: 1rem;
+  font-size: 0.7rem;
+  letter-spacing: 2px;
+  flex-shrink: 0;
 }
 
 /* Transitions */

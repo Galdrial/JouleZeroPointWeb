@@ -352,7 +352,17 @@ const vClickOutside = {
           scrollToTop();
         "
       >
-        ← PREV
+        <svg viewBox="0 0 16 16" class="pag-btn-icon" aria-hidden="true">
+          <path
+            d="M9.5 3.5L5 8l4.5 4.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        PREV
       </button>
 
       <div class="page-info">
@@ -369,7 +379,17 @@ const vClickOutside = {
           scrollToTop();
         "
       >
-        NEXT →
+        NEXT
+        <svg viewBox="0 0 16 16" class="pag-btn-icon" aria-hidden="true">
+          <path
+            d="M6.5 3.5L11 8l-4.5 4.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
       </button>
     </div>
 
@@ -828,5 +848,15 @@ const vClickOutside = {
   color: #fff;
   text-shadow: 0 0 10px var(--accent-cyan);
   padding: 0 0.5rem;
+}
+.pag-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.pag-btn-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex: 0 0 auto;
 }
 </style>

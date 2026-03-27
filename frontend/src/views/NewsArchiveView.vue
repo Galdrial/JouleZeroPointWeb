@@ -48,7 +48,19 @@ onMounted(async () => {
           priorità alle comunicazioni in evidenza.
         </p>
       </div>
-      <RouterLink to="/" class="archive-link">← Torna alla Home</RouterLink>
+      <RouterLink to="/" class="archive-link archive-link--back">
+        <svg viewBox="0 0 16 16" class="archive-link-icon" aria-hidden="true">
+          <path
+            d="M9.5 3.5L5 8l4.5 4.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        <span>Torna alla Home</span>
+      </RouterLink>
     </header>
 
     <div v-if="isLoading" class="glass-panel archive-state">
@@ -79,9 +91,23 @@ onMounted(async () => {
         <h2>{{ news.title }}</h2>
         <p class="archive-summary">{{ news.summary }}</p>
         <div class="archive-actions">
-          <RouterLink :to="`/news/${news.slug}`" class="archive-primary-link"
-            >Leggi la news completa →</RouterLink
-          >
+          <RouterLink :to="`/news/${news.slug}`" class="archive-primary-link">
+            <span>Leggi la news completa</span>
+            <svg
+              viewBox="0 0 16 16"
+              class="archive-link-icon"
+              aria-hidden="true"
+            >
+              <path
+                d="M6.5 3.5L11 8l-4.5 4.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </RouterLink>
           <a
             v-if="news.sourceUrl"
             :href="news.sourceUrl"
@@ -139,6 +165,9 @@ onMounted(async () => {
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 .archive-grid {
@@ -212,6 +241,15 @@ onMounted(async () => {
   text-decoration: none;
   font-weight: 700;
   font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.archive-link-icon {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
 }
 
 .archive-secondary-link {

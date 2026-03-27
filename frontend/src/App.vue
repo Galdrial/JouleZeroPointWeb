@@ -279,7 +279,9 @@ watch(
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 1.28rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.5rem;
 }
 
 .footer-section-title {
@@ -292,7 +294,7 @@ watch(
 .footer-divider {
   width: min(320px, 100%);
   height: 1px;
-  margin: 0.9rem auto 0;
+  margin: 0.45rem auto 0;
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0),
