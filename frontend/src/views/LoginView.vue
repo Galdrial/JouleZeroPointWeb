@@ -1,55 +1,57 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import axios from 'axios';
-import { useRouter, useRoute } from 'vue-router';
+import axios from "axios";
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 const router = useRouter();
 const route = useRoute();
 
 const isLogin = ref(true);
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const error = ref('');
-const success = ref('');
+const username = ref("");
+const email = ref("");
+const password = ref("");
+const error = ref("");
+const success = ref("");
 const loading = ref(false);
 
 const toggleMode = () => {
   isLogin.value = !isLogin.value;
-  error.value = '';
-  success.value = '';
+  error.value = "";
+  success.value = "";
 };
 
 const submitForm = async () => {
   loading.value = true;
-  error.value = '';
-  success.value = '';
+  error.value = "";
+  success.value = "";
 
   try {
     if (isLogin.value) {
-      const res = await axios.post('http://localhost:3000/api/auth/login', {
+      const res = await axios.post("/api/auth/login", {
         email: email.value,
-        password: password.value
+        password: password.value,
       });
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('username', res.data.username);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("username", res.data.username);
       success.value = res.data.message;
-      const redirectTo = route.query.redirect as string || '/';
+      const redirectTo = (route.query.redirect as string) || "/";
       setTimeout(() => router.push(redirectTo), 1200);
     } else {
-      const res = await axios.post('http://localhost:3000/api/auth/register', {
+      const res = await axios.post("/api/auth/register", {
         username: username.value,
         email: email.value,
-        password: password.value
+        password: password.value,
       });
       success.value = res.data.message;
-      setTimeout(() => { 
-        isLogin.value = true; 
-        password.value = '';
+      setTimeout(() => {
+        isLogin.value = true;
+        password.value = "";
       }, 2000);
     }
   } catch (err: any) {
-    error.value = err.response?.data?.error || 'Errore di comunicazione col Nucleo Centrale.';
+    error.value =
+      err.response?.data?.error ||
+      "Errore di comunicazione col Nucleo Centrale.";
   } finally {
     loading.value = false;
   }
@@ -59,23 +61,58 @@ const submitForm = async () => {
 <template>
   <div class="login-view fade-in">
     <div class="glass-panel auth-panel">
-      <h2>{{ isLogin ? 'Accesso Costruttori' : 'Nuova Sincronizzazione' }}</h2>
-      
+      <h2>{{ isLogin ? "Accesso Costruttori" : "Nuova Sincronizzazione" }}</h2>
+
       <div v-if="error" class="alert-box error">{{ error }}</div>
       <div v-if="success" class="alert-box success">{{ success }}</div>
 
       <form @submit.prevent="submitForm">
-        <input v-if="!isLogin" v-model="username" type="text" placeholder="Nome Costruttore" class="glass-input" required />
-        <input v-model="email" type="email" placeholder="Frequenza Temporale (Email)" class="glass-input" required />
-        <input v-model="password" type="password" placeholder="Passphrase" class="glass-input" required />
-        <button type="submit" class="cyber-btn btn-primary full-width" :disabled="loading">
-          {{ loading ? 'Elaborazione...' : (isLogin ? 'Sincronizzazione' : 'Registra Frequenza') }}
+        <input
+          v-if="!isLogin"
+          v-model="username"
+          type="text"
+          placeholder="Nome Costruttore"
+          class="glass-input"
+          required
+        />
+        <input
+          v-model="email"
+          type="email"
+          placeholder="Frequenza Temporale (Email)"
+          class="glass-input"
+          required
+        />
+        <input
+          v-model="password"
+          type="password"
+          placeholder="Passphrase"
+          class="glass-input"
+          required
+        />
+        <button
+          type="submit"
+          class="cyber-btn btn-primary full-width"
+          :disabled="loading"
+        >
+          {{
+            loading
+              ? "Elaborazione..."
+              : isLogin
+                ? "Sincronizzazione"
+                : "Registra Frequenza"
+          }}
         </button>
       </form>
 
       <p class="toggle-text">
-        {{ isLogin ? 'Non hai un identificativo temporale?' : 'Hai già una frequenza registrata?' }}
-        <a href="#" @click.prevent="toggleMode">{{ isLogin ? 'Inizializzalo' : 'Accedi' }}</a>
+        {{
+          isLogin
+            ? "Non hai un identificativo temporale?"
+            : "Hai già una frequenza registrata?"
+        }}
+        <a href="#" @click.prevent="toggleMode">{{
+          isLogin ? "Inizializzalo" : "Accedi"
+        }}</a>
       </p>
     </div>
   </div>

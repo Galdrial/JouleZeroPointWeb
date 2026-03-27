@@ -28,6 +28,13 @@ body {
 
 #app {
   width: 100%;
+  overflow-x: clip;
+}
+
+html,
+body {
+  width: 100%;
+  overflow-x: clip;
 }
 
 /* Ambient Background */
@@ -200,6 +207,16 @@ nav a.router-link-active {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 1rem 0.5rem;
+  }
+
+  .auth-panel {
+    margin-top: 2rem;
+  }
 }
 
 h1,

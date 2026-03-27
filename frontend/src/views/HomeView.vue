@@ -112,7 +112,7 @@ onMounted(async () => {
           </div>
           <div class="hero-meta">
             <span class="hero-status"
-              >⚡ BETA APERTA SU TABLETOP SIMULATOR + CANALE DISCORD
+              >⚡ BETA SU TABLETOP SIMULATOR + CANALE DISCORD
               DEDICATO</span
             >
           </div>
@@ -613,8 +613,27 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
+  .home-view {
+    padding: 0 0.5rem 1.2rem;
+  }
+
+  .hero-section {
+    width: calc(100% + 2rem);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-bottom: 2rem;
+  }
+
   .hero-image-stage {
-    width: 100vw;
+    width: 100%;
+    min-height: clamp(420px, 68svh, 560px);
+  }
+
+  .hero-bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 18%;
   }
 
   .news-grid {
@@ -622,22 +641,95 @@ onMounted(async () => {
   }
 
   .hero-content {
-    top: clamp(10px, 3vw, 20px);
-    bottom: clamp(12px, 3vw, 22px);
-    left: clamp(12px, 4vw, 24px);
-    width: calc(100% - clamp(24px, 8vw, 48px));
-    justify-content: flex-start;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1.1rem;
+    padding: 1.2rem 1rem calc(1.2rem + env(safe-area-inset-bottom));
+    background: linear-gradient(
+      180deg,
+      rgba(4, 8, 14, 0) 0%,
+      rgba(4, 8, 14, 0.64) 38%,
+      rgba(4, 8, 14, 0.88) 100%
+    );
+  }
+
+  .hero-headline {
+    font-size: 1.5rem !important;
+    line-height: 1.18;
+    transform: translateY(-3rem);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(1rem, 2.9vw, 0.95rem);
+    line-height: 1.35;
+    margin: 0;
+    transform: translateY(-3rem);
+  }
+
+  .hero-actions {
+    width: 100%;
+    gap: 0.85rem;
+    margin-top: 0;
+    transform: translateY(-2rem);
+  }
+
+  .hero-meta {
+    width: 100%;
+    margin-top: 0;
+    align-items: center;
+    transform: translateY(0.2rem);
+  }
+
+  .hero-status {
+    letter-spacing: 0.35px;
+    font-size: 0.72rem;
+    text-align: center;
+    width: 100%;
+    max-width: 100%;
   }
 
   .hero-btn {
     min-width: 0;
-    width: min(100%, 340px);
+    width: min(100%, 320px);
+  }
+
+  .dashboard-grid {
+    gap: 1rem;
   }
 }
 
 @media (max-width: 560px) {
+  .hero-content {
+    gap: 0.95rem;
+    padding: 1.05rem 0.9rem calc(1.15rem + env(safe-area-inset-bottom));
+  }
+
+  .hero-headline {
+    font-size: 1.35rem;
+  }
+
   .news-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-image-stage {
+    min-height: clamp(420px, 74svh, 620px);
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-btn {
+    width: 100%;
+    text-align: center;
   }
 }
 

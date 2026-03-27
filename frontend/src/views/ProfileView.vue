@@ -44,10 +44,10 @@ const fetchProfileData = async () => {
   try {
     loading.value = true;
     const [decksRes, cardsRes] = await Promise.all([
-      axios.get(`http://localhost:3000/api/decks?creator=${username.value}`, {
+      axios.get(`/api/decks?creator=${username.value}`, {
         headers: { "x-user": loggedInUser },
       }),
-      axios.get("http://localhost:3000/api/cards"),
+      axios.get("/api/cards"),
     ]);
     userDecks.value = decksRes.data.decks;
     allCards.value = cardsRes.data;
@@ -61,13 +61,9 @@ const fetchProfileData = async () => {
 const deleteAccount = async () => {
   try {
     // 1. Purge Decks
-    await axios.delete(
-      `http://localhost:3000/api/decks/user/${username.value}`,
-    );
+    await axios.delete(`/api/decks/user/${username.value}`);
     // 2. Delete User
-    await axios.delete(
-      `http://localhost:3000/api/auth/account/${username.value}`,
-    );
+    await axios.delete(`/api/auth/account/${username.value}`);
 
     // 3. Cleanup and redirect
     localStorage.clear();
@@ -542,6 +538,121 @@ const goToDeck = (deckId: number) => {
   .danger-panel {
     flex-direction: column;
     gap: 2rem;
+    text-align: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .profile-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .profile-header {
+    gap: 1.25rem;
+    padding: 1.25rem 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cyber-avatar {
+    width: 96px;
+    height: 96px;
+  }
+
+  .avatar-symbol {
+    font-size: 3rem;
+  }
+
+  .username-title {
+    font-size: 2rem;
+    line-height: 1.05;
+    word-break: break-word;
+  }
+
+  .user-info,
+  .user-badges {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats-grid {
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    padding: 1.25rem;
+  }
+
+  .stat-value {
+    font-size: 2.4rem;
+  }
+
+  .cyber-subtitle {
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .header-line {
+    width: 100%;
+  }
+
+  .decks-grid {
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .deck-card {
+    padding: 1rem;
+  }
+
+  .deck-name {
+    font-size: 1rem;
+  }
+
+  .deck-hero-container {
+    height: 180px;
+  }
+
+  .caption-name {
+    font-size: 0.85rem;
+  }
+
+  .deck-footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .danger-zone {
+    margin-top: 2rem;
+  }
+
+  .danger-panel {
+    padding: 1.25rem 1rem;
+    gap: 1.25rem;
+  }
+
+  .danger-panel .cyber-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .confirm-modal {
+    padding: 1.25rem 1rem;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .modal-actions .cyber-btn {
+    width: 100%;
     text-align: center;
   }
 }

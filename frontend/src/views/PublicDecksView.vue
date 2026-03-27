@@ -997,4 +997,22 @@ onBeforeUnmount(() => {
     min-width: 100%;
   }
 }
+
+@media (max-width: 480px) {
+  .public-decks-view {
+    padding: 1rem 0.5rem;
+  }
+
+  .decks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .deck-hero-container {
+    height: 200px;
+  }
+
+  .pagination {
+    gap: 1rem;
+  }
+}
 </style>

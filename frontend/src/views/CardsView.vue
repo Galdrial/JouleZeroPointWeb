@@ -601,7 +601,7 @@ const vClickOutside = {
 @media (max-width: 600px) {
   .search-container {
     flex-direction: column;
-    padding: 0 1rem;
+    padding: 0 0.5rem;
   }
   .toggle-filters-btn {
     width: 100%;
@@ -858,5 +858,17 @@ const vClickOutside = {
   width: 0.85rem;
   height: 0.85rem;
   flex: 0 0 auto;
+}
+
+@media (max-width: 560px) {
+  .pagination-controls {
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .page-info {
+    font-size: 0.75rem;
+    gap: 0.4rem;
+  }
 }
 </style>

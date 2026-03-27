@@ -11,6 +11,7 @@ watch(
   () => route.fullPath,
   () => {
     username.value = localStorage.getItem("username") || "";
+    isMenuOpen.value = false;
   },
 );
 
@@ -18,10 +19,12 @@ const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("username");
   username.value = "";
+  isMenuOpen.value = false;
   router.push("/login");
 };
 
 const isTerminalOpen = ref(false);
+const isMenuOpen = ref(false);
 const hideUI = computed(() => route.meta.hideUI === true);
 
 onMounted(() => {
@@ -49,7 +52,27 @@ watch(
           <span class="joule">JOULE</span> <span class="zp">ZERO POINT</span>
         </div>
       </RouterLink>
-      <nav>
+
+      <!-- Hamburger (mobile only) -->
+      <button
+        class="hamburger"
+        :class="{ open: isMenuOpen }"
+        @click="isMenuOpen = !isMenuOpen"
+        aria-label="Menu"
+      >
+        <span></span><span></span><span></span>
+      </button>
+
+      <!-- Overlay backdrop (mobile only) -->
+      <Transition name="fade-overlay">
+        <div
+          v-if="isMenuOpen"
+          class="nav-overlay"
+          @click="isMenuOpen = false"
+        ></div>
+      </Transition>
+
+      <nav :class="{ 'nav--open': isMenuOpen }">
         <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
           >Database</RouterLink
         >
@@ -264,6 +287,10 @@ watch(
   padding-top: 0;
 }
 
+.app-layout {
+  overflow-x: clip;
+}
+
 .app-footer {
   width: 100%;
   text-align: center;
@@ -365,8 +392,8 @@ watch(
 /* Float Trigger Styles */
 .terminal-trigger {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  bottom: max(1.2rem, env(safe-area-inset-bottom));
+  right: max(1.2rem, env(safe-area-inset-right));
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
@@ -380,6 +407,7 @@ watch(
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.22);
   backdrop-filter: blur(10px);
+  transform-origin: center;
 }
 
 .terminal-trigger .icon-svg {
@@ -390,16 +418,18 @@ watch(
   z-index: 2;
 }
 
-.terminal-trigger:hover {
-  transform: scale(1.1) rotate(10deg);
-  box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-  border-color: #fff;
+@media (hover: hover) and (pointer: fine) {
+  .terminal-trigger:hover {
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+    border-color: #fff;
+  }
 }
 
 .terminal-trigger.active {
   background: rgba(255, 159, 28, 0.14);
   border-color: var(--accent-magenta);
-  transform: scale(1.1) rotate(10deg);
+  transform: scale(1.06) rotate(6deg);
 }
 
 .terminal-trigger.active .icon-svg {
@@ -426,5 +456,133 @@ watch(
     transform: scale(1.5);
     opacity: 0;
   }
+}
+
+/* ── Hamburger button ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  z-index: 201;
+}
+
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 2px;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ── Mobile overlay backdrop ── */
+.nav-overlay {
+  display: none;
+}
+
+/* ── Mobile nav drawer ── */
+@media (max-width: 768px) {
+  .glass-navbar {
+    padding: 0.8rem 1.2rem;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(2px);
+    z-index: 150;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: min(280px, 82vw);
+    height: 100dvh;
+    background: rgba(10, 15, 22, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid var(--glass-border);
+    flex-direction: column;
+    align-items: stretch;
+    padding: 5rem 1.2rem 2rem;
+    gap: 0.4rem;
+    z-index: 200;
+    transform: translateX(110%);
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+      visibility 0.32s;
+    overflow-y: auto;
+  }
+
+  nav.nav--open {
+    transform: translateX(0);
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .nav-item {
+    width: 100% !important;
+    text-align: center !important;
+    clip-path: none !important;
+    border-radius: 6px !important;
+    padding: 0.7rem 1rem !important;
+  }
+
+  .logout-btn {
+    margin-left: 0 !important;
+    margin-top: 0.4rem;
+  }
+
+  .terminal-trigger {
+    bottom: max(0.9rem, env(safe-area-inset-bottom));
+    right: max(0.9rem, env(safe-area-inset-right));
+    width: 3rem;
+    height: 3rem;
+  }
+
+  .terminal-trigger.active {
+    transform: scale(1.03);
+  }
+
+  .terminal-trigger .icon-svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Overlay fade transition */
+.fade-overlay-enter-active,
+.fade-overlay-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-overlay-enter-from,
+.fade-overlay-leave-to {
+  opacity: 0;
 }
 </style>

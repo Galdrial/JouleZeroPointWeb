@@ -749,13 +749,6 @@ onMounted(async () => {
               &times;
             </button>
             <div class="modal-body">
-              <div class="modal-image-container">
-                <img
-                  :src="selectedCard.image_url"
-                  :alt="selectedCard.name"
-                  @error="handleImgError"
-                />
-              </div>
               <div class="modal-info">
                 <h2>{{ selectedCard.name }}</h2>
                 <div class="badge-row">
@@ -1522,9 +1515,33 @@ onMounted(async () => {
   margin-bottom: 1rem;
 }
 
+.modal-body {
+  grid-template-columns: 1fr;
+}
+
+.modal-info {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.badge-row,
+.modal-stats {
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.modal-effect,
+.modal-role {
+  text-align: center;
+}
+
 .modal-controls-wrapper {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .viewer-controls {
@@ -2050,6 +2067,286 @@ onMounted(async () => {
   .builder-layout {
     grid-template-columns: 1fr;
     height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1.25rem 1rem;
+  }
+
+  .modal-body {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .modal-info h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .deck-view {
+    padding: 1rem 0.5rem;
+  }
+
+  .main-title {
+    font-size: 2rem;
+    letter-spacing: 0.12rem;
+  }
+
+  .dashboard-container {
+    gap: 1rem;
+  }
+
+  .top-actions {
+    justify-content: stretch;
+  }
+
+  .btn-primary.huge {
+    width: 100%;
+    padding: 0.95rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  .search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .custom-dropdown {
+    min-width: 100%;
+  }
+
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .decks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .deck-card {
+    padding: 1rem;
+  }
+
+  .deck-title-row h3 {
+    font-size: 1.15rem;
+  }
+
+  .deck-hero-container {
+    height: 220px;
+  }
+
+  .pagination {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .page-info {
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+
+  .builder-layout {
+    gap: 1rem;
+  }
+
+  .right-side {
+    order: -1;
+  }
+
+  .side-panel .glass-panel {
+    padding: 1rem;
+  }
+
+  .library-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .library-header .small-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .uppercase-title {
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    padding: 0.75rem 0 0;
+  }
+
+  .card-item {
+    padding: 0.75rem;
+    gap: 0.65rem;
+  }
+
+  .card-header.stacked {
+    gap: 0.55rem;
+  }
+
+  .card-header h3 {
+    font-size: 0.8rem;
+  }
+
+  .deck-name-input {
+    font-size: 1.15rem;
+  }
+
+  .checkbox-container {
+    align-items: flex-start;
+    line-height: 1.35;
+  }
+
+  .stats-bar-top {
+    gap: 0.75rem;
+  }
+
+  .stat {
+    font-size: 1rem;
+  }
+
+  .composition-hints {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+
+  .current-deck-list {
+    max-height: none;
+    padding-right: 0;
+  }
+
+  .deck-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.7rem 0.35rem;
+  }
+
+  .deck-row .name {
+    min-width: 0;
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .row-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+    margin-left: 0;
+    gap: 0.55rem;
+  }
+
+  .editor-actions .cyber-btn {
+    width: 100%;
+  }
+
+  .alert-box {
+    padding: 1.4rem 1rem;
+  }
+
+  .alert-actions.split-actions {
+    flex-direction: column;
+  }
+
+  .alert-actions.split-actions .cyber-btn,
+  .alert-actions .cyber-btn {
+    width: 100%;
+  }
+
+  .stats-modal-body {
+    gap: 1.4rem;
+    padding-right: 0.2rem;
+  }
+
+  .avg-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+
+  .type-row {
+    grid-template-columns: 90px 1fr;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 0.75rem;
+  }
+
+  .modal-content {
+    padding: 1rem 0.85rem;
+  }
+
+  .modal-info h2 {
+    font-size: 1.3rem;
+  }
+
+  .viewer-controls {
+    gap: 1rem;
+  }
+
+  .current-count {
+    min-width: 44px;
+    font-size: 1.55rem;
+  }
+
+  .decks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .deck-hero-container {
+    height: 200px;
+  }
+
+  .pagination {
+    gap: 1rem;
+  }
+
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dropdown-item {
+    padding: 0.85rem 0.9rem;
+    gap: 0.7rem;
+    font-size: 0.85rem;
+  }
+
+  .deck-row {
+    grid-template-columns: 1fr;
+  }
+
+  .deck-row .count {
+    font-size: 0.8rem;
+  }
+
+  .row-actions {
+    justify-content: stretch;
+  }
+
+  .row-actions .extra-small {
+    flex: 1 1 0;
+    width: auto !important;
+  }
+
+  .type-row {
+    grid-template-columns: 1fr;
+  }
+
+  .type-name {
+    font-size: 0.82rem;
   }
 }
 </style>
