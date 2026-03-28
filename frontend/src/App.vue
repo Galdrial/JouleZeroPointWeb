@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import logo2 from "./assets/logo2.png";
 import TerminalOracle from "./components/TerminalOracle.vue";
@@ -7,6 +7,10 @@ import TerminalOracle from "./components/TerminalOracle.vue";
 const router = useRouter();
 const route = useRoute();
 const username = ref(localStorage.getItem("username") || "");
+
+const isTerminalOpen = ref(false);
+const isMenuOpen = ref(false);
+const hideUI = computed(() => route.meta.hideUI === true);
 
 watch(
   () => route.fullPath,
@@ -24,10 +28,6 @@ const logout = () => {
   router.push("/login");
 };
 
-const isTerminalOpen = ref(false);
-const isMenuOpen = ref(false);
-const hideUI = computed(() => route.meta.hideUI === true);
-
 // Applica blur al contenuto e permette lo scroll sotto il menu mobile
 watch(isMenuOpen, (val) => {
   const content = document.querySelector(
@@ -40,10 +40,21 @@ watch(isMenuOpen, (val) => {
   }
 });
 
+const handleResize = () => {
+  if (window.innerWidth > 1690 && isMenuOpen.value) {
+    isMenuOpen.value = false;
+  }
+};
+
 onMounted(() => {
+  window.addEventListener("resize", handleResize);
   if (route.query.terminal === "1") {
     isTerminalOpen.value = true;
   }
+});
+
+onUnmounted(() => {
+  window.removeEventListener("resize", handleResize);
 });
 
 // Watcher per cambiamenti rotta (es: navigazione verso un link con query)
@@ -72,12 +83,53 @@ watch(
         :class="{ open: isMenuOpen }"
         @click="isMenuOpen = !isMenuOpen"
         aria-label="Menu"
-        v-if="!isMenuOpen"
       >
         <span></span><span></span><span></span>
       </button>
 
-      <!-- Overlay backdrop (mobile only) -->
+      <!-- Navigazione Desktop (Intatta per layout desktop) -->
+      <nav class="desktop-nav">
+        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
+          >Database</RouterLink
+        >
+        <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item"
+          >Come iniziare</RouterLink
+        >
+        <RouterLink to="/news" class="cyber-btn btn-secondary nav-item"
+          >News</RouterLink
+        >
+        <RouterLink to="/storia" class="cyber-btn btn-secondary nav-item"
+          >Storia</RouterLink
+        >
+        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
+          >Mazzi pubblici</RouterLink
+        >
+
+        <template v-if="username">
+          <RouterLink
+            to="/profile"
+            class="cyber-btn btn-secondary nav-item user-btn"
+            >{{ username }}</RouterLink
+          >
+          <button
+            @click="logout"
+            class="cyber-btn btn-danger nav-item logout-btn"
+          >
+            Logout
+          </button>
+        </template>
+        <template v-else>
+          <RouterLink
+            to="/login"
+            class="cyber-btn btn-primary nav-item auth-btn"
+            >Accedi</RouterLink
+          >
+        </template>
+      </nav>
+    </header>
+
+    <!-- Modal Mobile (Teleported to avoid z-index/stacking conflicts with header) -->
+    <Teleport to="body">
       <Transition name="fade-overlay">
         <div
           v-if="isMenuOpen"
@@ -93,67 +145,40 @@ watch(
         ></div>
       </Transition>
 
-      <nav :class="{ 'nav--open': isMenuOpen }">
-        <RouterLink
-          to="/"
-          class="cyber-btn btn-secondary nav-item nav-home-link"
-          @click="isMenuOpen = false"
+      <nav class="mobile-nav" :class="{ 'nav--open': isMenuOpen }">
+        <RouterLink to="/" class="cyber-btn btn-secondary nav-item mobile-only" @click="isMenuOpen = false"
           >Home</RouterLink
         >
-        <RouterLink
-          to="/cards"
-          class="cyber-btn btn-secondary nav-item"
-          @click="isMenuOpen = false"
+        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
           >Database</RouterLink
         >
-        <RouterLink
-          to="/come-iniziare"
-          class="cyber-btn btn-secondary nav-item"
-          @click="isMenuOpen = false"
+        <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
           >Come iniziare</RouterLink
         >
-        <RouterLink
-          to="/news"
-          class="cyber-btn btn-secondary nav-item"
-          @click="isMenuOpen = false"
+        <RouterLink to="/news" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
           >News</RouterLink
         >
-        <RouterLink
-          to="/storia"
-          class="cyber-btn btn-secondary nav-item"
-          @click="isMenuOpen = false"
+        <RouterLink to="/storia" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
           >Storia</RouterLink
         >
-        <RouterLink
-          to="/public-decks"
-          class="cyber-btn btn-secondary nav-item"
-          @click="isMenuOpen = false"
+        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
           >Mazzi pubblici</RouterLink
         >
         <template v-if="username">
-          <RouterLink
-            to="/profile"
-            class="cyber-btn btn-secondary nav-item user-btn"
-            @click="isMenuOpen = false"
+          <RouterLink to="/profile" class="cyber-btn btn-secondary nav-item user-btn" @click="isMenuOpen = false"
             >{{ username }}</RouterLink
           >
-          <button
-            @click="logout"
-            class="cyber-btn btn-danger nav-item logout-btn"
-          >
+          <button @click="logout" class="cyber-btn btn-danger nav-item logout-btn">
             Logout
           </button>
         </template>
         <template v-else>
-          <RouterLink
-            to="/login"
-            class="cyber-btn btn-primary nav-item auth-btn"
-            @click="isMenuOpen = false"
+          <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn" @click="isMenuOpen = false"
             >Accedi</RouterLink
           >
         </template>
       </nav>
-    </header>
+    </Teleport>
 
     <main
       class="content-wrapper"
@@ -285,6 +310,16 @@ watch(
 
 <style scoped>
 /* Nav Customizations */
+.desktop-nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.mobile-nav {
+  display: none;
+}
+
 @media (min-width: 1691px) {
   .nav-home-link {
     display: none;
@@ -585,7 +620,12 @@ watch(
     transition: filter 0.3s;
   }
 
-  nav {
+  .desktop-nav {
+    display: none !important;
+  }
+
+  .mobile-nav {
+    display: flex;
     position: fixed;
     top: 0;
     right: 0;
@@ -608,7 +648,7 @@ watch(
     box-shadow: -8px 0 24px 0 rgba(0, 0, 0, 0.12);
   }
 
-  nav.nav--open {
+  .mobile-nav.nav--open {
     transform: translateX(0);
     visibility: visible;
     pointer-events: auto;
