@@ -71,7 +71,7 @@ watch(
 <template>
   <div class="app-layout">
     <header v-if="!hideUI" class="glass-navbar">
-      <RouterLink to="/" class="logo-link">
+      <RouterLink to="/" class="logo-link" @click="isMenuOpen = false">
         <div class="logo">
           <span class="joule">JOULE</span> <span class="zp">ZERO POINT</span>
         </div>
@@ -146,34 +146,34 @@ watch(
       </Transition>
 
       <nav class="mobile-nav" :class="{ 'nav--open': isMenuOpen }">
-        <RouterLink to="/" class="cyber-btn btn-secondary nav-item mobile-only" @click="isMenuOpen = false"
+        <RouterLink to="/" class="mobile-nav-link" @click="isMenuOpen = false"
           >Home</RouterLink
         >
-        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
+        <RouterLink to="/cards" class="mobile-nav-link" @click="isMenuOpen = false"
           >Database</RouterLink
         >
-        <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
+        <RouterLink to="/come-iniziare" class="mobile-nav-link" @click="isMenuOpen = false"
           >Come iniziare</RouterLink
         >
-        <RouterLink to="/news" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
+        <RouterLink to="/news" class="mobile-nav-link" @click="isMenuOpen = false"
           >News</RouterLink
         >
-        <RouterLink to="/storia" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
+        <RouterLink to="/storia" class="mobile-nav-link" @click="isMenuOpen = false"
           >Storia</RouterLink
         >
-        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item" @click="isMenuOpen = false"
+        <RouterLink to="/public-decks" class="mobile-nav-link" @click="isMenuOpen = false"
           >Mazzi pubblici</RouterLink
         >
         <template v-if="username">
-          <RouterLink to="/profile" class="cyber-btn btn-secondary nav-item user-btn" @click="isMenuOpen = false"
+          <RouterLink to="/profile" class="mobile-nav-link user-link" @click="isMenuOpen = false"
             >{{ username }}</RouterLink
           >
-          <button @click="logout" class="cyber-btn btn-danger nav-item logout-btn">
+          <button @click="logout" class="mobile-nav-link logout-link">
             Logout
           </button>
         </template>
         <template v-else>
-          <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn" @click="isMenuOpen = false"
+          <RouterLink to="/login" class="mobile-nav-link auth-link" @click="isMenuOpen = false"
             >Accedi</RouterLink
           >
         </template>
@@ -654,34 +654,38 @@ watch(
     pointer-events: auto;
   }
 
-  .nav-item {
-    width: min(100%, 320px) !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: 60px !important;
-    text-align: center !important;
-    padding: 0.5rem 1rem !important;
-    margin-bottom: 0px !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    font-size: 1.1rem !important;
+  .mobile-nav-link {
+    width: 100%;
+    text-align: center;
+    padding: 0.8rem;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: block;
   }
 
-  .nav-item.btn-primary {
-    background: var(--accent-cyan) !important;
-    color: #000 !important;
+  .mobile-nav-link:hover,
+  .mobile-nav-link.router-link-active {
+    color: var(--accent-cyan);
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
   }
 
-  .nav-item.user-btn {
-    border-color: var(--accent-cyan) !important;
-    color: var(--accent-cyan) !important;
-    background: rgba(254, 220, 104, 0.1) !important;
+  .mobile-nav-link.logout-link {
+    margin-top: 1rem;
+    color: var(--accent-magenta);
+    opacity: 0.8;
   }
 
-  .logout-btn {
-    margin-left: 0 !important;
-    margin-top: 0.4rem;
+  .mobile-nav-link.logout-link:hover {
+    opacity: 1;
+    text-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
   }
 }
 
