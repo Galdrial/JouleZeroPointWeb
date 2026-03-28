@@ -28,12 +28,15 @@ const isTerminalOpen = ref(false);
 const isMenuOpen = ref(false);
 const hideUI = computed(() => route.meta.hideUI === true);
 
-// Previene lo scrolling della pagina quando il menu mobile è aperto
+// Applica blur al contenuto e permette lo scroll sotto il menu mobile
 watch(isMenuOpen, (val) => {
-  if (val) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
+  const content = document.querySelector(
+    ".content-wrapper",
+  ) as HTMLElement | null;
+  if (content) {
+    content.style.transition = "filter 0.3s";
+    content.style.filter = val ? "blur(3px)" : "";
+    content.style.pointerEvents = val ? "none" : "";
   }
 });
 
@@ -69,6 +72,7 @@ watch(
         :class="{ open: isMenuOpen }"
         @click="isMenuOpen = !isMenuOpen"
         aria-label="Menu"
+        v-if="!isMenuOpen"
       >
         <span></span><span></span><span></span>
       </button>
@@ -78,6 +82,13 @@ watch(
         <div
           v-if="isMenuOpen"
           class="nav-overlay"
+          @click="isMenuOpen = false"
+        ></div>
+      </Transition>
+      <Transition name="fade-overlay">
+        <div
+          v-if="isMenuOpen"
+          class="blur-overlay-clickable"
           @click="isMenuOpen = false"
         ></div>
       </Transition>
@@ -119,7 +130,6 @@ watch(
           @click="isMenuOpen = false"
           >Mazzi pubblici</RouterLink
         >
-
         <template v-if="username">
           <RouterLink
             to="/profile"
@@ -147,7 +157,10 @@ watch(
 
     <main
       class="content-wrapper"
-      :class="{ 'content-wrapper--flush-top': route.path === '/' }"
+      :class="{
+        'content-wrapper--flush-top': route.path === '/',
+        blurred: isMenuOpen,
+      }"
     >
       <RouterView />
     </main>
@@ -541,23 +554,45 @@ watch(
   .nav-overlay {
     display: block;
     position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+    top: 0;
+    right: 0;
+    width: min(80vw, 400px);
+    height: 100dvh;
+    background: rgba(0, 0, 0, 0.18);
+    backdrop-filter: blur(2px);
     z-index: 150;
     cursor: pointer;
+    border-radius: 0 0 0 24px;
+    box-shadow: -8px 0 24px 0 rgba(0, 0, 0, 0.12);
+    pointer-events: auto;
+  }
+
+  .blur-overlay-clickable {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 120;
+    background: transparent;
+    cursor: pointer;
+  }
+  /* Blur effect for content when menu is open */
+  .content-wrapper.blurred {
+    filter: blur(3px);
+    pointer-events: none;
+    transition: filter 0.3s;
   }
 
   nav {
     position: fixed;
     top: 0;
     right: 0;
-    width: 100vw;
+    width: min(80vw, 400px);
     height: 100dvh;
     background: #0a0f16;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-left: none;
+    border-left: 1.5px solid var(--glass-border);
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
@@ -569,6 +604,8 @@ watch(
     pointer-events: none;
     transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-y: auto;
+    border-radius: 0 0 0 24px;
+    box-shadow: -8px 0 24px 0 rgba(0, 0, 0, 0.12);
   }
 
   nav.nav--open {
