@@ -146,9 +146,6 @@ watch(
       </Transition>
 
       <nav class="mobile-nav" :class="{ 'nav--open': isMenuOpen }">
-        <RouterLink to="/" class="mobile-nav-link" @click="isMenuOpen = false"
-          >Home</RouterLink
-        >
         <RouterLink to="/cards" class="mobile-nav-link" @click="isMenuOpen = false"
           >Database</RouterLink
         >
@@ -674,7 +671,7 @@ watch(
   .mobile-nav-link:hover,
   .mobile-nav-link.router-link-active {
     color: var(--accent-cyan);
-    text-shadow: 0 0 10px rgba(0, 243, 255, 0.4);
+    text-shadow: 0 0 10px rgba(254, 220, 104, 0.4);
   }
 
   .mobile-nav-link.logout-link {
@@ -686,6 +683,17 @@ watch(
   .mobile-nav-link.logout-link:hover {
     opacity: 1;
     text-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
+  }
+
+  .mobile-nav-link.auth-link,
+  .mobile-nav-link.user-link {
+    color: var(--accent-gold) !important;
+    margin-top: 1rem;
+  }
+
+  .mobile-nav-link.auth-link:hover,
+  .mobile-nav-link.user-link:hover {
+    text-shadow: 0 0 10px rgba(254, 220, 104, 0.4);
   }
 }
 

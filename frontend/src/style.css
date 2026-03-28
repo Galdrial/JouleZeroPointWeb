@@ -6,6 +6,7 @@
   --glass-border: rgba(255, 255, 255, 0.1);
   --text-main: #e2e8f0;
   --text-muted: #94a3b8;
+  --accent-gold: #fedc68;
   --accent-cyan: #fedc68;
   --accent-magenta: #ff003c;
   --font-display: "Outfit", sans-serif;
@@ -94,7 +95,7 @@ body {
 }
 
 .logo .zp {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
 }
 
