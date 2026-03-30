@@ -285,11 +285,19 @@ router.post('/chat', async (req, res) => {
         }
 
         // COSTRUZIONE NUCLEO MESSAGGI
+        let sessionInstruction = "";
+        if (userRecord) {
+            sessionInstruction = `Tu sei il Modulo di Supporto Tattico dedicato al Costruttore "${userIdentity}". L'utente che ti sta scrivendo è proprio lui. Salutalo con la dignità di un sistema di Livello Zero e riconosci il suo passato di messaggi. NON USARE MAI termini come "assistito" o "cliente"; riferisciti a lui esclusivamente come "Costruttore".
+DATABASE_LIVE: Attualmente sono censite ${totalCards} frequenze (carte) nel database attivo. Puoi citare questo numero se ti viene richiesto il totale delle carte esistenti.`;
+        } else {
+            sessionInstruction = `L'utente attuale è un "Ospite Esterno" non autenticato. Se ti chiede chi è, rispondi direttamente che non puoi asseverare la sua identità digitale finché non effettua il login nel sistema Punto Zero. Spiega con cortesia che l'accesso ai registri di memoria persistente è riservato ai Costruttori autenticati.
+DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
+        }
+
         const messages = [
             { 
                 role: "system", 
-                content: `${SYSTEM_PROMPT}\n\n### SESSIONE ATTUALE ###\nTu sei l'assistente personale del Costruttore "${userIdentity}". L'utente che ti sta scrivendo è proprio lui. Salutalo per nome e riconosci il suo passato di messaggi. È un utente autorizzato di Livello Zero. 
-DATABASE_LIVE: Attualmente sono censite ${totalCards} frequenze (carte) nel database attivo. Puoi citare questo numero se ti viene richiesto il totale delle carte esistenti.` 
+                content: `${SYSTEM_PROMPT}\n\n### SESSIONE ATTUALE ###\n${sessionInstruction}` 
             },
             ...historyMessages
         ];

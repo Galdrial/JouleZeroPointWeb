@@ -61,7 +61,7 @@ const router = createRouter( {
     },
     {
       path: '/terminale-punto-zero',
-      name: 'oracle',
+      name: 'terminal',
       component: () => import( '../views/TerminalView.vue' ),
       meta: { hideUI: true }
     },

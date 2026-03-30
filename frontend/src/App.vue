@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import logo2 from "./assets/logo2.png";
-import TerminalOracle from "./components/TerminalOracle.vue";
+import JouleTerminal from "./components/JouleTerminal.vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -295,8 +295,9 @@ watch(
 
     <!-- Modal Terminale (Teleport) -->
     <Teleport to="body">
-      <TerminalOracle
+      <JouleTerminal
         :is-open="isTerminalOpen"
+        :username="username"
         @close="isTerminalOpen = false"
       />
     </Teleport>

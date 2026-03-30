@@ -4,6 +4,7 @@ import { nextTick, ref, watch } from "vue";
 
 const props = defineProps<{
   isOpen: boolean;
+  username: string;
 }>();
 
 const emit = defineEmits(["close"]);
@@ -103,6 +104,14 @@ watch(
       scrollToBottom();
     }
   },
+);
+
+// Reset chat when identity changes (Login/Logout isolation)
+watch(
+  () => props.username,
+  () => {
+    resetChat();
+  }
 );
 
 // Direttiva click-outside per chiudere il modal (opzionale, ma utile)
