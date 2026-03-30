@@ -8,7 +8,8 @@ const {
   voteDeck, 
   importDeck,
   deleteUserDecks,
-  getDeckById
+  getDeckById,
+  exportDeck
 } = require('../controllers/deckController');
 const { protect, optionalProtect } = require('../middleware/authMiddleware');
 
@@ -16,6 +17,7 @@ const { protect, optionalProtect } = require('../middleware/authMiddleware');
 router.get('/', optionalProtect, getDecks);
 router.get('/public', getPublicDecks);
 router.get('/:id', optionalProtect, getDeckById);
+router.get('/:id/export', optionalProtect, exportDeck);
 
 // Protected routes
 router.post('/', protect, saveDeck);

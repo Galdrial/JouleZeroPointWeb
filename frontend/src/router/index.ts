@@ -25,6 +25,15 @@ const router = createRouter( {
       component: () => import( '../views/LoginView.vue' )
     },
     {
+      path: '/register',
+      name: 'register',
+      component: () => import( '../views/LoginView.vue' ),
+      beforeEnter: ( to, _from, next ) => {
+        to.query.mode = 'register';
+        next();
+      }
+    },
+    {
       path: '/deckbuilder',
       name: 'deckbuilder',
       component: () => import( '../views/DeckbuilderView.vue' ),

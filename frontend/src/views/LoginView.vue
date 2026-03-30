@@ -6,7 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 const router = useRouter();
 const route = useRoute();
 
-const isLogin = ref(true);
+const isLogin = ref(route.query.mode !== "register");
 const username = ref("");
 const email = ref("");
 const password = ref("");

@@ -1,0 +1,30 @@
+/* PDF & TTS buttons styled like PUBBLICO/PRIVATO tags */
+.cyber-export-btn.pdf,
+.cyber-export-btn.tts {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  border-radius: 4px;
+  height: 32px;
+  padding: 0.2rem 0.5rem;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--accent-cyan);
+  background: #d4af371f;
+  color: var(--accent-cyan);
+  transition: all 0.2s;
+}
+.cyber-export-btn.tts {
+  border-color: var(--accent-magenta);
+  color: var(--accent-magenta);
+  background: #ff9f1c24;
+}
+.cyber-export-btn.pdf:hover,
+.cyber-export-btn.tts:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 10px var(--accent-cyan, #fedc68);
+  transform: scale(1.05);
+}

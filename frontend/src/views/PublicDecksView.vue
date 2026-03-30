@@ -84,21 +84,21 @@ const vClickOutside = {
   },
 };
 
-const getCostruttoreName = (id: number | null) => {
+const getCostruttoreName = (id: number | string | null) => {
   if (!id) return "Sconosciuto";
-  return costruttori.value.find((c) => c.id === id)?.name || "Sconosciuto";
+  return costruttori.value.find((c) => String(c.id) === String(id))?.name || "Sconosciuto";
 };
 
-const getCostruttoreImg = (id: number | null) => {
+const getCostruttoreImg = (id: number | string | null) => {
   if (!id) return "";
-  return costruttori.value.find((c) => c.id === id)?.image_url || "";
+  return costruttori.value.find((c) => String(c.id) === String(id))?.image_url || "";
 };
 
 const previewCards = computed(() => {
   if (!selectedDeck.value) return [];
   return selectedDeck.value.cards
     .map((item) => {
-      const card = allCards.value.find((c) => c.id === item.cardId);
+      const card = allCards.value.find((c) => String(c.id) === String(item.cardId));
       return {
         cardId: item.cardId,
         count: item.count,
@@ -110,8 +110,13 @@ const previewCards = computed(() => {
 });
 
 const loadCostruttori = async () => {
-  const response = await axios.get("/api/v1/cards");
-  allCards.value = response.data;
+  try {
+    const response = await axios.get("/api/v1/cards");
+    allCards.value = response.data;
+  } catch (e) {
+    console.error("ERRORE_CARTE:", e);
+    error.value = "Impossibile recuperare l'archivio frammenti del Nucleo Centrale.";
+  }
 };
 
 const loadPublicDecks = async () => {
@@ -203,6 +208,32 @@ const importDeck = async (deck: PublicDeck) => {
     clearSuccessMessage();
     error.value = e?.response?.data?.error || "Errore durante l'import.";
   }
+};
+
+const handleExport = (deckId: string | number, format: "pdf" | "tts") => {
+  const token = localStorage.getItem("token");
+  const url = `/api/v1/decks/${deckId}/export?format=${format}`;
+  
+  axios({
+    url: url,
+    method: 'GET',
+    responseType: 'blob',
+    headers: {
+      "Authorization": token ? `Bearer ${token}` : ""
+    }
+  }).then((response) => {
+    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    const extension = format === 'pdf' ? 'pdf' : 'jpg';
+    link.setAttribute('download', `Joule_Export_${deckId}.${extension}`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }).catch(() => {
+    error.value = "Errore durante l'esportazione dei dati.";
+  });
 };
 
 const clearSuccessMessage = () => {
@@ -372,6 +403,10 @@ onBeforeUnmount(() => {
             <span class="stat-key">IMPORT</span>
             <span class="stat-val">{{ d.importsCount }}</span>
           </div>
+          <div class="deck-export-actions side-icons">
+             <button @click.stop="handleExport(d.id!, 'pdf')" class="export-mini-btn" title="Scarica PDF Decklist">📄</button>
+             <button @click.stop="handleExport(d.id!, 'tts')" class="export-mini-btn" title="Esporta per Tabletop Simulator">🎮</button>
+          </div>
         </div>
 
         <div class="deck-actions">
@@ -439,6 +474,11 @@ onBeforeUnmount(() => {
                 <span class="preview-name">{{ item.name }}</span>
                 <span class="preview-type">{{ item.type }}</span>
               </div>
+            </div>
+
+            <div class="modal-export-group">
+               <button @click="handleExport(selectedDeck.id!, 'pdf')" class="cyber-btn btn-secondary small-btn">📄 SCARICA DECKLIST (PDF)</button>
+               <button @click="handleExport(selectedDeck.id!, 'tts')" class="cyber-btn btn-secondary small-btn">🎮 ESPORTA PER TTS (JPG)</button>
             </div>
           </div>
         </div>
@@ -796,6 +836,42 @@ onBeforeUnmount(() => {
   align-items: flex-start;
   padding: 0 0.4rem;
   min-height: 42px;
+}
+
+.deck-export-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.deck-export-actions.side-icons {
+  padding-left: 0.5rem;
+}
+
+.export-mini-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 4px 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.export-mini-btn:hover {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.modal-export-group {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .caption-name {

@@ -253,13 +253,38 @@ const executeSave = async (overwrite: boolean) => {
   }
 };
 
+const handleExport = (deckId: string | number, format: "pdf" | "tts") => {
+  const token = localStorage.getItem("token");
+  const url = `/api/v1/decks/${deckId}/export?format=${format}`;
+  
+  axios({
+    url: url,
+    method: 'GET',
+    responseType: 'blob',
+    headers: {
+      "Authorization": token ? `Bearer ${token}` : ""
+    }
+  }).then((response) => {
+    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    const extension = format === 'pdf' ? 'pdf' : 'jpg';
+    link.setAttribute('download', `Joule_Export_${deckId}.${extension}`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }).catch(() => {
+    showTerminalAlert("ERRORE DURANTE L'ESPORTAZIONE DEI DATI.");
+  });
+};
+
 // Funzioni Dashboard
 const loadDecks = async () => {
   loading.value = true;
   try {
     const res = await axios.get("/api/v1/decks", {
       params: {
-        creator: username.value,
         q: searchDashboard.value,
         costruttoreId: filterCostruttore.value,
         page: currentPage.value,
@@ -320,10 +345,10 @@ const editDeck = (deck: SavedDeck) => {
   editingDeckId.value = deck.id || null;
   isPublic.value = deck.isPublic || false;
   selectedCostruttore.value =
-    allCards.value.find((c) => c.id === deck.costruttoreId) || null;
+    allCards.value.find((c) => String(c.id) === String(deck.costruttoreId)) || null;
   currentDeck.value = deck.cards
     .map((dc) => {
-      const card = allCards.value.find((c) => c.id === dc.cardId);
+      const card = allCards.value.find((c) => String(c.id) === String(dc.cardId));
       return card ? { card, count: dc.count } : null;
     })
     .filter(Boolean) as DeckCard[];
@@ -347,12 +372,12 @@ const handleImgError = (e: Event) => {
   (e.target as HTMLImageElement).style.display = "none";
 };
 
-const getCostruttoreName = (id: number | null) => {
-  return allCards.value.find((c) => c.id === id)?.name || "Sconosciuto";
+const getCostruttoreName = (id: number | string | null) => {
+  return allCards.value.find((c) => String(c.id) === String(id))?.name || "Sconosciuto";
 };
 
-const getCostruttoreImg = (id: number | null) => {
-  return allCards.value.find((c) => c.id === id)?.image_url || "";
+const getCostruttoreImg = (id: number | string | null) => {
+  return allCards.value.find((c) => String(c.id) === String(id))?.image_url || "";
 };
 
 // Watchers per Dashboard
@@ -486,6 +511,12 @@ onMounted(async () => {
             >
               <span class="trash-icon">×</span>
             </button>
+          </div>
+
+          <!-- ACTIONS ROW: PDF and TTS above image -->
+          <div class="deck-actions-row">
+            <button @click.stop="handleExport(d.id!, 'pdf')" class="cyber-export-btn pdf" title="Scarica PDF Decklist">PDF</button>
+            <button @click.stop="handleExport(d.id!, 'tts')" class="cyber-export-btn tts" title="Esporta per Tabletop Simulator">TTS</button>
           </div>
 
           <!-- HERO IMAGE: Wide like Database -->
@@ -1792,6 +1823,52 @@ onMounted(async () => {
   transition: 0.3s;
 }
 
+.deck-export-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+  margin-right: 1rem;
+}
+
+.export-mini-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.export-mini-btn:hover {
+  background: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--accent-cyan);
+}
+
+.export-group-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.btn-secondary {
+  border-color: var(--accent-cyan) !important;
+  color: var(--accent-cyan) !important;
+  font-size: 0.8rem !important;
+  background: rgba(0, 255, 255, 0.05) !important;
+}
+
+.btn-secondary:hover {
+  background: var(--accent-cyan) !important;
+  color: #000 !important;
+}
+
 .deck-stats-bar {
   background: rgba(0, 0, 0, 0.4);
   padding: 0.6rem 1rem;
@@ -2364,5 +2441,51 @@ onMounted(async () => {
   .type-name {
     font-size: 0.82rem;
   }
+}
+
+.deck-actions-row {
+  display: flex;
+  gap: 1rem;
+  padding: 0 1.25rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.cyber-export-btn {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  text-align: center;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.cyber-export-btn.pdf {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.cyber-export-btn.pdf:hover {
+  background: var(--accent-cyan);
+  color: #000;
+  box-shadow: 0 0 15px var(--accent-cyan);
+}
+
+.cyber-export-btn.tts {
+  border-color: var(--accent-magenta);
+  color: var(--accent-magenta);
+}
+
+.cyber-export-btn.tts:hover {
+  background: var(--accent-magenta);
+  color: #fff;
+  box-shadow: 0 0 15px var(--accent-magenta);
 }
 </style>

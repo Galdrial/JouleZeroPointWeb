@@ -90,17 +90,17 @@ const totalCardsInDecks = computed(() => {
 });
 
 const getCostruttoreImage = (deck: SavedDeck) => {
-  const costruttore = allCards.value.find((c) => c.id === deck.costruttoreId);
+  const costruttore = allCards.value.find((c) => String(c.id) === String(deck.costruttoreId));
   return costruttore ? costruttore.image_url : "/assets/cards/placeholder.png";
 };
 
 const getCostruttoreName = (deck: SavedDeck) => {
-  const costruttore = allCards.value.find((c) => c.id === deck.costruttoreId);
+  const costruttore = allCards.value.find((c) => String(c.id) === String(deck.costruttoreId));
   return costruttore ? costruttore.name : "Sconosciuto";
 };
 
-const goToDeck = (deckId: number) => {
-  router.push({ path: "/deckbuilder", query: { edit: deckId } });
+const goToDeck = () => {
+  router.push("/deckbuilder");
 };
 </script>
 
@@ -151,7 +151,7 @@ const goToDeck = (deckId: number) => {
           v-for="deck in userDecks"
           :key="deck.id"
           class="deck-card glass-panel hover-glow"
-          @click="goToDeck(deck.id)"
+          @click="goToDeck()"
         >
           <div class="deck-header">
             <span class="deck-name">{{ deck.name }}</span>
@@ -397,7 +397,7 @@ const goToDeck = (deckId: number) => {
 
 .decks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: clamp(1rem, 2.5vw, 2rem);
   margin-bottom: clamp(2rem, 5vw, 4rem);
 }

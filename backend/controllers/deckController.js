@@ -1,5 +1,9 @@
 const Deck = require('../models/Deck');
+const Card = require('../models/Card');
 const logger = require('../config/logger');
+const { exec } = require('child_process');
+const fs = require('fs');
+const path = require('path');
 
 // @desc    Get all decks (Private/Creator filter)
 // @route   GET /api/v1/decks
@@ -7,14 +11,15 @@ const logger = require('../config/logger');
 const getDecks = async (req, res) => {
   try {
     const { creator, q, costruttoreId, page = 1, limit = 12 } = req.query;
-    const requester = req.user ? req.user.username : null;
+    const requester = req.user ? req.user.username.toLowerCase() : null;
+    const creatorLower = creator ? creator.toString().toLowerCase() : null;
 
     let query = {};
     
-    if (creator) {
-      query.creator = creator.toString().toLowerCase();
+    if (creatorLower) {
+      query.creator = creatorLower;
       // If not the owner, show only public
-      if (requester !== creator) {
+      if (requester !== creatorLower) {
         query.isPublic = true;
       }
     } else {
@@ -269,6 +274,87 @@ const getDeckById = async (req, res) => {
   }
 };
 
+// @desc    Export deck to PDF or TTS JPG
+// @route   GET /api/v1/decks/:id/export
+// @access  Public
+const exportDeck = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { format } = req.query; // 'pdf' or 'tts'
+
+    if (!format || !['pdf', 'tts'].includes(format)) {
+      return res.status(400).json({ error: 'Formato export non valido (richiesto pdf o tts).' });
+    }
+
+    const deck = await Deck.findById(id);
+    if (!deck) {
+      return res.status(404).json({ error: 'Mazzo non trovato.' });
+    }
+
+    // Creazione cartelle se mancano
+    const exportsDir = path.join(__dirname, '../exports');
+    const tmpDir = path.join(__dirname, '../tmp');
+    if (!fs.existsSync(exportsDir)) fs.mkdirSync(exportsDir);
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir);
+
+    logger.info(`ESPORTAZIONE_AVVIATA: Mazzo ${id} in formato ${format}`);
+
+    // Arricchimento dei dati con i NOMI e gli URL delle immagini
+    const allCards = await Card.find({});
+    const cardMap = allCards.reduce((acc, c) => {
+      acc[c.cardId] = { name: c.name, image_url: c.image_url };
+      return acc;
+    }, {});
+
+    const enrichedDeck = deck.toObject();
+    enrichedDeck.costruttore_name = cardMap[deck.costruttoreId]?.name || 'Costruttore Ignoto';
+    enrichedDeck.costruttore_image_url = cardMap[deck.costruttoreId]?.image_url || '';
+    
+    enrichedDeck.cards = enrichedDeck.cards.map(c => ({
+      ...c,
+      name: cardMap[c.cardId]?.name || 'Carta Sconosciuta',
+      image_url: cardMap[c.cardId]?.image_url || ''
+    }));
+
+    const tmpJsonPath = path.join(tmpDir, `deck_${id}.json`);
+    fs.writeFileSync(tmpJsonPath, JSON.stringify(enrichedDeck, null, 2));
+
+    const pythonPath = path.join(__dirname, '../../venv/bin/python3');
+    const scriptPath = path.join(__dirname, '../deckbuilder.py');
+
+    logger.info(`ESPORTAZIONE_AVVIATA: Mazzo ${id} in formato ${format}`);
+
+    exec(`${pythonPath} ${scriptPath} ${tmpJsonPath} ${format}`, (error, stdout, stderr) => {
+      // Pulizia JSON temporaneo
+      if (fs.existsSync(tmpJsonPath)) fs.unlinkSync(tmpJsonPath);
+
+      if (error) {
+        logger.error(`ERRORE_PYTHON_EXPORT: ${error.message}`);
+        return res.status(500).json({ error: 'Errore durante la generazione del file.' });
+      }
+
+      const extension = format === 'pdf' ? 'pdf' : 'jpg';
+      const filePath = path.join(exportsDir, `deck_export_${id}.${extension}`);
+
+      if (!fs.existsSync(filePath)) {
+        return res.status(500).json({ error: 'Il file generato non è stato trovato.' });
+      }
+
+      res.download(filePath, `Joule_${deck.name}_${format}.${extension}`, (err) => {
+        if (err) {
+          logger.error(`ERRORE_DOWNLOAD: ${err.message}`);
+        }
+        // Opzionale: rimuovi il file dopo il download per risparmiare spazio
+        // if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+      });
+    });
+
+  } catch (error) {
+    logger.error(`ERRORE_DECK_EXPORT: ${error.message}`);
+    res.status(500).json({ error: 'Errore imprevisto durante l\'esportazione.' });
+  }
+};
+
 module.exports = {
   getDecks,
   getPublicDecks,
@@ -278,4 +364,5 @@ module.exports = {
   importDeck,
   deleteUserDecks,
   getDeckById,
+  exportDeck,
 };
