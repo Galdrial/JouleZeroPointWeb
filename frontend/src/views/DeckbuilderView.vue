@@ -48,6 +48,8 @@ const isTypeDropdownOpen = ref(false);
 const isPublic = ref(false);
 const editingDeckId = ref<string | number | null>(null);
 const originalDeckName = ref("Nuovo Mazzo");
+const isExporting = ref(false);
+const exportFormat = ref<"pdf" | "tts">("pdf");
 
 // Delete State
 const deckToDelete = ref<string | number | null>(null);
@@ -253,18 +255,23 @@ const executeSave = async (overwrite: boolean) => {
   }
 };
 
-const handleExport = (deckId: string | number, format: "pdf" | "tts") => {
+const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
   const token = localStorage.getItem("token");
   const url = `/api/v1/decks/${deckId}/export?format=${format}`;
   
-  axios({
-    url: url,
-    method: 'GET',
-    responseType: 'blob',
-    headers: {
-      "Authorization": token ? `Bearer ${token}` : ""
-    }
-  }).then((response) => {
+  isExporting.value = true;
+  exportFormat.value = format;
+
+  try {
+    const response = await axios({
+      url: url,
+      method: 'GET',
+      responseType: 'blob',
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : ""
+      }
+    });
+
     const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement('a');
     link.href = blobUrl;
@@ -274,9 +281,11 @@ const handleExport = (deckId: string | number, format: "pdf" | "tts") => {
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
-  }).catch(() => {
-    showTerminalAlert("ERRORE DURANTE L'ESPORTAZIONE DEI DATI.");
-  });
+  } catch (e) {
+    showTerminalAlert("ERRORE DURANTE L'ESPORTAZIONE DEI DATI DALLA MATRICE.");
+  } finally {
+    isExporting.value = false;
+  }
 };
 
 // Funzioni Dashboard
@@ -945,7 +954,6 @@ onMounted(async () => {
         </div>
       </Transition>
     </Teleport>
-
     <!-- TERMINAL ALERT OVERLAY -->
     <Transition name="fade">
       <div v-if="showAlert" class="alert-overlay" @click="showAlert = false">
@@ -964,6 +972,30 @@ onMounted(async () => {
             >
               RICEVUTO
             </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
+    
+    <!-- EXPORT LOADER OVERLAY (CYBER EXTRACTION) -->
+    <Transition name="matrix-fade">
+      <div v-if="isExporting" class="export-overlay">
+        <div class="matrix-background"></div>
+        <div class="extraction-container">
+          <div class="glitch-title" data-text="ESTRAZIONE DATI">ESTRAZIONE DATI</div>
+          <div class="processing-core">
+            <div class="core-ring"></div>
+            <div class="core-ring"></div>
+            <div class="core-ring"></div>
+            <div class="core-pulse"></div>
+            <div class="scanning-line"></div>
+          </div>
+          <div class="extraction-status">
+            <span class="status-indicator">●</span>
+            <span class="status-text">Sincronizzazione Frammenti: {{ exportFormat.toUpperCase() }}...</span>
+          </div>
+          <div class="matrix-code">
+            01010110 01001111 01001001 01000100 00100000 01011010 01000101 01010010 01001111 00100000 01010000 01001111 01001001 01001110 01010100
           </div>
         </div>
       </div>
@@ -2487,5 +2519,162 @@ onMounted(async () => {
   background: var(--accent-magenta);
   color: #fff;
   box-shadow: 0 0 15px var(--accent-magenta);
+}
+
+/* EXPORT OVERLAY ANIMATIONS */
+.export-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #050a10;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.matrix-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, transparent 70%);
+  opacity: 0.5;
+}
+
+.extraction-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.glitch-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: 8px;
+  color: #fff;
+  position: relative;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+.processing-core {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.core-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.core-ring:nth-child(1) {
+  width: 100%;
+  height: 100%;
+  border-top-color: var(--accent-cyan);
+  animation: rotate 2s linear infinite;
+  box-shadow: 0 0 20px var(--accent-cyan);
+}
+
+.core-ring:nth-child(2) {
+  width: 75%;
+  height: 75%;
+  border-bottom-color: var(--accent-magenta);
+  animation: rotate 1.5s linear infinite reverse;
+}
+
+.core-ring:nth-child(3) {
+  width: 50%;
+  height: 50%;
+  border-left-color: var(--accent-cyan);
+  animation: rotate 3s linear infinite;
+}
+
+.core-pulse {
+  width: 30px;
+  height: 30px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 50px #fff;
+  animation: pulse 1s ease-in-out infinite alternate;
+}
+
+.scanning-line {
+  position: absolute;
+  width: 250px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+  box-shadow: 0 0 15px var(--accent-cyan);
+  animation: scan 4s ease-in-out infinite;
+}
+
+.extraction-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-display);
+  letter-spacing: 2px;
+}
+
+.status-indicator {
+  color: var(--accent-cyan);
+  animation: blink 0.8s infinite;
+}
+
+.status-text {
+  color: #fff;
+  font-size: 1.1rem;
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.matrix-code {
+  font-family: monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.2);
+  max-width: 400px;
+  text-align: center;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  from { transform: scale(0.8); opacity: 0.5; }
+  to { transform: scale(1.2); opacity: 1; }
+}
+
+@keyframes scan {
+  0% { transform: translateY(-150px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(150px); opacity: 0; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.matrix-fade-enter-active, .matrix-fade-leave-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.matrix-fade-enter-from, .matrix-fade-leave-to {
+  opacity: 0;
+  backdrop-filter: blur(0);
 }
 </style>
