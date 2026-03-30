@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import axios from "axios";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { useAuthStore } from "../stores/auth";
 
 interface CardRef {
   cardId: number;
@@ -26,7 +27,8 @@ interface Card {
   type: string;
 }
 
-const username = ref(localStorage.getItem("username") || "");
+const authStore = useAuthStore();
+const username = computed(() => authStore.username);
 const loading = ref(true);
 const error = ref("");
 const successMessage = ref("");
@@ -153,14 +155,13 @@ const voteDeck = async (deck: PublicDeck) => {
   }
 
   try {
-    const token = localStorage.getItem("token");
     const response = await axios.post(
       `/api/v1/decks/${deck.id}/vote`,
       {},
       {
         headers: { 
           "x-user": username.value,
-          "Authorization": token ? `Bearer ${token}` : ""
+          "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
         },
       },
     );
@@ -187,14 +188,13 @@ const importDeck = async (deck: PublicDeck) => {
   }
 
   try {
-    const token = localStorage.getItem("token");
     const response = await axios.post(
       `/api/v1/decks/${deck.id}/import`,
       {},
       {
         headers: { 
           "x-user": username.value,
-          "Authorization": token ? `Bearer ${token}` : ""
+          "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
         },
       },
     );
@@ -210,30 +210,31 @@ const importDeck = async (deck: PublicDeck) => {
   }
 };
 
-const handleExport = (deckId: string | number, format: "pdf" | "tts") => {
-  const token = localStorage.getItem("token");
+const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
   const url = `/api/v1/decks/${deckId}/export?format=${format}`;
   
-  axios({
-    url: url,
-    method: 'GET',
-    responseType: 'blob',
-    headers: {
-      "Authorization": token ? `Bearer ${token}` : ""
-    }
-  }).then((response) => {
+  try {
+    const response = await axios({
+      url: url,
+      method: "GET",
+      responseType: "blob",
+      headers: {
+        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
+      },
+    });
+
     const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = blobUrl;
-    const extension = format === 'pdf' ? 'pdf' : 'jpg';
-    link.setAttribute('download', `Joule_Export_${deckId}.${extension}`);
+    const extension = format === "pdf" ? "pdf" : "jpg";
+    link.setAttribute("download", `Joule_Export_${deckId}.${extension}`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
-  }).catch(() => {
-    error.value = "Errore durante l'esportazione dei dati.";
-  });
+  } catch (e) {
+    error.value = "Errore durante l'esportazione dei dati dalla Matrice.";
+  }
 };
 
 const clearSuccessMessage = () => {
@@ -270,7 +271,6 @@ watch(selectedDeck, (value) => {
 });
 
 onMounted(async () => {
-  username.value = localStorage.getItem("username") || "";
   await Promise.all([loadCostruttori(), loadPublicDecks()]);
 });
 
@@ -403,10 +403,11 @@ onBeforeUnmount(() => {
             <span class="stat-key">IMPORT</span>
             <span class="stat-val">{{ d.importsCount }}</span>
           </div>
-          <div class="deck-export-actions side-icons">
-             <button @click.stop="handleExport(d.id!, 'pdf')" class="export-mini-btn" title="Scarica PDF Decklist">📄</button>
-             <button @click.stop="handleExport(d.id!, 'tts')" class="export-mini-btn" title="Esporta per Tabletop Simulator">🎮</button>
-          </div>
+        </div>
+
+        <div class="deck-export-actions">
+          <button @click.stop="handleExport(d.id!, 'pdf')" class="cyber-export-btn pdf" title="Scarica PDF Decklist">PDF</button>
+          <button @click.stop="handleExport(d.id!, 'tts')" class="cyber-export-btn tts" title="Esporta per Tabletop Simulator">TTS</button>
         </div>
 
         <div class="deck-actions">
@@ -477,8 +478,8 @@ onBeforeUnmount(() => {
             </div>
 
             <div class="modal-export-group">
-               <button @click="handleExport(selectedDeck.id!, 'pdf')" class="cyber-btn btn-secondary small-btn">📄 SCARICA DECKLIST (PDF)</button>
-               <button @click="handleExport(selectedDeck.id!, 'tts')" class="cyber-btn btn-secondary small-btn">🎮 ESPORTA PER TTS (JPG)</button>
+               <button @click="handleExport(selectedDeck.id!, 'pdf')" class="cyber-export-btn pdf">PDF DECKLIST</button>
+               <button @click="handleExport(selectedDeck.id!, 'tts')" class="cyber-export-btn tts">TTS EXPORT</button>
             </div>
           </div>
         </div>
@@ -1098,5 +1099,50 @@ onBeforeUnmount(() => {
   .pagination {
     gap: 1rem;
   }
+}
+.deck-export-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+  width: 100%;
+}
+
+.cyber-export-btn {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--accent-cyan);
+  color: var(--accent-cyan);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.3s;
+  text-align: center;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.cyber-export-btn.pdf {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.cyber-export-btn.pdf:hover {
+  background: var(--accent-cyan);
+  color: #000;
+  box-shadow: 0 0 15px var(--accent-cyan);
+}
+
+.cyber-export-btn.tts {
+  border-color: var(--accent-magenta);
+  color: var(--accent-magenta);
+}
+
+.cyber-export-btn.tts:hover {
+  background: var(--accent-magenta);
+  color: #fff;
+  box-shadow: 0 0 15px var(--accent-magenta);
 }
 </style>

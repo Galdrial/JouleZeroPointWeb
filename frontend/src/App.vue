@@ -1,29 +1,29 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "./stores/auth";
 import logo2 from "./assets/logo2.png";
 import JouleTerminal from "./components/JouleTerminal.vue";
 
 const router = useRouter();
 const route = useRoute();
-const username = ref(localStorage.getItem("username") || "");
+const authStore = useAuthStore();
 
 const isTerminalOpen = ref(false);
 const isMenuOpen = ref(false);
 const hideUI = computed(() => route.meta.hideUI === true);
 
+// Sincronizzazione automatica ad ogni cambio rotta
 watch(
   () => route.fullPath,
   () => {
-    username.value = localStorage.getItem("username") || "";
+    authStore.initialize();
     isMenuOpen.value = false;
   },
 );
 
 const logout = () => {
-  localStorage.removeItem("token");
-  localStorage.removeItem("username");
-  username.value = "";
+  authStore.logout();
   isMenuOpen.value = false;
   router.push("/login");
 };
@@ -47,6 +47,7 @@ const handleResize = () => {
 };
 
 onMounted(() => {
+  authStore.initialize();
   window.addEventListener("resize", handleResize);
   if (route.query.terminal === "1") {
     isTerminalOpen.value = true;
@@ -105,11 +106,11 @@ watch(
           >Mazzi pubblici</RouterLink
         >
 
-        <template v-if="username">
+        <template v-if="authStore.username">
           <RouterLink
             to="/profile"
             class="cyber-btn btn-secondary nav-item user-btn"
-            >{{ username }}</RouterLink
+            >{{ authStore.username }}</RouterLink
           >
           <button
             @click="logout"
@@ -161,9 +162,9 @@ watch(
         <RouterLink to="/public-decks" class="mobile-nav-link" @click="isMenuOpen = false"
           >Mazzi pubblici</RouterLink
         >
-        <template v-if="username">
+        <template v-if="authStore.username">
           <RouterLink to="/profile" class="mobile-nav-link user-link" @click="isMenuOpen = false"
-            >{{ username }}</RouterLink
+            >{{ authStore.username }}</RouterLink
           >
           <button @click="logout" class="mobile-nav-link logout-link">
             Logout
@@ -297,7 +298,6 @@ watch(
     <Teleport to="body">
       <JouleTerminal
         :is-open="isTerminalOpen"
-        :username="username"
         @close="isTerminalOpen = false"
       />
     </Teleport>

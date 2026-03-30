@@ -8,6 +8,7 @@ import {
   TYPE_COLOR_GRADIENTS,
   TYPE_GLOWS,
 } from "../constants/cardTypes";
+import { useAuthStore } from "../stores/auth";
 
 interface Card {
   id: number;
@@ -36,7 +37,8 @@ interface SavedDeck {
   isPublic?: boolean;
 }
 
-const username = ref(localStorage.getItem("username") || "");
+const authStore = useAuthStore();
+const username = computed(() => authStore.username);
 
 // UI State
 const viewMode = ref<"dashboard" | "editor">("dashboard");
@@ -239,9 +241,8 @@ const executeSave = async (overwrite: boolean) => {
       creator: username.value,
       isPublic: isPublic.value,
     };
-    const token = localStorage.getItem("token");
     await axios.post("/api/v1/decks", payload, {
-      headers: { "Authorization": token ? `Bearer ${token}` : "" }
+      headers: { "Authorization": authStore.token ? `Bearer ${authStore.token}` : "" }
     });
     viewMode.value = "dashboard";
     loadDecks();
@@ -256,9 +257,7 @@ const executeSave = async (overwrite: boolean) => {
 };
 
 const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
-  const token = localStorage.getItem("token");
   const url = `/api/v1/decks/${deckId}/export?format=${format}`;
-  
   isExporting.value = true;
   exportFormat.value = format;
 
@@ -268,7 +267,7 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
       method: 'GET',
       responseType: 'blob',
       headers: {
-        "Authorization": token ? `Bearer ${token}` : ""
+        "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
       }
     });
 
@@ -301,7 +300,7 @@ const loadDecks = async () => {
       },
       headers: {
         "x-user": username.value,
-        "Authorization": localStorage.getItem("token") ? `Bearer ${localStorage.getItem("token")}` : ""
+        "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
       },
     });
     decks.value = res.data.decks;
@@ -338,9 +337,8 @@ const confirmDelete = (id: string | number) => {
 
 const executeDelete = async () => {
   if (deckToDelete.value) {
-    const token = localStorage.getItem("token");
     await axios.delete(`/api/v1/decks/${deckToDelete.value}`, {
-      headers: { "Authorization": token ? `Bearer ${token}` : "" }
+      headers: { "Authorization": authStore.token ? `Bearer ${authStore.token}` : "" }
     });
     deckToDelete.value = null;
     showDeleteConfirm.value = false;
@@ -405,9 +403,8 @@ onMounted(async () => {
   if (editId) {
     try {
       loading.value = true;
-      const token = localStorage.getItem("token");
       const res = await axios.get(`/api/v1/decks/${editId}`, {
-        headers: { "Authorization": token ? `Bearer ${token}` : "" }
+        headers: { "Authorization": authStore.token ? `Bearer ${authStore.token}` : "" }
       });
       editDeck(res.data);
     } catch (e) {

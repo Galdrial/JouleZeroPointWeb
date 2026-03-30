@@ -2,6 +2,7 @@
 import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
 interface Card {
   id: number;
@@ -22,10 +23,11 @@ interface SavedDeck {
 
 const router = useRouter();
 const route = useRoute();
-const loggedInUser = localStorage.getItem("username") || "";
-const username = ref(route.query.user?.toString() || loggedInUser);
+const authStore = useAuthStore();
+
+const username = ref(route.query.user?.toString() || authStore.username);
 const isOwnProfile = computed(
-  () => !route.query.user || route.query.user === loggedInUser,
+  () => !route.query.user || route.query.user === authStore.username,
 );
 const loading = ref(true);
 const userDecks = ref<SavedDeck[]>([]);
@@ -35,7 +37,7 @@ const showDeleteConfirm = ref(false);
 watch(
   () => route.query.user,
   (newVal) => {
-    username.value = newVal?.toString() || loggedInUser;
+    username.value = newVal?.toString() || authStore.username;
     fetchProfileData();
   },
 );
@@ -43,12 +45,11 @@ watch(
 const fetchProfileData = async () => {
   try {
     loading.value = true;
-    const token = localStorage.getItem("token");
     const [decksRes, cardsRes] = await Promise.all([
       axios.get(`/api/v1/decks?creator=${username.value}`, {
         headers: { 
-          "x-user": loggedInUser,
-          "Authorization": token ? `Bearer ${token}` : ""
+          "x-user": authStore.username,
+          "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
         },
       }),
       axios.get("/api/v1/cards"),
@@ -64,8 +65,7 @@ const fetchProfileData = async () => {
 
 const deleteAccount = async () => {
   try {
-    const token = localStorage.getItem("token");
-    const headers = { "Authorization": `Bearer ${token}` };
+    const headers = { "Authorization": `Bearer ${authStore.token}` };
 
     // 1. Purge Decks
     await axios.delete(`/api/v1/decks/user/${username.value}`, { headers });
@@ -73,7 +73,7 @@ const deleteAccount = async () => {
     await axios.delete(`/api/v1/auth/profile`, { headers });
 
     // 3. Cleanup and redirect
-    localStorage.clear();
+    authStore.logout();
     router.push("/login");
     window.location.reload(); 
   } catch (error) {

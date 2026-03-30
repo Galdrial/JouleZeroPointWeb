@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import { useAuthStore } from '../stores/auth';
 
 const router = createRouter( {
   history: createWebHistory( import.meta.env.BASE_URL ),
@@ -81,8 +82,8 @@ const router = createRouter( {
 } )
 
 router.beforeEach( ( to, _from, next ) => {
-  const isAuthenticated = localStorage.getItem( 'username' );
-  if ( to.meta.requiresAuth && !isAuthenticated ) {
+  const authStore = useAuthStore();
+  if ( to.meta.requiresAuth && !authStore.isLoggedIn ) {
     next( { name: 'login', query: { redirect: to.fullPath } } );
   } else {
     next();

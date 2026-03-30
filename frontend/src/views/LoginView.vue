@@ -2,9 +2,11 @@
 import axios from "axios";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useAuthStore } from "../stores/auth";
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
 
 const isLogin = ref(route.query.mode !== "register");
 const username = ref("");
@@ -31,8 +33,10 @@ const submitForm = async () => {
         email: email.value,
         password: password.value,
       });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("username", res.data.username);
+      
+      // Utilizziamo lo store centralizzato
+      authStore.setAuth(res.data.token, res.data.username);
+      
       success.value = "Sincronizzazione completata!";
       const redirectTo = (route.query.redirect as string) || "/";
       setTimeout(() => router.push(redirectTo), 1200);

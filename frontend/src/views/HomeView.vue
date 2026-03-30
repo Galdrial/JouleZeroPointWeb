@@ -7,6 +7,8 @@ import {
   isStoryCategory,
   type NewsCategory,
 } from "../utils/newsCategory";
+import { useAuthStore } from "../stores/auth";
+import { computed } from "vue";
 
 type NewsPreview = {
   id: number;
@@ -21,8 +23,9 @@ type NewsPreview = {
   featuredOrder: number | null;
 };
 
+const authStore = useAuthStore();
 const fragmentCount = ref(120);
-const isAuthenticated = ref(false);
+const isAuthenticated = computed(() => authStore.isLoggedIn);
 const latestNews = ref<NewsPreview[]>([]);
 const tabletopGuideUrl =
   "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
@@ -51,7 +54,7 @@ const particleStyles = Array.from({ length: 150 }, () => ({
 }));
 
 onMounted(async () => {
-  isAuthenticated.value = !!localStorage.getItem("username");
+  // isAuthenticated è ora gestito automaticamente dallo store centralizzato
 
   try {
     const response = await axios.get("/api/v1/cards");

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import axios from "axios";
 import { nextTick, ref, watch } from "vue";
+import { useAuthStore } from "../stores/auth";
 
 const props = defineProps<{
   isOpen: boolean;
-  username: string;
 }>();
+
+const authStore = useAuthStore();
 
 const emit = defineEmits(["close"]);
 
@@ -71,13 +73,12 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
-    const username = localStorage.getItem("username") || "";
     const response = await axios.post("/api/v1/terminal/chat", {
       message: userText,
       threadId: threadId.value,
     }, {
       headers: {
-        "x-user": username
+        "x-user": authStore.username
       }
     });
 
@@ -108,7 +109,7 @@ watch(
 
 // Reset chat when identity changes (Login/Logout isolation)
 watch(
-  () => props.username,
+  () => authStore.username,
   () => {
     resetChat();
   }
