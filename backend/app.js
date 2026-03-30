@@ -3,10 +3,6 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 const logger = require('./config/logger');
-const connectDB = require('./config/db');
-
-// Inizializza Database
-connectDB();
 
 const app = express();
 
@@ -47,7 +43,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  logger.info(`[PUNTO ZERO] Nucleo Operativo stabile sulla porta ${PORT} [Mode: ${process.env.NODE_ENV}]`);
-});
+module.exports = app;

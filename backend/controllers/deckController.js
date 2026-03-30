@@ -27,7 +27,7 @@ const getDecks = async (req, res) => {
     }
 
     if (costruttoreId) {
-      query.costruttoreId = parseInt(costruttoreId, 10);
+      query.costruttoreId = costruttoreId;
     }
 
     const total = await Deck.countDocuments(query);
@@ -61,7 +61,7 @@ const getPublicDecks = async (req, res) => {
     }
 
     if (costruttoreId) {
-      query.costruttoreId = parseInt(costruttoreId, 10);
+      query.costruttoreId = costruttoreId;
     }
 
     let sortOption = { createdAt: -1 };
@@ -118,11 +118,13 @@ const saveDeck = async (req, res) => {
     }
 
     let savedDeck;
+    const finalCostruttoreId = costruttoreId || req.user.id;
+
     if (id) {
       // Update existing
       savedDeck = await Deck.findOneAndUpdate(
         { _id: id, creator },
-        { name, cards, costruttoreId, isPublic },
+        { name, cards, costruttoreId: finalCostruttoreId, isPublic },
         { new: true, runValidators: true }
       );
 
@@ -134,7 +136,7 @@ const saveDeck = async (req, res) => {
       savedDeck = await Deck.create({
         name,
         cards,
-        costruttoreId,
+        costruttoreId: finalCostruttoreId,
         creator,
         isPublic
       });

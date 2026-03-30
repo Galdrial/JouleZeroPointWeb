@@ -18,7 +18,7 @@ const deckSchema = new mongoose.Schema({
     default: [],
   },
   costruttoreId: {
-    type: Number,
+    type: String,
     required: true,
   },
   isPublic: {
