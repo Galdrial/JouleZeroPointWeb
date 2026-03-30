@@ -129,7 +129,7 @@ function scrollToTop() {
 
 onMounted(async () => {
   try {
-    const response = await axios.get("/api/cards");
+    const response = await axios.get("/api/v1/cards");
     cards.value = response.data;
   } catch (e) {
     error.value =

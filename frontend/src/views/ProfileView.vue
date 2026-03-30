@@ -43,11 +43,15 @@ watch(
 const fetchProfileData = async () => {
   try {
     loading.value = true;
+    const token = localStorage.getItem("token");
     const [decksRes, cardsRes] = await Promise.all([
-      axios.get(`/api/decks?creator=${username.value}`, {
-        headers: { "x-user": loggedInUser },
+      axios.get(`/api/v1/decks?creator=${username.value}`, {
+        headers: { 
+          "x-user": loggedInUser,
+          "Authorization": token ? `Bearer ${token}` : ""
+        },
       }),
-      axios.get("/api/cards"),
+      axios.get("/api/v1/cards"),
     ]);
     userDecks.value = decksRes.data.decks;
     allCards.value = cardsRes.data;
@@ -60,15 +64,18 @@ const fetchProfileData = async () => {
 
 const deleteAccount = async () => {
   try {
+    const token = localStorage.getItem("token");
+    const headers = { "Authorization": `Bearer ${token}` };
+
     // 1. Purge Decks
-    await axios.delete(`/api/decks/user/${username.value}`);
+    await axios.delete(`/api/v1/decks/user/${username.value}`, { headers });
     // 2. Delete User
-    await axios.delete(`/api/auth/account/${username.value}`);
+    await axios.delete(`/api/v1/auth/profile`, { headers });
 
     // 3. Cleanup and redirect
     localStorage.clear();
     router.push("/login");
-    window.location.reload(); // Force refresh to clear app state
+    window.location.reload(); 
   } catch (error) {
     alert("Errore critico durante la rimozione dei dati.");
   }

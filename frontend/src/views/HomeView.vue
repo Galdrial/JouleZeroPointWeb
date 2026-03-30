@@ -54,14 +54,14 @@ onMounted(async () => {
   isAuthenticated.value = !!localStorage.getItem("username");
 
   try {
-    const response = await axios.get("/api/cards");
+    const response = await axios.get("/api/v1/cards");
     fragmentCount.value = response.data.length;
   } catch (err) {
     console.error("Errore sincronizzazione frammenti:", err);
   }
 
   try {
-    const response = await axios.get("/api/news", { params: { limit: 6 } });
+    const response = await axios.get("/api/v1/news", { params: { limit: 6 } });
     latestNews.value = response.data;
   } catch (err) {
     console.error("Errore caricamento news home:", err);

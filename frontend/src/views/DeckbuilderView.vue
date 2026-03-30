@@ -28,7 +28,7 @@ interface DeckCard {
 }
 
 interface SavedDeck {
-  id?: number;
+  id?: string | number;
   name: string;
   cards: { cardId: number; count: number }[];
   costruttoreId: number | null;
@@ -46,11 +46,11 @@ const isCostruttoreDropdownOpen = ref(false);
 const isEditorCostruttoreDropdownOpen = ref(false);
 const isTypeDropdownOpen = ref(false);
 const isPublic = ref(false);
-const editingDeckId = ref<number | null>(null);
+const editingDeckId = ref<string | number | null>(null);
 const originalDeckName = ref("Nuovo Mazzo");
 
 // Delete State
-const deckToDelete = ref<number | null>(null);
+const deckToDelete = ref<string | number | null>(null);
 const showDeleteConfirm = ref(false);
 
 // Preview & Modal State
@@ -237,7 +237,10 @@ const executeSave = async (overwrite: boolean) => {
       creator: username.value,
       isPublic: isPublic.value,
     };
-    await axios.post("/api/decks", payload);
+    const token = localStorage.getItem("token");
+    await axios.post("/api/v1/decks", payload, {
+      headers: { "Authorization": token ? `Bearer ${token}` : "" }
+    });
     viewMode.value = "dashboard";
     loadDecks();
   } catch (e: any) {
@@ -254,7 +257,7 @@ const executeSave = async (overwrite: boolean) => {
 const loadDecks = async () => {
   loading.value = true;
   try {
-    const res = await axios.get("/api/decks", {
+    const res = await axios.get("/api/v1/decks", {
       params: {
         creator: username.value,
         q: searchDashboard.value,
@@ -264,6 +267,7 @@ const loadDecks = async () => {
       },
       headers: {
         "x-user": username.value,
+        "Authorization": localStorage.getItem("token") ? `Bearer ${localStorage.getItem("token")}` : ""
       },
     });
     decks.value = res.data.decks;
@@ -293,14 +297,17 @@ const vClickOutside = {
   },
 };
 
-const confirmDelete = (id: number) => {
+const confirmDelete = (id: string | number) => {
   deckToDelete.value = id;
   showDeleteConfirm.value = true;
 };
 
 const executeDelete = async () => {
   if (deckToDelete.value) {
-    await axios.delete(`/api/decks/${deckToDelete.value}`);
+    const token = localStorage.getItem("token");
+    await axios.delete(`/api/v1/decks/${deckToDelete.value}`, {
+      headers: { "Authorization": token ? `Bearer ${token}` : "" }
+    });
     deckToDelete.value = null;
     showDeleteConfirm.value = false;
     loadDecks();
@@ -357,9 +364,25 @@ watch([searchDashboard, filterCostruttore], () => {
 watch(currentPage, loadDecks);
 
 onMounted(async () => {
-  const [cardsRes] = await Promise.all([axios.get("/api/cards")]);
+  const [cardsRes] = await Promise.all([axios.get("/api/v1/cards")]);
   allCards.value = cardsRes.data;
-  await loadDecks();
+
+  const editId = new URLSearchParams(window.location.search).get("edit");
+  if (editId) {
+    try {
+      loading.value = true;
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`/api/v1/decks/${editId}`, {
+        headers: { "Authorization": token ? `Bearer ${token}` : "" }
+      });
+      editDeck(res.data);
+    } catch (e) {
+      console.error("Errore caricamento mazzo edit:", e);
+      await loadDecks();
+    }
+  } else {
+    await loadDecks();
+  }
   loading.value = false;
 });
 </script>

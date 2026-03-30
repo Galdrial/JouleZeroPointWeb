@@ -42,7 +42,7 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
-    const response = await axios.post("/api/chat", {
+    const response = await axios.post("/api/v1/terminal/chat", {
       message: text,
       threadId: threadId.value,
     });

@@ -27,22 +27,22 @@ const submitForm = async () => {
 
   try {
     if (isLogin.value) {
-      const res = await axios.post("/api/auth/login", {
+      const res = await axios.post("/api/v1/auth/login", {
         email: email.value,
         password: password.value,
       });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("username", res.data.username);
-      success.value = res.data.message;
+      success.value = "Sincronizzazione completata!";
       const redirectTo = (route.query.redirect as string) || "/";
       setTimeout(() => router.push(redirectTo), 1200);
     } else {
-      const res = await axios.post("/api/auth/register", {
+      await axios.post("/api/v1/auth/register", {
         username: username.value,
         email: email.value,
         password: password.value,
       });
-      success.value = res.data.message;
+      success.value = "Frequenza registrata con successo!";
       setTimeout(() => {
         isLogin.value = true;
         password.value = "";

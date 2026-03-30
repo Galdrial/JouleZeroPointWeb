@@ -33,7 +33,7 @@ const formatNewsDate = (value: string) =>
 
 onMounted(async () => {
   try {
-    const response = await axios.get("/api/news", {
+    const response = await axios.get("/api/v1/news", {
       params: { category: "news" },
     });
     newsItems.value = response.data;

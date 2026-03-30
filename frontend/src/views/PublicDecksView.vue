@@ -110,7 +110,7 @@ const previewCards = computed(() => {
 });
 
 const loadCostruttori = async () => {
-  const response = await axios.get("/api/cards");
+  const response = await axios.get("/api/v1/cards");
   allCards.value = response.data;
 };
 
@@ -118,7 +118,7 @@ const loadPublicDecks = async () => {
   loading.value = true;
   error.value = "";
   try {
-    const response = await axios.get("/api/public-decks", {
+    const response = await axios.get("/api/v1/decks/public", {
       params: {
         q: searchQuery.value,
         costruttoreId: filterCostruttore.value,
@@ -148,11 +148,15 @@ const voteDeck = async (deck: PublicDeck) => {
   }
 
   try {
+    const token = localStorage.getItem("token");
     const response = await axios.post(
-      `/api/decks/${deck.id}/vote`,
+      `/api/v1/decks/${deck.id}/vote`,
       {},
       {
-        headers: { "x-user": username.value },
+        headers: { 
+          "x-user": username.value,
+          "Authorization": token ? `Bearer ${token}` : ""
+        },
       },
     );
 
@@ -178,11 +182,15 @@ const importDeck = async (deck: PublicDeck) => {
   }
 
   try {
+    const token = localStorage.getItem("token");
     const response = await axios.post(
-      `/api/decks/${deck.id}/import`,
+      `/api/v1/decks/${deck.id}/import`,
       {},
       {
-        headers: { "x-user": username.value },
+        headers: { 
+          "x-user": username.value,
+          "Authorization": token ? `Bearer ${token}` : ""
+        },
       },
     );
 

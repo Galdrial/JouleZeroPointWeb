@@ -51,7 +51,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get(`/api/news/${slug}`);
+    const response = await axios.get(`/api/v1/news/${slug}`);
     news.value = response.data;
   } catch (_error) {
     errorMessage.value = "La news richiesta non è disponibile.";

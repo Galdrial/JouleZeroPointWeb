@@ -66,7 +66,7 @@ async function loadNews() {
   isLoading.value = true;
   globalError.value = "";
   try {
-    const res = await axios.get("/api/admin/news", {
+    const res = await axios.get("/api/v1/news/admin/all", {
       headers: { "X-Admin-Key": adminKey.value },
     });
     newsList.value = res.data.map((item: NewsItem) => ({
@@ -178,7 +178,7 @@ async function uploadImageFile() {
 
   isUploadingImage.value = true;
   try {
-    const response = await axios.post("/api/admin/news/upload-image", data, {
+    const response = await axios.post("/api/v1/news/admin/upload-image", data, {
       headers: {
         "X-Admin-Key": adminKey.value,
       },
@@ -271,13 +271,13 @@ async function submitForm() {
 
   try {
     if (isEditing.value) {
-      await axios.put(`/api/admin/news/${editingSlug.value}`, payload, {
-        headers: { "X-Admin-Key": adminKey.value },
+      await axios.put(`/api/v1/news/${editingSlug.value}`, payload, {
+        headers: { "x-admin-key": adminKey.value },
       });
       formSuccess.value = "News aggiornata.";
     } else {
-      await axios.post("/api/admin/news", payload, {
-        headers: { "X-Admin-Key": adminKey.value },
+      await axios.post("/api/v1/news", payload, {
+        headers: { "x-admin-key": adminKey.value },
       });
       formSuccess.value = "News creata con successo.";
       closeForm();
@@ -293,9 +293,9 @@ async function submitForm() {
 async function togglePublished(item: NewsItem) {
   try {
     await axios.put(
-      `/api/admin/news/${item.slug}`,
+      `/api/v1/news/${item.slug}`,
       { isPublished: !item.isPublished },
-      { headers: { "X-Admin-Key": adminKey.value } },
+      { headers: { "x-admin-key": adminKey.value } },
     );
     await loadNews();
   } catch {
@@ -312,8 +312,8 @@ async function deleteNews(slug: string) {
   }
   confirmDeleteSlug.value = "";
   try {
-    await axios.delete(`/api/admin/news/${slug}`, {
-      headers: { "X-Admin-Key": adminKey.value },
+    await axios.delete(`/api/v1/news/${slug}`, {
+      headers: { "x-admin-key": adminKey.value },
     });
     await loadNews();
   } catch {
