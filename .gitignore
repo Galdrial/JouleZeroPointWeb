@@ -21,6 +21,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # MongoDB data files
+backend/mongodb_data/
 WiredTiger*
 metrics/
 diagnostic.data/
