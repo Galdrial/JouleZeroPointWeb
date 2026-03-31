@@ -8,55 +8,66 @@ import { useCardStore, type Card } from "../stores/cardStore";
 import { useNotificationStore } from "../stores/notificationStore";
 import { storeToRefs } from "pinia";
 
+// State Orchestration: Stores & Core Refs
 const cardStore = useCardStore();
 const notifications = useNotificationStore();
 const { cards, loading, error } = storeToRefs(cardStore);
 
-// Filtri Reattivi
+// Reactive Discovery Filters
 const searchQuery = ref("");
 const selectedType = ref("");
-const filterEt = ref(10);
-const filterPep = ref(10);
-const filterRp = ref(10);
+const filterEt = ref(10); // Energy Threshold ceiling
+const filterPep = ref(10); // Power level ceiling
+const filterRp = ref(10); // Resilience level ceiling
 
-// Stato Modal
+// Modal & Preview State
 const selectedCard = ref<Card | null>(null);
 
-// Stato Filtri
+// UI Toggle State
 const showFilters = ref(false);
 const isTypeDropdownOpen = ref(false);
 
-// Paginazione
+// Pagination Attributes
 const currentPage = ref(1);
 const itemsPerPage = 20;
 const types: CardTypeOption[] = CARDS_VIEW_TYPE_OPTIONS;
 
+// Computed Logic: Dropdown Label Synthesis
 const selectedTypeOption = computed(() =>
   types.find((typeOption) => typeOption.value === selectedType.value),
 );
 
+/**
+ * Filter Sequence: Type Selection
+ */
 const selectType = (type: string) => {
   selectedType.value = type;
   isTypeDropdownOpen.value = false;
 };
 
-// Stato Ordinamento
+// Sorting State Management
 const sortBy = ref("id");
 const isSortDropdownOpen = ref(false);
 const sortOptions = [
   { value: "id", label: "Default (ID)" },
-  { value: "name", label: "Nome (A-Z)" },
-  { value: "cost_et", label: "Costo (ET)" },
-  { value: "pep", label: "Potenza (PEP)" },
-  { value: "rp", label: "Resistenza (RP)" },
+  { value: "name", label: "Name (A-Z)" },
+  { value: "cost_et", label: "Cost (ET)" },
+  { value: "pep", label: "Power (PEP)" },
+  { value: "rp", label: "Resilience (RP)" },
 ];
 
+/**
+ * Filter Sequence: Sort Selection
+ */
 const selectSort = (val: string) => {
   sortBy.value = val;
   isSortDropdownOpen.value = false;
 };
 
-// Blocca/Sblocca Scroll quando il modal è aperto
+/**
+ * Lifecycle Observer: Modal Scroll Management
+ * Locks the main perspective scroll when a fragment is in detailed view.
+ */
 watch(selectedCard, (val) => {
   if (val) {
     document.body.style.overflow = "hidden";
@@ -65,22 +76,33 @@ watch(selectedCard, (val) => {
   }
 });
 
+/**
+ * Asset Hydration Error Handler
+ */
 const handleImgError = (e: Event) => {
   const target = e.target as HTMLImageElement;
   target.style.display = "none";
   target.parentElement?.classList.add("missing-image");
 };
 
+/**
+ * Computed Logic: Matrix Filtering & Sorting Sequence
+ * Orchestrates the multi-layered filter application for card discovery.
+ */
 const filteredCards = computed(() => {
   return (cards.value as Card[])
     .filter((card: Card) => {
+      // Identity Match
       const nameMatch = card.name
         .toLowerCase()
         .includes(searchQuery.value.toLowerCase());
+      
+      // Categorical Match
       const typeMatch = !selectedType.value || card.type === selectedType.value;
 
-      // Tutti filtri MASSIMI per coerenza visiva (barre a destra = mostrano tutto)
-      // Se il filtro è attivo (< 10), mostriamo solo le carte che HANNO il valore e rientrano nel limite
+      // Capability Thresholds:
+      // If filter is at maximum (10), all cards pass.
+      // If constrained, card must possess the attribute and stay within range.
       const etMatch =
         filterEt.value >= 10 ||
         (card.cost_et !== null && card.cost_et <= filterEt.value);
@@ -93,31 +115,41 @@ const filteredCards = computed(() => {
       return nameMatch && typeMatch && etMatch && pepMatch && rpMatch;
     })
     .sort((a: Card, b: Card) => {
-      if (sortBy.value === "id") return 0; // Mantieni ordine originale
+      if (sortBy.value === "id") return 0; // Maintain original sequence
       if (sortBy.value === "name") return a.name.localeCompare(b.name);
+      
+      // Capability Ranking (Descending)
       if (sortBy.value === "pep" || sortBy.value === "rp") {
         const valA = a[sortBy.value] ?? -1;
         const valB = b[sortBy.value] ?? -1;
-        return (valB as number) - (valA as number); // Decrescente per Potenza e Resistenza
+        return (valB as number) - (valA as number);
       }
 
-      // Ordinamento numerico crescente per gli altri (es: ET)
+      // Cost Ranking (Ascending)
       const valA = a[sortBy.value] ?? 999;
       const valB = b[sortBy.value] ?? 999;
       return (valA as number) - (valB as number);
     });
 });
 
+/**
+ * Computed Logic: Pagination Metrics
+ */
 const totalPages = computed(() =>
   Math.ceil(filteredCards.value.length / itemsPerPage),
 );
 
+/**
+ * Computed Logic: Active Paginated Slice
+ */
 const paginatedCards = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   return filteredCards.value.slice(start, start + itemsPerPage);
 });
 
-// Reset pagina quando cambiano i filtri
+/**
+ * State Hygiene: Reset pagination on filter recalibration
+ */
 watch(
   [searchQuery, selectedType, filterEt, filterPep, filterRp, sortBy],
   () => {
@@ -125,25 +157,34 @@ watch(
   },
 );
 
+/**
+ * Viewport Bridge: Scroll to top of the matrix
+ */
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 onMounted(async () => {
+  // Initialization Sequence: Synchronize card repository
   try {
     await cardStore.fetchCards();
   } catch (err) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 });
 
+/**
+ * Dissonance Observer: Monitor for database synchronization errors
+ */
 watch(error, (newError) => {
   if (newError) {
-    notifications.error("Dissonanza nel database carte: " + newError);
+    notifications.error("Card database dissonance: " + newError);
   }
 });
 
-// Direttiva click-outside
+/**
+ * UI Support: Click-Outside Directive
+ */
 const vClickOutside = {
   mounted(el: any, binding: any) {
     el.clickOutsideEvent = (event: any) => {

@@ -5,6 +5,10 @@ import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
 import { useNotificationStore } from "../stores/notificationStore";
 
+/**
+ * Card Interface
+ * Structural definition for fragment assets.
+ */
 interface Card {
   id: number;
   name: string;
@@ -13,6 +17,10 @@ interface Card {
   image_url: string;
 }
 
+/**
+ * SavedDeck Interface
+ * Structural definition for synchronized deck artifacts.
+ */
 interface SavedDeck {
   id: number;
   name: string;
@@ -22,20 +30,27 @@ interface SavedDeck {
   isPublic: boolean;
 }
 
+// Global Orchestration: Routing & Stores
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const notifications = useNotificationStore();
 
+// Identity State
 const username = ref(route.query.user?.toString() || authStore.username);
 const isOwnProfile = computed(
   () => !route.query.user || route.query.user === authStore.username,
 );
+
+// Resource Loading State
 const loading = ref(true);
 const userDecks = ref<SavedDeck[]>([]);
 const allCards = ref<Card[]>([]);
 const showDeleteConfirm = ref(false);
 
+/**
+ * Perspective Observer: Watch for user parameter mutations.
+ */
 watch(
   () => route.query.user,
   (newVal) => {
@@ -44,6 +59,10 @@ watch(
   },
 );
 
+/**
+ * Data Retrieval Protocol: Fetch Profile Artifacts
+ * Synchronizes the dashboard with the user's saved decks and card registry.
+ */
 const fetchProfileData = async () => {
   try {
     loading.value = true;
@@ -54,47 +73,62 @@ const fetchProfileData = async () => {
     userDecks.value = decksRes.data.decks;
     allCards.value = cardsRes.data;
   } catch (error) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   } finally {
     loading.value = false;
   }
 };
 
+/**
+ * Security Protocol: Decommission Account
+ * Irreversibly purges all synchronized decks and identity data from the Matrix.
+ */
 const deleteAccount = async () => {
   try {
-    // 1. Purge Decks
+    // 1. Purge Deck Artifacts
     await api.delete(`/decks/user/${username.value}`);
-    // 2. Delete User
+    // 2. Terminate Identity Record
     await api.delete(`/auth/profile`);
 
-    // 3. Cleanup and redirect
-    notifications.success("Account terminato. Tutti i dati sono stati rimossi dai database Atlas.");
+    // 3. Cleanup session and redirect to terminal login
+    notifications.success("Account terminated. All data purged from Atlas databases.");
     authStore.logout();
     router.push("/login");
   } catch (error) {
-    // Gestito globalmente
+    // Managed via global error handlers
   }
 };
 
-
 onMounted(fetchProfileData);
 
+/**
+ * Computed Logic: Aggregate Resource Metrics
+ */
 const totalCardsInDecks = computed(() => {
   return userDecks.value.reduce((acc, deck) => {
     return acc + deck.cards.reduce((sum, c) => sum + c.count, 0);
   }, 0);
 });
 
+/**
+ * Registry Lookup: Retrieve Constructor Asset URL
+ */
 const getCostruttoreImage = (deck: SavedDeck) => {
   const costruttore = allCards.value.find((c) => String(c.id) === String(deck.costruttoreId));
   return costruttore ? costruttore.image_url : "/assets/cards/placeholder.png";
 };
 
+/**
+ * Registry Lookup: Retrieve Constructor Nominal ID
+ */
 const getCostruttoreName = (deck: SavedDeck) => {
   const costruttore = allCards.value.find((c) => String(c.id) === String(deck.costruttoreId));
-  return costruttore ? costruttore.name : "Sconosciuto";
+  return costruttore ? costruttore.name : "Unknown";
 };
 
+/**
+ * Viewport Bridge: Navigate to Deckbuilder terminal
+ */
 const goToDeck = () => {
   router.push("/deckbuilder");
 };

@@ -11,6 +11,7 @@ const logger = require('./config/logger');
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Operational Constraints: Thermal limits for incoming transmissions
 const MAX_MESSAGE_LENGTH = Number(process.env.CHAT_MAX_MESSAGE_LENGTH || 1200);
 
 const SYSTEM_PROMPT = `Sei un arbitro esperto e preciso del gioco di carte JOULE: ZERO POINT.
@@ -178,23 +179,26 @@ Un Frammento applica il suo testo SOLO nel Presente.
 Se la domanda riguarda una situazione non coperta dal regolamento, dillo chiaramente e suggerisci la regola più simile applicabile.`;
 
 /**
- * Tool: Search cards by name or similarity
+ * Intelligence Tool: Search cards by name or semantic similarity.
+ * Interfaces with the Atlas Matrix to retrieve operational data for the Oracle.
+ * @param {string} query - The search directive (name, type, or concept).
+ * @returns {Promise<Array|Object>} - Collection of formatted card artifacts or error signal.
  */
 async function search_cards(query) {
     try {
         const lowerQuery = query.toLowerCase();
         let results = [];
 
-        // Verifica se si tratta di una ricerca per categoria (filtro esatto)
+        // Category Filter Phase: Exact match for primary archetypes
         if (['anomalia', 'frammento', 'evento', 'costruttore'].includes(lowerQuery)) {
             results = await Card.find({ type: { $regex: new RegExp(`^${query}$`, 'i') } }).limit(20);
         } else {
-            // Ricerca per nome esatto
+            // Identity Phase: Attempt exact name match
             const exactMatch = await Card.find({ name: { $regex: new RegExp(`^${query}$`, 'i') } });
             if (exactMatch.length > 0) {
                 results = exactMatch;
             } else {
-                // Ricerca vettoriale/semantica
+                // Semantic Resonance Phase: Generate vector and perform cosine similarity search
                 const queryVector = await generateEmbedding(query);
                 const cards = await Card.find({ embedding: { $exists: true, $ne: [] } });
                 results = cards.map(c => ({
@@ -204,6 +208,7 @@ async function search_cards(query) {
             }
         }
 
+        // Projection Phase: Reduce data to essential tactical attributes
         return results.map(c => ({
             nome: c.name,
             tipo: c.type,
@@ -213,13 +218,16 @@ async function search_cards(query) {
             effetto: c.effect
         }));
     } catch (error) {
-        logger.error(`ERRORE_SEARCH_CARDS: ${error.message}`);
-        return { error: "Errore durante la ricerca nel database delle carte." };
+        logger.error(`SEARCH_CARDS_FAILURE: ${error.message}`);
+        return { error: "Matrix database synchronization error during card retrieval." };
     }
 }
 
 /**
- * Guardrail: Detects common prompt injection patterns
+ * Security Guardrail: Prompt Injection Detection.
+ * Scans incoming transmissions for common manipulation patterns.
+ * @param {string} text - User input stream.
+ * @returns {boolean} - True if injection signals are detected.
  */
 function isLikelyInjection(text) {
     const forbiddenPatterns = [
@@ -237,15 +245,19 @@ function isLikelyInjection(text) {
     return forbiddenPatterns.some(pattern => pattern.test(text));
 }
 
+/**
+ * Neural Discourse Endpoint: Oracle Dialogue Orchestration.
+ * Bridges user directives with the GPT-4o logic engine and vector knowledge base.
+ */
 router.post('/chat', async (req, res) => {
     const { message, gameState } = req.body;
     const usernameHeader = req.headers['x-user'];
 
-    if (!message) return res.status(400).json({ error: 'Messaggio mancante.' });
+    if (!message) return res.status(400).json({ error: 'Missing input directive.' });
 
-    // Shield: Pre-check for Prompt Injection
+    // Peripheral Security: Prompt Injection Shield
     if (isLikelyInjection(message)) {
-        logger.warn(`TENTATIVO_INJECTION_BLOCCCATO: ${message.substring(0, 100)}...`);
+        logger.warn(`INJECTION_ATTEMPT_ABORTED: IP: ${req.ip} | Input: ${message.substring(0, 100)}...`);
         return res.json({ 
             reply: "⚠️ Anomalia rilevata nel flusso temporale. Accesso alle funzioni di sistema negato. Sono l'Assistente Joule e sono qui per spiegare le regole del gioco." 
         });
@@ -256,9 +268,10 @@ router.post('/chat', async (req, res) => {
         let userIdentity = "Costruttore Ignoto";
         let historyMessages = [];
         
-        // RECUPERO STATISTICHE GLOBALI
+        // Context Awareness: Fetch global card statistics for RAG enhancement
         const totalCards = await Card.countDocuments();
 
+        // Identity Synchronization: Detect if request originates from an authenticated Constructor
         if (usernameHeader) {
             const normalizedUsername = usernameHeader.trim().toLowerCase();
             userRecord = await User.findOne({ username: normalizedUsername });
@@ -267,15 +280,15 @@ router.post('/chat', async (req, res) => {
                 userIdentity = userRecord.usernameDisplay || userRecord.username;
                 const history = await Message.find({ userId: userRecord._id })
                     .sort({ timestamp: -1 })
-                    .limit(15); // Prendiamo un po' più di respiro
+                    .limit(15);
                 
-                // FILTRO PURIFICATORE: Escludiamo i messaggi di errore o anomalie passate
+                // History Sanitization: Exclude system failures or injection warnings from cognitive loop
                 const filteredHistory = history.filter(m => 
                     !m.content.includes("Anomalia rilevata") && 
                     !m.content.includes("Accesso alle funzioni di sistema negato") && !m.content.includes("non posso ricordare")
                 ).slice(0, 8);
 
-                logger.info(`HISTORY_FOUND: Found ${filteredHistory.length} clean messages for ${userIdentity}`);
+                logger.debug(`HISTORY_RESTORED: Syncing ${filteredHistory.length} clean artifacts for ${userIdentity}`);
                 
                 historyMessages = filteredHistory.reverse().map(m => ({ 
                     role: m.role === 'assistant' ? 'assistant' : 'user', 
@@ -284,13 +297,13 @@ router.post('/chat', async (req, res) => {
             }
         }
 
-        // COSTRUZIONE NUCLEO MESSAGGI
+        // Discourse Synthesis: Construct specific behavioral instructions for this session
         let sessionInstruction = "";
         if (userRecord) {
             sessionInstruction = `Tu sei il Modulo di Supporto Tattico dedicato al Costruttore "${userIdentity}". L'utente che ti sta scrivendo è proprio lui. Salutalo con la dignità di un sistema di Livello Zero e riconosci il suo passato di messaggi. NON USARE MAI termini come "assistito" o "cliente"; riferisciti a lui esclusivamente come "Costruttore".
 DATABASE_LIVE: Attualmente sono censite ${totalCards} frequenze (carte) nel database attivo. Puoi citare questo numero se ti viene richiesto il totale delle carte esistenti.`;
         } else {
-            sessionInstruction = `L'utente attuale è un "Ospite Esterno" non autenticato. Se ti chiede chi è, rispondi direttamente che non puoi asseverare la sua identità digitale finché non effettua il login nel sistema Punto Zero. Spiega con cortesia che l'accesso ai registri di memoria persistente è riservato ai Costruttori autenticati.
+            sessionInstruction = `L'utente attuale è un "Ospite Esterno" non autenticato. Se ti chiede chi è, rispondi direttamente che non puoi asseverar la sua identità digitale finché non effettua il login nel sistema Punto Zero. Spiega con cortesia che l'accesso ai registri di memoria persistente è riservato ai Costruttori autenticati.
 DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
         }
 
@@ -302,15 +315,16 @@ DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
             ...historyMessages
         ];
 
+        // Conditional Context: Inject ongoing game state if available
         if (gameState) {
             messages.push({ role: "system", content: `CURRENT_GAME_STATE:\n${JSON.stringify(gameState)}` });
         }
 
         messages.push({ role: "user", content: message });
 
-        // LOG DI CONTROLLO FINALE
-        logger.debug(`OPENAI_PAYLOAD: Sending ${messages.length} messages. Identity: ${userIdentity}`);
+        logger.debug(`COGNITIVE_LOOP_INIT: Payload synchronized. Identity: ${userIdentity}`);
 
+        // Inference Phase: Invoke OpenAI logic engine with function calling support
         const response = await openai.chat.completions.create({
             model: "gpt-4o",
             messages: messages,
@@ -333,6 +347,7 @@ DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
 
         let finalResponse = response.choices[0].message;
 
+        // Functional Synthesis: Execute tools if requested by the AI
         if (finalResponse.tool_calls) {
             const toolMessages = [...messages, finalResponse];
             for (const toolCall of finalResponse.tool_calls) {
@@ -347,6 +362,7 @@ DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
                 });
             }
 
+            // Final Integration Phase: Synthesize response with tool outputs
             const secondResponse = await openai.chat.completions.create({
                 model: "gpt-4o",
                 messages: toolMessages
@@ -354,6 +370,7 @@ DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
             finalResponse = secondResponse.choices[0].message;
         }
 
+        // Persistence Phase: Record dialogue for future context if user is authenticated
         if (userRecord) {
             await Message.create([
                 { userId: userRecord._id, role: 'user', content: message },
@@ -364,8 +381,8 @@ DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
         res.json({ reply: finalResponse.content });
 
     } catch (error) {
-        logger.error(`ERRORE_LOGIC_ENGINE: ${error.message}`);
-        res.status(500).json({ error: "Interruzione nel canale logico. Riprova." });
+        logger.error(`DIALECTIC_FAILURE: Cognitive engine collision: ${error.message}`);
+        res.status(500).json({ error: "Communication channel interrupted. Please retry the directive." });
     }
 });
 

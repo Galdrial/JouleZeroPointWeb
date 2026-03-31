@@ -14,6 +14,7 @@ import { useCardStore, type Card } from "../stores/cardStore";
 import { useDeckStore, type SavedDeck } from "../stores/deckStore";
 import { storeToRefs } from "pinia";
 
+// State Orchestration: Stores & Core Refs
 const authStore = useAuthStore();
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
@@ -24,32 +25,37 @@ const { userDecks: decks, totalUserDecks: totalDecks, loading: decksLoading, err
 
 const username = computed(() => authStore.username);
 
-// UI State
+// UI State Management
 const viewMode = ref<"dashboard" | "editor">("dashboard");
-const loading = ref(true);
-const isSaving = ref(false);
+const loading = ref(true); // Global loading signal
+const isSaving = ref(false); // Deck persistence signal
 const isCostruttoreDropdownOpen = ref(false);
 const isEditorCostruttoreDropdownOpen = ref(false);
 const isTypeDropdownOpen = ref(false);
-const isPublic = ref(false);
+const isPublic = ref(false); // Visibility flag for the current deck
 const editingDeckId = ref<string | number | null>(null);
 const originalDeckName = ref("Nuovo Mazzo");
-const isExporting = ref(false);
+const isExporting = ref(false); // Asset synthesis signal
 const exportFormat = ref<"pdf" | "tts">("pdf");
 
-// Delete State
+// Deletion Lifecycle State
 const deckToDelete = ref<string | number | null>(null);
 const showDeleteConfirm = ref(false);
 
-// Preview & Modal State
+// Preview & Modal State Management
 const selectedCard = ref<Card | null>(null);
 const showStatsModal = ref(false);
 
+/**
+ * Global Notification Bridge
+ * Proxies error signals to the central notification infrastructure.
+ * @param msg Notification payload
+ */
 const showTerminalAlert = (msg: string) => {
   notifications.error(msg);
 };
 
-// Editor State
+// Editor State Initialization
 const currentDeck = ref<DeckCard[]>([]);
 const selectedCostruttore = ref<Card | null>(null);
 const deckName = ref("Nuovo Mazzo");
@@ -58,21 +64,25 @@ const editorSelectedType = ref("");
 
 const typeOptions = DECKBUILDER_TYPE_OPTIONS;
 
-// Dashboard State
+// Dashboard Filtering & Pagination State
 const searchDashboard = ref("");
 const filterCostruttore = ref<number | "">("");
 const currentPage = ref(1);
 const limit = 12;
 
+/**
+ * DeckCard Data Structure
+ * Pairings of card entities and their respective count in the active deck.
+ */
 interface DeckCard {
   card: Card;
   count: number;
 }
 
-// Computed for Editor
+// Computed Logic: Editor Library Filtering
 const filteredLibrary = computed(() => {
   return allCards.value.filter((c) => {
-    if (c.type === "Costruttore") return false;
+    if (c.type === "Costruttore") return false; // Constructors are handled separately
     const nameMatch = c.name
       .toLowerCase()
       .includes(editorSearchQuery.value.toLowerCase());
@@ -82,9 +92,18 @@ const filteredLibrary = computed(() => {
   });
 });
 
+/**
+ * Computed Logic: Constructor Selection
+ * Filters the library for high-clearance Constructor units.
+ */
 const costruttori = computed(() =>
   allCards.value.filter((c) => c.type === "Costruttore"),
 );
+
+/**
+ * Computed Logic: Deck Composition Metrics
+ * Real-time monitoring of deck quantity and type distribution.
+ */
 const totalCards = computed(() =>
   currentDeck.value.reduce((sum, item) => sum + item.count, 0),
 );
@@ -105,6 +124,9 @@ const totalEvents = computed(() => {
   }, 0);
 });
 
+/**
+ * Statistical Analysis: Cost Curve Distribution
+ */
 const costCurve = computed(() => {
   const curve: Record<string, number> = {};
   currentDeck.value.forEach((item) => {
@@ -114,6 +136,9 @@ const costCurve = computed(() => {
   return curve;
 });
 
+/**
+ * Statistical Analysis: Average Power & Resilience
+ */
 const averagePep = computed(() => {
   const cardsWithPep = currentDeck.value.filter(
     (item) => item.card.pep !== null,
@@ -138,6 +163,9 @@ const averageRp = computed(() => {
   return (totalRp / totalCount).toFixed(2);
 });
 
+/**
+ * Visual Logic: Type Color Mappings
+ */
 const typeDistribution = computed(() => {
   const distribution: Record<string, number> = {};
   currentDeck.value.forEach((item) => {
@@ -155,13 +183,22 @@ const getTypeGlow = (type: string): string => {
   return TYPE_GLOWS[type] || "none";
 };
 
+/**
+ * Validation Logic: Rarity Constraints
+ * Enforces specific copy limits based on card rarity signals.
+ */
 const getLimit = (rarity: string) => {
   if (rarity === "Critica") return 1;
   if (rarity === "Instabile") return 2;
   return 3;
 };
 
-// Funzioni Editor
+// --- Editor Operational Sequences ---
+
+/**
+ * Add an energy unit to the active deck artifact.
+ * Enforces deck size limits (40) and rarity constraints.
+ */
 const addToDeck = (card: Card) => {
   if (totalCards.value >= 40) return;
   const limit = getLimit(card.rarity);
@@ -173,6 +210,9 @@ const addToDeck = (card: Card) => {
   }
 };
 
+/**
+ * Remove an energy unit from the active deck artifact.
+ */
 const removeFromDeck = (card: Card) => {
   const index = currentDeck.value.findIndex((item) => item.card.id === card.id);
   if (index !== -1) {
@@ -184,13 +224,17 @@ const removeFromDeck = (card: Card) => {
   }
 };
 
+/**
+ * Initiate Deck Synchronization Protocol
+ * Validates structural requirements before persisting to the matrix.
+ */
 const saveDeck = () => {
   if (totalCards.value !== 40) {
-    showTerminalAlert("IL MAZZO DEVE CONTENERE ESATTAMENTE 40 CARTE.");
+    showTerminalAlert("THE DECK MUST CONTAIN EXACTLY 40 CARTE.");
     return;
   }
   if (!selectedCostruttore.value) {
-    showTerminalAlert("SELEZIONA UN COSTRUTTORE PER SINCRONIZZARE IL MAZZO.");
+    showTerminalAlert("SELECT A CONSTRUCTOR TO SYNCHRONIZE THE DECK.");
     return;
   }
 
@@ -208,6 +252,10 @@ const saveDeck = () => {
   executeSave(false);
 };
 
+/**
+ * Execute API Persistence Sequence
+ * Transmits the deck artifact to the central server.
+ */
 const executeSave = async (overwrite: boolean) => {
   isSaving.value = true;
   try {
@@ -223,19 +271,23 @@ const executeSave = async (overwrite: boolean) => {
       isPublic: isPublic.value,
     };
     await api.post("/decks", payload);
-    notifications.success("Mazzo sincronizzato con la Matrice Joule con successo!");
+    notifications.success("Deck successfully synchronized with the Joule Matrix!");
     viewMode.value = "dashboard";
     loadDecks();
   } catch (e: any) {
     showTerminalAlert(
       e?.response?.data?.error ||
-        "ERRORE DURANTE LA SINCRONIZZAZIONE DELLA LINEA TEMPORALE.",
+        "ERROR DURING TEMPORAL LINE SYNCHRONIZATION.",
     );
   } finally {
     isSaving.value = false;
   }
 };
 
+/**
+ * Initiate Asset Synthesis (Export)
+ * Bridges to the backend Python engine for PDF or Tabletop Simulator assets.
+ */
 const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
   try {
     const response = await api({
@@ -255,13 +307,17 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
   } catch (e) {
-    showTerminalAlert("ERRORE DURANTE L'ESPORTAZIONE DEI DATI DALLA MATRICE.");
+    showTerminalAlert("ERROR RETRIEVING EXPORT DATA FROM THE MATRIX.");
   } finally {
     isExporting.value = false;
   }
 };
 
-// Funzioni Dashboard
+// --- Dashboard Operational Sequences ---
+
+/**
+ * Fetch and refresh the user's deck registry.
+ */
 const loadDecks = async () => {
   await deckStore.fetchUserDecks({
     q: searchDashboard.value,
@@ -276,7 +332,10 @@ const selectDashboardCostruttore = (id: number | "") => {
   isCostruttoreDropdownOpen.value = false;
 };
 
-// Direttiva click-outside
+/**
+ * Click-Outside Directive Implementation
+ * Manages modal/dropdown state hygiene.
+ */
 const vClickOutside = {
   mounted(el: any, binding: any) {
     el.clickOutsideEvent = (event: any) => {
@@ -291,6 +350,9 @@ const vClickOutside = {
   },
 };
 
+/**
+ * Initiate Decommission Sequence (Delete)
+ */
 const confirmDelete = (id: string | number) => {
   deckToDelete.value = id;
   showDeleteConfirm.value = true;
@@ -304,11 +366,14 @@ const executeDelete = async () => {
       showDeleteConfirm.value = false;
       loadDecks();
     } else {
-      showTerminalAlert("ERRORE DURANTE LA CANCELLAZIONE DEL MAZZO.");
+      showTerminalAlert("ERROR DURING DECK DECOMMISSIONING.");
     }
   }
 };
 
+/**
+ * Load a deck artifact into the Editor for recalibration.
+ */
 const editDeck = (deck: SavedDeck) => {
   deckName.value = deck.name;
   originalDeckName.value = deck.name;
@@ -325,6 +390,9 @@ const editDeck = (deck: SavedDeck) => {
   viewMode.value = "editor";
 };
 
+/**
+ * Initialize a new deck blueprint.
+ */
 const createNewDeck = () => {
   deckName.value = "Nuovo Mazzo";
   originalDeckName.value = "Nuovo Mazzo";
@@ -337,20 +405,21 @@ const createNewDeck = () => {
 
 const totalPages = computed(() => Math.ceil(totalDecks.value / limit));
 
-// Utils
+// --- Utility Bridges ---
+
 const handleImgError = (e: Event) => {
   (e.target as HTMLImageElement).style.display = "none";
 };
 
 const getCostruttoreName = (id: number | string | null) => {
-  return allCards.value.find((c) => String(c.id) === String(id))?.name || "Sconosciuto";
+  return allCards.value.find((c) => String(c.id) === String(id))?.name || "Unknown";
 };
 
 const getCostruttoreImg = (id: number | string | null) => {
   return allCards.value.find((c) => String(c.id) === String(id))?.image_url || "";
 };
 
-// Watchers per Dashboard
+// Synchronization Observers
 watch([searchDashboard, filterCostruttore], () => {
   currentPage.value = 1;
   loadDecks();
@@ -358,16 +427,17 @@ watch([searchDashboard, filterCostruttore], () => {
 
 watch(decksError, (newError) => {
   if (newError) {
-    showTerminalAlert(`ERRORE MATRICE: ${newError}`);
+    showTerminalAlert(`MATRIX ERROR: ${newError}`);
   }
 });
 
 onMounted(async () => {
   loading.value = true;
   
-  // Caricamento Matrice Carte (una sola volta grazie al caching dello store)
+  // Matrix Sync: Load global card repository (cached via store)
   await cardStore.fetchCards();
 
+  // Initialization: Check for editorial redirection (edit param)
   const editId = new URLSearchParams(window.location.search).get("edit");
   if (editId) {
     try {
@@ -378,7 +448,7 @@ onMounted(async () => {
         await loadDecks();
       }
     } catch (e) {
-      console.error("Errore caricamento mazzo edit:", e);
+      console.error("Deck edit load error:", e);
       await loadDecks();
     }
   } else {

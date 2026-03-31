@@ -8,12 +8,16 @@ import {
   type NewsCategory,
 } from "../utils/newsCategory";
 
+/**
+ * NewsDetail Data Structure
+ * Comprehensive model for individual news entries.
+ */
 type NewsDetail = {
   id: number;
   slug: string;
   title: string;
   summary: string;
-  content: string;
+  content: string; // Markdown or plain text content
   category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
@@ -22,11 +26,17 @@ type NewsDetail = {
   featuredOrder: number | null;
 };
 
+// Global Orchestration: Routing & State
 const route = useRoute();
 const news = ref<NewsDetail | null>(null);
 const isLoading = ref(true);
 const errorMessage = ref("");
 
+/**
+ * Date Localization Bridge
+ * Formats ISO strings into human-readable Italian locale markers.
+ * @param value ISO date string
+ */
 const formatNewsDate = (value: string) =>
   new Date(value).toLocaleDateString("it-IT", {
     day: "2-digit",
@@ -34,6 +44,10 @@ const formatNewsDate = (value: string) =>
     year: "numeric",
   });
 
+/**
+ * Content Synthesis: Paragraph Extraction
+ * Splits the raw content string into displayable paragraph units.
+ */
 const paragraphs = computed(() =>
   (news.value?.content || "")
     .split(/\n\s*\n/)
@@ -42,10 +56,11 @@ const paragraphs = computed(() =>
 );
 
 onMounted(async () => {
+  // Initialization Sequence: Fetch specific news artifact by slug
   const slug = String(route.params.slug || "");
 
   if (!slug) {
-    errorMessage.value = "News non valida.";
+    errorMessage.value = "Invalid news identifier.";
     isLoading.value = false;
     return;
   }
@@ -54,7 +69,7 @@ onMounted(async () => {
     const response = await api.get(`/news/${slug}`);
     news.value = response.data;
   } catch (_error) {
-    errorMessage.value = "La news richiesta non è disponibile.";
+    errorMessage.value = "The requested news entry is unavailable in the Matrix.";
   } finally {
     isLoading.value = false;
   }

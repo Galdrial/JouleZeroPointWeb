@@ -3,13 +3,24 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import logo2 from "../../assets/logo2.png";
 
+/**
+ * Component Props
+ * @property {boolean} isOpen - Current state of the terminal drawer.
+ */
 const props = defineProps({
   isOpen: Boolean
 });
 
+// Event Emission: Toggle the terminal state
 defineEmits(['toggle']);
 
+// Route Orchestration: Conditional visibility
 const route = useRoute();
+
+/**
+ * Visibility Logic
+ * Determines if the terminal trigger should be rendered based on route metadata (hideUI flag).
+ */
 const hideUI = computed(() => route.meta.hideUI === true);
 </script>
 

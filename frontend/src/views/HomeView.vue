@@ -10,6 +10,10 @@ import {
 import { useAuthStore } from "../stores/auth";
 import { computed } from "vue";
 
+/**
+ * NewsPreview Data Structure
+ * Represents a summarized news entity for grid visualization.
+ */
 type NewsPreview = {
   id: number;
   slug: string;
@@ -23,14 +27,20 @@ type NewsPreview = {
   featuredOrder: number | null;
 };
 
+// Global Store & State Initialization
 const authStore = useAuthStore();
 const fragmentCount = ref(120);
 const isAuthenticated = computed(() => authStore.isLoggedIn);
 const latestNews = ref<NewsPreview[]>([]);
-const tabletopGuideUrl =
-  "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
+
+// External Link Constants
+const tabletopGuideUrl = "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 
+/**
+ * Format the news publication date into a human-readable locale string.
+ * @param value ISO date string
+ */
 const formatNewsDate = (value: string) =>
   new Date(value).toLocaleDateString("it-IT", {
     day: "2-digit",
@@ -38,6 +48,10 @@ const formatNewsDate = (value: string) =>
     year: "numeric",
   });
 
+/**
+ * Visual Engine: Ambient Particle System
+ * Generates randomized styles for background micro-animations.
+ */
 const particleStyles = Array.from({ length: 150 }, () => ({
   left: `${Math.random() * 100}%`,
   top: `${Math.random() * 100}%`,
@@ -54,18 +68,20 @@ const particleStyles = Array.from({ length: 150 }, () => ({
 }));
 
 onMounted(async () => {
+  // Inventory Sync: Retrieve total fragments from the matrix
   try {
     const response = await api.get("/cards");
     fragmentCount.value = response.data.length;
   } catch (err) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 
+  // Content Sync: Retrieve initial news transmission (limit 6)
   try {
     const response = await api.get("/news", { params: { limit: 6 } });
     latestNews.value = response.data;
   } catch (err) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 });
 </script>

@@ -5,51 +5,66 @@ import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
 import { useNotificationStore } from "../stores/notificationStore";
 
+// Global Orchestration: Routing & Stores
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 const notifications = useNotificationStore();
 
+// UI State & Form Attributes
 const isLogin = ref(route.query.mode !== "register");
 const username = ref("");
 const email = ref("");
 const password = ref("");
 const loading = ref(false);
 
+/**
+ * Toggle between Authentication and Identification (Login/Register)
+ */
 const toggleMode = () => {
   isLogin.value = !isLogin.value;
 };
 
+/**
+ * Submission Protocol: Authenticate with the Joule Matrix
+ * Handles both session creation (Login) and identity registration.
+ */
 const submitForm = async () => {
   loading.value = true;
 
   try {
     if (isLogin.value) {
+      // Identity Verification Sequence
       const res = await api.post("/auth/login", {
         email: email.value,
         password: password.value,
       });
       
+      // Persist session tokens to the central Auth Store
       authStore.setAuth(res.data.token, res.data.username);
-      notifications.success("Sincronizzazione completata con successo!");
+      notifications.success("Synchronization successfully completed!");
       
+      // Redirect handling with intentional delay for UI smoothing
       const redirectTo = (route.query.redirect as string) || "/";
       setTimeout(() => router.push(redirectTo), 800);
     } else {
+      // New Identity Initialization Sequence
       await api.post("/auth/register", {
         username: username.value,
         email: email.value,
         password: password.value,
       });
-      notifications.success("Frequenza registrata con successo! Inizializzando portale d'accesso...");
+      notifications.success("Frequency registered! Initializing access portal...");
+      
+      // Automatic switch to Login perspective after successful registration
       setTimeout(() => {
         isLogin.value = true;
         password.value = "";
       }, 2000);
     }
   } catch (err: any) {
-    // Gli errori globali sono già gestiti dall'interceptor di api.ts
-    // ma possiamo aggiungere logica specifica qui se necessario (es. focus campi)
+    // Structural errors are managed by the global API interceptor.
+    // Specific UX logic (e.g., field focusing) can be inserted here.
   } finally {
     loading.value = false;
   }

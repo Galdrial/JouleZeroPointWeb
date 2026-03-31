@@ -1,92 +1,84 @@
-# Joule Zero Point - Backend
+# Joule: Zero Point - Backend Matrix
 
-Backend Express per autenticazione, gestione mazzi e Terminale AI.
+The core logic engine and API gateway for the Joule: Zero Point ecosystem. Handles authentication, deck orchestration, and the AI Oracle Terminal discourse.
 
-## Setup locale
+## Local Initialization
 
-1. Crea il file env:
+1. Establish your environment configuration:
 
 ```bash
 cp .env.example .env
 ```
 
-2. Compila le variabili minime in `.env`:
+2. Synchronize mandatory variables in `.env`:
 
-- `OPENAI_API_KEY`
-- `ASSISTANT_ID`
-- `JWT_SECRET`
+- `OPENAI_API_KEY`: Neural engine access key (OpenAI).
+- `ASSISTANT_ID`: OpenAI Assistant identifier for the Oracle.
+- `JWT_SECRET`: Security salt for token generation and identity verification.
 
-3. Installa dipendenze e avvia:
+3. Install dependencies and ignite the node:
 
 ```bash
 npm install
-node server.js
+npm start
 ```
 
-Server di default: `http://localhost:3000`
+Default Operational Port: `http://localhost:3000`
 
-## Variabili ambiente
+## Environmental Signals
 
-Obbligatorie:
+### Mandatory
+- `MONGODB_URI`: Connection string for the Atlas Matrix (Database).
+- `OPENAI_API_KEY`: Access token for the GPT-4o engine.
+- `JWT_SECRET`: Cryptographic key for session tokens.
 
-- `OPENAI_API_KEY`
-- `ASSISTANT_ID`
-- `JWT_SECRET`
+### Optional (Custom Configuration)
+- `PORT`: (Default: `3000`)
+- `CHAT_MAX_MESSAGE_LENGTH`: (Default: `1200`)
+- `NODE_ENV`: (e.g., `development`, `production`)
 
-Opzionali:
+## Primary API Protocols (V1)
 
-- `PORT` (default `3000`)
-- `SHEETS_URL` (override sorgente carte)
-- `CHAT_MAX_MESSAGE_LENGTH` (default `1200`)
-- `CHAT_RATE_WINDOW_MS` (default `60000`)
-- `CHAT_RATE_MAX_REQUESTS` (default `12`)
+### Authentication (`/api/v1/auth`)
+- `POST /register`: Identity creation.
+- `POST /login`: Session initiation.
+- `GET /search`: Identity discovery.
+- `DELETE /account/:username`: Identity decommissioning.
 
-## API principali
+### Card Database (`/api/v1/cards`)
+- `GET /`: Global card catalog retrieval.
 
-### Auth
+### News & Lore (`/api/v1/news`)
+- `GET /`: News/Story stream retrieval.
+- `POST /`: Unified article synthesis (Admin only).
+- `PUT /:id`: Article update (Admin only).
+- `DELETE /:id`: Article deletion (Admin only).
 
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/auth/search?q=...&current=...`
-- `DELETE /api/auth/account/:username`
+### Deck Orchestration (`/api/v1/decks`)
+- `GET /`: User collection and public library discovery.
+- `POST /`: Deck synthesis.
+- `DELETE /:id`: Deck decommissioning.
+- `POST /:id/vote`: Collective resonance (Voting).
+- `POST /:id/import`: Artifact cloning.
 
-### Carte
+### AI Oracle Terminal (`/api/v1/terminal`)
+- `POST /chat`: Oracle discourse interface.
 
-- `GET /api/cards`
-
-### Mazzi
-
-- `GET /api/decks`
-- `POST /api/decks`
-- `DELETE /api/decks/:id`
-- `DELETE /api/decks/user/:username`
-
-### Community
-
-- `GET /api/public-decks`
-- `POST /api/decks/:id/vote`
-- `POST /api/decks/:id/import`
-
-### Terminale AI
-
-- `POST /api/chat`
-
-Body tipico:
-
+Input Payload Structure:
 ```json
 {
-  "message": "testo utente",
-  "threadId": "thread_xxx_opzionale"
+  "message": "User query/directive",
+  "gameState": { "optional": "current_game_context" }
 }
 ```
 
-## Header usati
+## Security Headers
+- `Authorization`: `Bearer <JWT_TOKEN>` (Required for identified sectors).
+- `x-user`: Transmitted for contextual identity tracking (Voting/Personal filtering).
+- `X-Admin-Key`: Required for administrative operations (News management).
 
-- `x-user`: richiesto per endpoint che dipendono dall'utente (voto/import/filtro personalizzato).
-
-## Note deploy
-
-- Non committare mai `.env`.
-- In produzione imposta le secret nel provider (Render, Railway, VPS, ecc.).
-- Ruota `OPENAI_API_KEY` se è stata esposta in log/screenshot.
-- Valuta CORS restrittivo (ora è aperto) e rate limit anche a livello reverse proxy.
+## Deployment & Security Protocols
+- **Credential Safety**: Never commit `.env` to the source registry.
+- **Production Secrets**: Configure environment variables via your provider's secure dashboard (Railway, VPS, VPS, etc.).
+- **Key Rotation**: Rotate `OPENAI_API_KEY` immediately if exposed in diagnostic logs or screenshots.
+- **Network Armor**: Implement restricted CORS and robust rate-limiting at the reverse proxy layer for production environments.

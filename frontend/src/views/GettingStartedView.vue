@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/**
+ * Global Constants: External Connection Gateways
+ * Links to the official communication hub and virtualization environment.
+ */
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 const tabletopModUrl =
   "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";

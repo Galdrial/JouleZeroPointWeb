@@ -9,6 +9,10 @@ import {
   type NewsCategory,
 } from "../utils/newsCategory";
 
+/**
+ * NewsItem Data Structure
+ * Comprehensive model for news entries within the administrative matrix.
+ */
 type NewsItem = {
   id: number;
   slug: string;
@@ -24,6 +28,10 @@ type NewsItem = {
   featuredOrder: number | null;
 };
 
+/**
+ * FormData Structure
+ * Template for creating or modifying news artifacts.
+ */
 type FormData = {
   slug: string;
   title: string;
@@ -38,12 +46,16 @@ type FormData = {
   featuredOrder: number | null;
 };
 
-// --- AUTH ---
+// --- Authentication & Access Control ---
 const adminKey = ref(sessionStorage.getItem("adminKey") || "");
 const keyInput = ref("");
 const authError = ref("");
 const isAuthenticated = computed(() => !!adminKey.value);
 
+/**
+ * Initiate Administrative Session
+ * Persists the clearing key to session storage for matrix access.
+ */
 function login() {
   if (!keyInput.value.trim()) return;
   adminKey.value = keyInput.value.trim();
@@ -52,17 +64,25 @@ function login() {
   loadNews();
 }
 
+/**
+ * Terminate Administrative Session
+ * Purges access keys and flushes the local news registry.
+ */
 function logout() {
   adminKey.value = "";
   sessionStorage.removeItem("adminKey");
   newsList.value = [];
 }
 
-// --- DATA ---
+// --- Data Orchestration ---
 const newsList = ref<NewsItem[]>([]);
 const isLoading = ref(false);
 const notifications = useNotificationStore();
 
+/**
+ * Data Retrieval Protocol: Fetch Administrative News Registry
+ * Synchronizes the dashboard with all news entries (published and drafts).
+ */
 async function loadNews() {
   isLoading.value = true;
   try {
@@ -73,7 +93,7 @@ async function loadNews() {
     }));
   } catch (e: any) {
     if (e?.response?.status === 401) {
-      notifications.error("Chiave amministrativa non valida.");
+      notifications.error("Invalid administrative key.");
       adminKey.value = "";
       sessionStorage.removeItem("adminKey");
     }
@@ -82,7 +102,12 @@ async function loadNews() {
   }
 }
 
-// --- FORM ---
+// --- Editorial Form Orchestration ---
+
+/**
+ * Form Blueprint Initialization
+ * Generates an empty schema for new news entries.
+ */
 const emptyForm = (): FormData => ({
   slug: "",
   title: "",
@@ -106,6 +131,10 @@ const imagePreviewError = ref(false);
 const selectedImageFile = ref<File | null>(null);
 const isUploadingImage = ref(false);
 
+/**
+ * Validation Logic: Asset URI Integrity
+ * Ensures image paths conform to local or remote protocol standards.
+ */
 const isImageUrlValid = computed(() => {
   const value = form.imageUrl.trim();
   if (!value) return true;
@@ -130,6 +159,7 @@ const isImageUrlValid = computed(() => {
 
 const canSubmitForm = computed(() => isImageUrlValid.value);
 
+// --- Observers for State Hygiene ---
 watch(
   () => form.imageUrl,
   () => {
@@ -146,18 +176,28 @@ watch(
   },
 );
 
+/**
+ * UI Support: Handle asset hydration failure
+ */
 function onImagePreviewError() {
   imagePreviewError.value = true;
 }
 
+/**
+ * Change Listener: Buffer selected image file
+ */
 function onImageFileChange(event: Event) {
   const target = event.target as HTMLInputElement;
   selectedImageFile.value = target.files?.[0] || null;
 }
 
+/**
+ * Asset Persistence Protocol: Upload Image to Matrix
+ * Bridges to the Multer-powered backend endpoint for image storage.
+ */
 async function uploadImageFile() {
   if (!selectedImageFile.value) {
-    notifications.warn("Seleziona prima un file immagine.");
+    notifications.warn("Please select an image file first.");
     return;
   }
 
@@ -170,15 +210,18 @@ async function uploadImageFile() {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     form.imageUrl = response.data.imageUrl;
-    notifications.success("Immagine caricata e URL sincronizzato.");
+    notifications.success("Image uploaded. URL synchronized.");
     selectedImageFile.value = null;
   } catch (e: any) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   } finally {
     isUploadingImage.value = false;
   }
 }
 
+/**
+ * Editorial Sequence: Open Creation Perspective
+ */
 function openCreate() {
   Object.assign(form, emptyForm());
   isEditing.value = false;
@@ -189,6 +232,10 @@ function openCreate() {
   showForm.value = true;
 }
 
+/**
+ * Editorial Sequence: Open Modification Perspective
+ * Populates the form with existing news artifact data.
+ */
 function openEdit(item: NewsItem) {
   Object.assign(form, {
     slug: item.slug,
@@ -212,6 +259,9 @@ function openEdit(item: NewsItem) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+/**
+ * UI State Hygiene: Close editorial perspective
+ */
 function closeForm() {
   showForm.value = false;
   formError.value = "";
@@ -219,17 +269,22 @@ function closeForm() {
   selectedImageFile.value = null;
 }
 
+/**
+ * Execution Protocol: Persist Editorial Changes
+ * Transmits the news artifact payload to the central repository.
+ */
 async function submitForm() {
   formError.value = "";
 
+  // Structural Validation
   if (!form.slug || !form.title || !form.summary || !form.content) {
-    formError.value = "Slug, titolo, sommario e contenuto sono obbligatori.";
+    formError.value = "Slug, title, summary, and content are mandatory.";
     return;
   }
 
   if (!isImageUrlValid.value) {
     formError.value =
-      "URL immagine non valido. Usa /news/... oppure un link completo http(s).";
+      "Invalid image URL. Use /news/... or a complete http(s) link.";
     return;
   }
 
@@ -245,31 +300,39 @@ async function submitForm() {
   try {
     if (isEditing.value) {
       await api.put(`/news/${editingSlug.value}`, payload);
-      notifications.success("News aggiornata nella Matrice.");
+      notifications.success("News entry updated in the Matrix.");
     } else {
       await api.post("/news", payload);
-      notifications.success("News creata con successo.");
+      notifications.success("News entry created successfully.");
       closeForm();
     }
     await loadNews();
   } catch (e: any) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 }
 
-// --- TOGGLE / DELETE ---
+// --- Operational Sequences: Lifecycle & Decommissioning ---
+
+/**
+ * Toggle Visibility Status
+ */
 async function togglePublished(item: NewsItem) {
   try {
     await api.put(`/news/${item.slug}`, { isPublished: !item.isPublished });
-    notifications.success(`Stato news aggiornato: ${item.isPublished ? "Nascosta" : "Pubblicata"}`);
+    notifications.success(`Visibility updated: ${item.isPublished ? "Hidden" : "Published"}`);
     await loadNews();
   } catch {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 }
 
 const confirmDeleteSlug = ref("");
 
+/**
+ * Decommission Protocol: Delete News Artifact
+ * Requires dual-phase confirmation to prevent accidental loss of lore data.
+ */
 async function deleteNews(slug: string) {
   if (confirmDeleteSlug.value !== slug) {
     confirmDeleteSlug.value = slug;
@@ -278,17 +341,23 @@ async function deleteNews(slug: string) {
   confirmDeleteSlug.value = "";
   try {
     await api.delete(`/news/${slug}`);
-    notifications.success("Notizia decomposta dai database Atlas.");
+    notifications.success("News entry decomposed from Atlas databases.");
     await loadNews();
   } catch {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 }
 
+/**
+ * Decommission Hygiene: Cancel deletion intent
+ */
 function cancelDelete() {
   confirmDeleteSlug.value = "";
 }
 
+/**
+ * Utility: Standard Date Serialization
+ */
 function formatDate(value: string) {
   return new Date(value).toLocaleDateString("it-IT", {
     day: "2-digit",

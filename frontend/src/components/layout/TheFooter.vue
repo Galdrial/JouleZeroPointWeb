@@ -2,7 +2,14 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 
+// Route Orchestration: Global Layout Controller
 const route = useRoute();
+
+/**
+ * Visibility Logic
+ * Determines if the footer should be rendered based on route metadata (hideUI flag).
+ * Commonly disabled in immersive views like the Terminal or specialized dashboards.
+ */
 const hideUI = computed(() => route.meta.hideUI === true);
 </script>
 

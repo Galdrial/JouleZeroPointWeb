@@ -3,14 +3,24 @@ import { computed, ref, onMounted, onUnmounted, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 
+// Global Orchestration: Routing & Identity
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 
+// UI Interactivity State
 const isMenuOpen = ref(false);
+
+/**
+ * Visibility Logic
+ * Determines if the navbar should be rendered based on route metadata (hideUI flag).
+ */
 const hideUI = computed(() => route.meta.hideUI === true);
 
-// Sincronizzazione automatica ad ogni cambio rotta
+/**
+ * Navigation Observer: Auto-Sync
+ * Ensures the mobile menu is collapsed upon route mutation to prevent viewport occlusion.
+ */
 watch(
   () => route.fullPath,
   () => {
@@ -18,12 +28,20 @@ watch(
   },
 );
 
+/**
+ * Session Termination Sequence
+ * Purges identity tokens and redirects the user to the authentication gateway.
+ */
 const logout = () => {
   authStore.logout();
   isMenuOpen.value = false;
   router.push("/login");
 };
 
+/**
+ * Layout Guard: Boundary synchronization
+ * Forces menu collapse when transcending the mobile breakpoint during resize events.
+ */
 const handleResize = () => {
   if (window.innerWidth > 1690 && isMenuOpen.value) {
     isMenuOpen.value = false;
@@ -38,7 +56,11 @@ onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
 });
 
-// Applica blur al contenuto e permette lo scroll sotto il menu mobile
+/**
+ * UX Synthesis: Content Occlusion Management
+ * Applies visual filters (blur) to the main content-wrapper when the mobile menu is active.
+ * Enhances focus on navigation artifacts.
+ */
 watch(isMenuOpen, (val) => {
   const content = document.querySelector(".content-wrapper") as HTMLElement | null;
   if (content) {

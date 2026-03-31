@@ -3,26 +3,37 @@ import { nextTick, ref, watch } from "vue";
 import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
 
+/**
+ * Component Props
+ * @property {boolean} isOpen - Controls the visibility of the terminal drawer.
+ */
 const props = defineProps<{
   isOpen: boolean;
 }>();
 
+// Global Orchestration: Identity & Session
 const authStore = useAuthStore();
-
 const emit = defineEmits(["close"]);
 
+// UI State: Discourse & Input Buffer
 const inputMessage = ref("");
 const messages = ref<{ role: string; text: string }[]>([
   {
     role: "ai",
-    text: "Stato Operativo: Online. Sono il Terminale del Punto Zero. Puoi interrogarmi sul regolamento, sui frammenti di lore o sulle frequenze specifiche (statistiche) di ogni Carta. Inserisci la tua direttiva, Costruttore.",
+    text: "Operational Status: Online. I am the Zero Point Terminal. You can query me regarding game regulations, lore fragments, or specific card frequencies (stats). Enter your directive, Constructor.",
   },
 ]);
-const loading = ref(false);
-const threadId = ref<string | null>(null);
-const chatBoxRow = ref<HTMLElement | null>(null);
-const MAX_MESSAGE_LENGTH = 1200;
 
+// Protocol State
+const loading = ref(false);
+const threadId = ref<string | null>(null); // Persistent AI context identifier
+const chatBoxRow = ref<HTMLElement | null>(null);
+const MAX_MESSAGE_LENGTH = 1200; // Thermal limit for input strings
+
+/**
+ * UI Support: Viewport Synchronization
+ * Ensures the dialogue stream scrolls to the latest transmission.
+ */
 const scrollToBottom = async () => {
   await nextTick();
   if (chatBoxRow.value) {
@@ -30,16 +41,25 @@ const scrollToBottom = async () => {
   }
 };
 
+/**
+ * Memory Flush: Reset Terminal Protocol
+ * Purges the current thread and restores the default state.
+ */
 const resetChat = () => {
   threadId.value = null;
   messages.value = [
     {
       role: "ai",
-      text: "Sincronizzazione completata. Protocollo Terminale resettato. Inserisci la tua direttiva, Costruttore.",
+      text: "Synchronization complete. Terminal protocol reset. Enter your directive, Constructor.",
     },
   ];
 };
 
+/**
+ * Text Synthesis: Content Formatting Bridge
+ * Sanitizes and transforms raw AI output into semantic HTML.
+ * @param text Raw response string
+ */
 const formatMessage = (text: string) => {
   if (!text) return "";
   const escaped = text
@@ -48,6 +68,8 @@ const formatMessage = (text: string) => {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+  
+  // Transform newlines and markdown-like patterns
   let html = escaped.replace(/\n/g, "<br/>");
   html = html.replace(/\. ([A-Z])/g, ".<br/><br/>$1");
   html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
@@ -55,13 +77,19 @@ const formatMessage = (text: string) => {
   return html;
 };
 
+/**
+ * Execution Protocol: Transmit Directive to Oracle
+ * Interfaces with the central Matrix AI engine.
+ */
 const sendMessage = async () => {
+  // Guard Clauses: Prevent empty or concurrent transmissions
   if (!inputMessage.value.trim()) return;
 
+  // Thermal Limit Validation
   if (inputMessage.value.length > MAX_MESSAGE_LENGTH) {
     messages.value.push({
       role: "error",
-      text: `Messaggio troppo lungo (max ${MAX_MESSAGE_LENGTH} caratteri).`,
+      text: `Input Error: Directive exceeds thermal limit (max ${MAX_MESSAGE_LENGTH} characters).`,
     });
     return;
   }
@@ -73,6 +101,7 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
+    // Sychronize with the Matrix AI service
     const response = await api.post("/terminal/chat", {
       message: userText,
       threadId: threadId.value,
@@ -85,13 +114,15 @@ const sendMessage = async () => {
       role: "error",
       text:
         error.response?.data?.error ||
-        "Interferenza Quantica. Impossibile connettersi al server IA.",
+        "Quantum Interference detected. Unable to reach the IA core.",
     });
   } finally {
     loading.value = false;
     await scrollToBottom();
   }
 };
+
+// --- Perspective Observers ---
 
 // Auto-scroll when modal opens
 watch(
@@ -103,7 +134,7 @@ watch(
   },
 );
 
-// Reset chat when identity changes (Login/Logout isolation)
+// Identity Isolation: Reset chat when current user changes
 watch(
   () => authStore.username,
   () => {
@@ -111,7 +142,10 @@ watch(
   }
 );
 
-// Direttiva click-outside per chiudere il modal (opzionale, ma utile)
+/**
+ * Custom Directive: Detect clicks outside the target element.
+ * Bridges to the close emission.
+ */
 const vClickOutside = {
   mounted(el: any, binding: any) {
     el.clickOutsideEvent = (event: any) => {
@@ -126,6 +160,7 @@ const vClickOutside = {
   },
 };
 </script>
+>
 
 <template>
   <Transition name="terminal-slide">

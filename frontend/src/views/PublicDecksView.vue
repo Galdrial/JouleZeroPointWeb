@@ -7,48 +7,64 @@ import { useCardStore, type Card } from "../stores/cardStore";
 import { useDeckStore, type PublicDeck } from "../stores/deckStore";
 import { storeToRefs } from "pinia";
 
+/**
+ * CardRef Interface
+ * Represents a reference to a card with its quantity within a deck.
+ */
 interface CardRef {
   cardId: number;
   count: number;
 }
 
+// Global Orchestration: Stores & Identity
 const authStore = useAuthStore();
 const username = computed(() => authStore.username);
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
 const notifications = useNotificationStore();
 
+// State Reactive Refs: Derived from Pinia
 const { cards: allCards } = storeToRefs(cardStore);
 const { publicDecks: decks, loading } = storeToRefs(deckStore);
 
+// Pagination & Registry Metadata
 const totalDecks = ref(0);
 const currentPage = ref(1);
 const limit = 12;
 
+// Search & Filter state
 const searchQuery = ref("");
 const filterCostruttore = ref<number | "">("");
 const sortBy = ref<"recent" | "top" | "imports">("recent");
 
+// UI Interactive State
 const selectedDeck = ref<PublicDeck | null>(null);
 const isCostruttoreDropdownOpen = ref(false);
 const isSortDropdownOpen = ref(false);
 
+/**
+ * Registry Lookup: Extract Constructor cards from the global manifest.
+ */
 const costruttori = computed(() =>
   (allCards.value as Card[]).filter((c) => c.type === "Costruttore"),
 );
 
+// Sorting Config for Discovery
 const sortOptions = [
-  { value: "recent", label: "Recenti" },
-  { value: "top", label: "Più votati" },
-  { value: "imports", label: "Più importati" },
+  { value: "recent", label: "Recent" },
+  { value: "top", label: "Top Rated" },
+  { value: "imports", label: "Most Imported" },
 ] as const;
 
+/**
+ * Label Resolution: Resolve friendly names for dropdown triggers.
+ */
 const selectedCostruttoreLabel = computed(() => {
-  if (filterCostruttore.value === "") return "Costruttore";
+  if (filterCostruttore.value === "") return "Constructor";
   return (
     costruttori.value
       .find((costruttore) => costruttore.id === filterCostruttore.value)
-      ?.name.split(",")[0] || "Costruttore"
+      ?.name.split(",")[0] || "Constructor"
   );
 });
 
@@ -58,6 +74,10 @@ const selectedSortLabel = computed(
 
 const totalPages = computed(() => Math.ceil(totalDecks.value / limit));
 
+/**
+ * Custom Directive: Detect clicks outside the target element.
+ * Used for dropdown closing protocols.
+ */
 const vClickOutside = {
   mounted(el: any, binding: any) {
     el.clickOutsideEvent = (event: any) => {
@@ -72,16 +92,25 @@ const vClickOutside = {
   },
 };
 
+/**
+ * Registry Resolution: Map Constructor ID to Nominal identity.
+ */
 const getCostruttoreName = (id: number | string | null) => {
-  if (!id) return "Sconosciuto";
-  return costruttori.value.find((c) => String(c.id) === String(id))?.name || "Sconosciuto";
+  if (!id) return "Unknown";
+  return costruttori.value.find((c) => String(c.id) === String(id))?.name || "Unknown";
 };
 
+/**
+ * Registry Resolution: Map Constructor ID to Asset URL.
+ */
 const getCostruttoreImg = (id: number | string | null) => {
   if (!id) return "";
   return costruttori.value.find((c) => String(c.id) === String(id))?.image_url || "";
 };
 
+/**
+ * Deck Synthesis: Hydrate card references with full manifest data for preview.
+ */
 const previewCards = computed(() => {
   if (!selectedDeck.value) return [];
   return selectedDeck.value.cards
@@ -90,13 +119,17 @@ const previewCards = computed(() => {
       return {
         cardId: item.cardId,
         count: item.count,
-        name: card?.name || `Carta #${item.cardId}`,
-        type: card?.type || "Sconosciuto",
+        name: card?.name || `Fragment #${item.cardId}`,
+        type: card?.type || "Unknown",
       };
     })
     .sort((a: any, b: any) => a.name.localeCompare(b.name));
 });
 
+/**
+ * Discovery Protocol: Fetch Public Deck Registry
+ * Transmits filter parameters and pagination markers to the API.
+ */
 const loadPublicDecks = async () => {
   const result = await deckStore.fetchPublicDecks({
     q: searchQuery.value,
@@ -111,9 +144,13 @@ const loadPublicDecks = async () => {
   }
 };
 
+/**
+ * Engagement Protocol: Register Matrix Vote
+ * Upvotes or downvotes a deck, synchronizing with the user's identity.
+ */
 const voteDeck = async (deck: PublicDeck) => {
   if (!username.value) {
-    notifications.warn("Effettua il login per votare i mazzi.");
+    notifications.warn("Please login to vote on decks.");
     return;
   }
 
@@ -121,36 +158,45 @@ const voteDeck = async (deck: PublicDeck) => {
     const response = await api.post(`/decks/${deck.id}/vote`);
     deck.votesCount = response.data.votesCount;
     deck.userVoted = response.data.userVoted;
-    notifications.success(deck.userVoted ? "Voto registrato nella Matrice!" : "Voto rimosso.");
+    notifications.success(deck.userVoted ? "Vote registered in the Matrix!" : "Vote removed.");
   } catch (e: any) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 };
 
+/**
+ * Synchronization Protocol: Import Deck Artifact
+ * Clones a public deck into the user's private repository.
+ */
 const importDeck = async (deck: PublicDeck) => {
   if (!username.value) {
-    notifications.warn("Effettua il login per importare i mazzi.");
+    notifications.warn("Please login to import decks.");
     return;
   }
 
+  // Prevent recursive self-imports
   if (
     (deck.creator || "").trim().toLowerCase() ===
     username.value.trim().toLowerCase()
   ) {
-    notifications.info("Non puoi importare un tuo mazzo.");
+    notifications.info("Recursion detected: You cannot import your own artifact.");
     return;
   }
 
   try {
     const response = await api.post(`/decks/${deck.id}/import`);
     deck.importsCount += 1;
-    const importedDeckName = response?.data?.importedDeck?.name || "Mazzo importato";
-    notifications.success(`Import riuscito: ${importedDeckName}`);
+    const importedDeckName = response?.data?.importedDeck?.name || "Imported Deck";
+    notifications.success(`Import successful: ${importedDeckName}`);
   } catch (e: any) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 };
 
+/**
+ * External Bridge: Trigger Asset Export (PDF/TTS)
+ * Generates a file download sequence for the requested format.
+ */
 const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
   try {
     const response = await api({
@@ -169,16 +215,20 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
-    notifications.success(`Esportazione ${format.toUpperCase()} iniziata.`);
+    notifications.success(`Exporting ${format.toUpperCase()} sequence initiated.`);
   } catch (e) {
-    // Gestito globalmente
+    // Managed via global notification infrastructure
   }
 };
 
+/**
+ * UI Perspective: Open granular deck preview modal.
+ */
 const openPreview = (deck: PublicDeck) => {
   selectedDeck.value = deck;
 };
 
+// Perspective Observers: Trigger reload on filter mutation.
 watch([searchQuery, filterCostruttore, sortBy], () => {
   currentPage.value = 1;
   loadPublicDecks();
@@ -187,6 +237,7 @@ watch([searchQuery, filterCostruttore, sortBy], () => {
 watch(currentPage, loadPublicDecks);
 
 onMounted(async () => {
+  // Initialization Sequence: Fetch global manifest and current registry sector.
   await Promise.all([cardStore.fetchCards(), loadPublicDecks()]);
 });
 </script>

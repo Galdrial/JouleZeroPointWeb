@@ -3,20 +3,29 @@ import { nextTick, onMounted, ref } from "vue";
 import api from "../utils/api";
 import { useRouter } from "vue-router";
 
+// Global Orchestration: Routing & Identity
 const router = useRouter();
+
+// UI State: Input & Dialogue History
 const userInput = ref("");
 const messages = ref([
   {
     role: "assistant",
     content:
-      "PROTOCOLLO DI ACCESSO DIRETTO ATTIVATO. Sono il Terminale del Punto Zero.\n\nInserisci la tua direttiva, Costruttore.",
+      "DIRECT ACCESS PROTOCOL ACTIVATED. I am the Zero Point Terminal.\n\nEnter your directive, Constructor.",
   },
 ]);
-const isLoading = ref(false);
-const threadId = ref<string | null>(null);
-const chatContainer = ref<HTMLElement | null>(null);
-const MAX_MESSAGE_LENGTH = 1200;
 
+// Protocol State
+const isLoading = ref(false);
+const threadId = ref<string | null>(null); // Persistent AI context identifier
+const chatContainer = ref<HTMLElement | null>(null);
+const MAX_MESSAGE_LENGTH = 1200; // Thermal limit for input strings
+
+/**
+ * UI Support: Automated viewport synchronization
+ * Ensures the dialogue stream remains focused on the latest transmission.
+ */
 const scrollToBottom = async () => {
   await nextTick();
   if (chatContainer.value) {
@@ -24,13 +33,19 @@ const scrollToBottom = async () => {
   }
 };
 
+/**
+ * Execution Protocol: Transmit Directive to Oracle
+ * Interfaces with the AI engine via the designated backend terminal endpoint.
+ */
 const sendMessage = async () => {
+  // Guard Clauses: Prevent empty or concurrent transmissions
   if (!userInput.value.trim() || isLoading.value) return;
 
+  // Thermal Limit Validation
   if (userInput.value.length > MAX_MESSAGE_LENGTH) {
     messages.value.push({
       role: "assistant",
-      content: `ERRORE INPUT: Messaggio troppo lungo (max ${MAX_MESSAGE_LENGTH} caratteri).`,
+      content: `INPUT ERROR: Directive exceeds thermal limit (max ${MAX_MESSAGE_LENGTH} characters).`,
     });
     return;
   }
@@ -42,18 +57,20 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
+    // Sychronize with the Matrix AI service
     const response = await api.post("/terminal/chat", {
       message: text,
       threadId: threadId.value,
     });
 
+    // Update persistent context and dialogue history
     threadId.value = response.data.threadId;
     messages.value.push({ role: "assistant", content: response.data.reply });
   } catch (error) {
     messages.value.push({
       role: "assistant",
       content:
-        "ERRORE DI SINCRONIZZAZIONE: Connessione alla Matrice interrotta. Verifica lo stato del database.",
+        "SYNCHRONIZATION ERROR: Connection to the Matrix severed. Verify database stability.",
     });
   } finally {
     isLoading.value = false;
@@ -61,17 +78,23 @@ const sendMessage = async () => {
   }
 };
 
+/**
+ * Memory Flush: Reset Terminal Context
+ */
 const resetChat = () => {
   threadId.value = null;
   messages.value = [
     {
       role: "assistant",
       content:
-        "MEMORIA RESETTATA. Connessione ripristinata.\n\nIn attesa di nuove direttive...",
+        "MEMORY PURGED. Connection restored.\n\nAwaiting new directives...",
     },
   ];
 };
 
+/**
+ * Exit Protocol: Return to Home sector
+ */
 const goBack = () => {
   router.push("/");
 };

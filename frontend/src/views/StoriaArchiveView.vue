@@ -3,6 +3,10 @@ import { onMounted, ref } from "vue";
 import api from "../utils/api";
 import { type NewsCategory } from "../utils/newsCategory";
 
+/**
+ * StoryPreview Data Structure
+ * Minimal projection for historical lore logs and world-building narratives.
+ */
 type StoryPreview = {
   id: number;
   slug: string;
@@ -11,15 +15,21 @@ type StoryPreview = {
   category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
-  publishedAt: string;
+  publishedAt: string; // ISO date string
   isFeatured: boolean;
   featuredOrder: number | null;
 };
 
+// State Resource Orchestration
 const storyItems = ref<StoryPreview[]>([]);
 const isLoading = ref(true);
 const errorMessage = ref("");
 
+/**
+ * Date Localization Bridge
+ * Formats historical markers into human-readable Italian locale strings.
+ * @param value ISO date string
+ */
 const formatNewsDate = (value: string) =>
   new Date(value).toLocaleDateString("it-IT", {
     day: "2-digit",
@@ -28,13 +38,14 @@ const formatNewsDate = (value: string) =>
   });
 
 onMounted(async () => {
+  // Initialization Sequence: Fetch historical narrative logs (filtered by 'storia')
   try {
     const response = await api.get("/news", {
       params: { category: "storia" },
     });
     storyItems.value = response.data;
   } catch (_error) {
-    errorMessage.value = "Impossibile caricare l'archivio storia.";
+    errorMessage.value = "Unable to synchronize historical archives.";
   } finally {
     isLoading.value = false;
   }

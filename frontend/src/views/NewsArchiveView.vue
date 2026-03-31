@@ -7,6 +7,10 @@ import {
   type NewsCategory,
 } from "../utils/newsCategory";
 
+/**
+ * NewsPreview Data Structure
+ * Minimal projection of news content for archival display.
+ */
 type NewsPreview = {
   id: number;
   slug: string;
@@ -15,15 +19,21 @@ type NewsPreview = {
   category: NewsCategory;
   imageUrl: string;
   sourceUrl: string;
-  publishedAt: string;
+  publishedAt: string; // ISO date string
   isFeatured: boolean;
   featuredOrder: number | null;
 };
 
+// State Resource Orchestration
 const newsItems = ref<NewsPreview[]>([]);
 const isLoading = ref(true);
 const errorMessage = ref("");
 
+/**
+ * Date Localization Bridge
+ * Formats ISO strings into human-readable Italian locale markers.
+ * @param value ISO date string
+ */
 const formatNewsDate = (value: string) =>
   new Date(value).toLocaleDateString("it-IT", {
     day: "2-digit",
@@ -32,13 +42,14 @@ const formatNewsDate = (value: string) =>
   });
 
 onMounted(async () => {
+  // Initialization Sequence: Fetch historical news logs
   try {
     const response = await api.get("/news", {
-      params: { category: "news" },
+      params: { category: "news" }, // Filter for general news logs
     });
     newsItems.value = response.data;
   } catch (_error) {
-    errorMessage.value = "Impossibile caricare l'archivio news.";
+    errorMessage.value = "Unable to synchronize news archive.";
   } finally {
     isLoading.value = false;
   }

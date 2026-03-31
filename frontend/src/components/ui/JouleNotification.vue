@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { useNotificationStore } from '../../stores/notificationStore';
 
+/**
+ * Global Notification Component
+ * Orchestrates the display of ephemeral toast notifications across the application.
+ * Synchronized with the Pinia notificationStore for centralized message management.
+ */
 const notificationStore = useNotificationStore();
 </script>
 
