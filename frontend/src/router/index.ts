@@ -95,6 +95,21 @@ const router = createRouter( {
       path: '/privacy',
       name: 'privacy',
       component: () => import( '../views/PrivacyView.vue' )
+    },
+    {
+      path: '/verify-email/:token',
+      name: 'verifyEmail',
+      component: () => import('../views/VerifyEmailView.vue')
+    },
+    {
+      path: '/forgot-password',
+      name: 'forgotPassword',
+      component: () => import('../views/ForgotPasswordView.vue')
+    },
+    {
+      path: '/reset-password/:token',
+      name: 'resetPassword',
+      component: () => import('../views/ResetPasswordView.vue')
     }
   ]
 } )

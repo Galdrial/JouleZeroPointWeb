@@ -29,6 +29,13 @@ const userSchema = new mongoose.Schema({
     type: String, // Bcrypt hashed credential
     required: [true, 'Password is mandatory'],
   },
+  isVerified: {
+    type: Boolean,
+    default: false, // Prevents unregistered access
+  },
+  verificationToken: String,
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
 }, {
   // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true,

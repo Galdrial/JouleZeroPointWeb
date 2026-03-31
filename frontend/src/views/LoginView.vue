@@ -16,6 +16,7 @@ const isLogin = ref(route.query.mode !== "register");
 const username = ref("");
 const email = ref("");
 const password = ref("");
+const confirmPassword = ref("");
 const loading = ref(false);
 
 /**
@@ -48,19 +49,26 @@ const submitForm = async () => {
       const redirectTo = (route.query.redirect as string) || "/";
       setTimeout(() => router.push(redirectTo), 800);
     } else {
+      // Identity Verification Constraint Check
+      if (password.value !== confirmPassword.value) {
+        notifications.error("Errore crittografico: Le Passphrase non combaciano.");
+        return;
+      }
+      
       // New Identity Initialization Sequence
-      await api.post("/auth/register", {
+      const res = await api.post("/auth/register", {
         username: username.value,
         email: email.value,
         password: password.value,
       });
-      notifications.success("Frequency registered! Initializing access portal...");
+      notifications.success(res.data.message || "Frequenza generata! Controlla la posta.");
       
-      // Automatic switch to Login perspective after successful registration
+      // Automatic switch to Login perspective after successful registration (without token issuance)
       setTimeout(() => {
         isLogin.value = true;
         password.value = "";
-      }, 2000);
+        confirmPassword.value = "";
+      }, 2800);
     }
   } catch (err: any) {
     // Structural errors are managed by the global API interceptor.
@@ -101,6 +109,14 @@ const submitForm = async () => {
           class="glass-input"
           required
         />
+        <input
+          v-if="!isLogin"
+          v-model="confirmPassword"
+          type="password"
+          placeholder="Conferma Passphrase"
+          class="glass-input"
+          required
+        />
         <button
           type="submit"
           class="cyber-btn btn-primary full-width"
@@ -115,6 +131,10 @@ const submitForm = async () => {
           }}
         </button>
       </form>
+
+      <p class="toggle-text forgot-wrapper" v-if="isLogin">
+        <RouterLink to="/forgot-password" class="forgot-link">Hai smarrito la Passphrase?</RouterLink>
+      </p>
 
       <p class="toggle-text">
         {{
@@ -164,6 +184,15 @@ const submitForm = async () => {
 .toggle-text a:hover {
   text-decoration: underline;
   text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+.forgot-wrapper {
+  margin-top: 1rem;
+  margin-bottom: -0.5rem;
+}
+.forgot-link {
+  color: var(--text-light) !important;
+  font-size: 0.8rem;
+  font-style: italic;
 }
 
 .auth-panel .btn-primary,
