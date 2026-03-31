@@ -12,19 +12,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--accent-cyan);
-  background: #d4af371f;
-  color: var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
+  background: rgba(var(--accent-gold-rgb), 0.12);
+  color: var(--accent-gold);
   transition: all 0.2s;
 }
 .cyber-export-btn.tts {
   border-color: var(--accent-magenta);
   color: var(--accent-magenta);
-  background: #ff9f1c24;
+  background: rgba(var(--accent-magenta-rgb), 0.14);
 }
 .cyber-export-btn.pdf:hover,
 .cyber-export-btn.tts:hover {
   filter: brightness(1.15);
-  box-shadow: 0 0 10px var(--accent-cyan, #fedc68);
+  box-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.4);
   transform: scale(1.05);
 }

@@ -78,7 +78,7 @@ const notificationStore = useNotificationStore();
   border-left: 4px solid var(--accent-magenta);
 }
 .toast-card.warning {
-  border-left: 4px solid var(--accent-cyan);
+  border-left: 4px solid var(--accent-gold);
 }
 .toast-card.info {
   border-left: 4px solid #fff;

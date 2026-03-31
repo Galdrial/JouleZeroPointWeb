@@ -103,8 +103,8 @@ watch(
   pointer-events: none;
   z-index: 0;
   background: 
-    radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(0, 243, 255, 0.05) 0%, transparent 40%);
+    radial-gradient(circle at 15% 15%, rgba(var(--accent-gold-rgb), 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(var(--accent-gold-rgb), 0.05) 0%, transparent 40%);
 }
 
 /* Blur globale per menu mobile (gestito via componente Navbar) */

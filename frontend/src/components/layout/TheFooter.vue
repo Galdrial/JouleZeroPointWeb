@@ -102,7 +102,7 @@ const hideUI = computed(() => route.meta.hideUI === true);
   transition: color 0.2s ease;
 }
 
-.footer-links a:hover { color: var(--accent-cyan); }
+.footer-links a:hover { color: var(--accent-gold); }
 
 .footer-socials {
   display: flex;
@@ -112,7 +112,7 @@ const hideUI = computed(() => route.meta.hideUI === true);
 }
 
 .footer-social-link {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   text-decoration: none;
   width: 42px;
   height: 42px;

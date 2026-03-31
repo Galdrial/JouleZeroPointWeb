@@ -248,7 +248,7 @@ const vClickOutside = {
   overflow: hidden;
   box-shadow:
     0 10px 50px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(212, 175, 55, 0.14);
+    0 0 20px rgba(var(--accent-gold-rgb), 0.14);
   border: 1px solid var(--glass-border);
   background: rgba(10, 15, 20, 0.95);
   backdrop-filter: blur(15px);
@@ -268,7 +268,7 @@ const vClickOutside = {
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 2px;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   display: flex;
   align-items: center;
   gap: 0.8rem;
@@ -277,9 +277,9 @@ const vClickOutside = {
 .pulse-dot {
   width: 8px;
   height: 8px;
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-gold);
   animation: pulse 2s infinite;
 }
 
@@ -314,7 +314,7 @@ const vClickOutside = {
 }
 
 .action-btn:hover {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   transform: scale(1.1);
 }
 
@@ -351,8 +351,8 @@ const vClickOutside = {
 
 .chat-bubble.user {
   border-left: none;
-  border-right: 2px solid var(--accent-cyan);
-  background: rgba(212, 175, 55, 0.08);
+  border-right: 2px solid var(--accent-gold);
+  background: rgba(var(--accent-gold-rgb), 0.08);
   align-self: flex-end;
   text-align: right;
   width: auto;
@@ -362,7 +362,7 @@ const vClickOutside = {
 
 .chat-bubble.ai {
   border-left-color: var(--accent-magenta);
-  background: rgba(255, 159, 28, 0.06);
+  background: rgba(var(--accent-magenta-rgb), 0.06);
   align-self: flex-start;
   width: 90%;
 }
@@ -379,7 +379,7 @@ const vClickOutside = {
 }
 
 .user .sender {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 .ai .sender {
   color: var(--accent-magenta);

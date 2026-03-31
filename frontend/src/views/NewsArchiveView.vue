@@ -172,7 +172,7 @@ onMounted(async () => {
 
 .archive-kicker {
   margin: 0 0 0.45rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   letter-spacing: 2px;
   font-family: var(--font-display);
   font-size: 0.8rem;
@@ -248,7 +248,7 @@ onMounted(async () => {
 }
 
 .archive-category-badge--news {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   background: rgba(254, 220, 104, 0.12);
   border: 1px solid rgba(254, 220, 104, 0.26);
 }
@@ -295,7 +295,7 @@ onMounted(async () => {
 }
 
 .archive-primary-link {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   text-decoration: none;
   font-weight: 700;
   font-size: 0.85rem;

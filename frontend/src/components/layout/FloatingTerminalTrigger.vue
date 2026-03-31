@@ -50,14 +50,14 @@ const hideUI = computed(() => route.meta.hideUI === true);
   height: clamp(4rem, 8vw, 4.5rem);
   border-radius: 50%;
   background: rgba(10, 15, 20, 0.8);
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 999;
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.22);
+  box-shadow: 0 0 15px rgba(var(--accent-gold-rgb), 0.22);
   backdrop-filter: blur(10px);
   transform-origin: center;
 }
@@ -68,19 +68,19 @@ const hideUI = computed(() => route.meta.hideUI === true);
   object-fit: contain;
   transition: all 0.3s ease;
   z-index: 2;
-  filter: drop-shadow(0 0 6px rgba(254, 220, 104, 0.35));
+  filter: drop-shadow(0 0 6px rgba(var(--accent-gold-rgb), 0.35));
 }
 
 @media (hover: hover) and (pointer: fine) {
   .terminal-trigger:hover {
     transform: scale(1.1) rotate(10deg);
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 25px rgba(var(--accent-gold-rgb), 0.4);
     border-color: #fff;
   }
 }
 
 .terminal-trigger.active {
-  background: rgba(255, 159, 28, 0.14);
+  background: rgba(var(--accent-magenta-rgb), 0.14);
   border-color: var(--accent-magenta);
   transform: scale(1.06) rotate(6deg);
 }
@@ -94,7 +94,7 @@ const hideUI = computed(() => route.meta.hideUI === true);
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid var(--accent-cyan);
+  border: 2px solid var(--accent-gold);
   animation: pulse-ring 2s infinite;
   opacity: 0;
 }

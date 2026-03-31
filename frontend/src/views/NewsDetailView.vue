@@ -208,7 +208,7 @@ onMounted(async () => {
   color: var(--text-muted);
   font-size: 1rem;
   line-height: 1.65;
-  border-left: 2px solid var(--accent-cyan);
+  border-left: 2px solid var(--accent-gold);
   padding-left: 0.85rem;
 }
 
@@ -240,7 +240,7 @@ onMounted(async () => {
 }
 
 .news-category-badge--news {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   background: rgba(254, 220, 104, 0.12);
   border: 1px solid rgba(254, 220, 104, 0.26);
 }
@@ -314,7 +314,7 @@ onMounted(async () => {
 }
 
 .news-archive-link:hover {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   padding-left: 1.4rem;
 }
 

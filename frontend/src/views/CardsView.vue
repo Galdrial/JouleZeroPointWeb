@@ -513,7 +513,7 @@ const vClickOutside = {
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-family: var(--font-display);
   letter-spacing: clamp(0.18rem, 1vw, 0.5rem);
-  background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -546,7 +546,7 @@ const vClickOutside = {
 }
 .card-item:hover {
   transform: translateY(-8px);
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
   box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
 }
 .card-header {
@@ -655,10 +655,10 @@ const vClickOutside = {
   appearance: none;
   width: 15px;
   height: 15px;
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow: 0 0 10px var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-gold);
 }
 
 .badge {
@@ -736,7 +736,7 @@ const vClickOutside = {
   text-overflow: ellipsis;
 }
 .dropdown-trigger:hover {
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
 }
 .dropdown-trigger .arrow {
   margin-left: auto;
@@ -755,7 +755,7 @@ const vClickOutside = {
   z-index: 999;
   background: rgba(10, 15, 25, 0.98);
   backdrop-filter: blur(15px);
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
@@ -776,7 +776,7 @@ const vClickOutside = {
 }
 .dropdown-item.active {
   background: rgba(212, 175, 55, 0.12);
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 .dot {
   width: 8px;
@@ -815,7 +815,7 @@ const vClickOutside = {
 
 .loader {
   border: 4px solid rgba(255, 255, 255, 0.1);
-  border-left-color: var(--accent-cyan);
+  border-left-color: var(--accent-gold);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -858,7 +858,7 @@ const vClickOutside = {
 .current-page {
   font-size: clamp(1.1rem, 3vw, 1.4rem);
   color: #fff;
-  text-shadow: 0 0 10px var(--accent-cyan);
+  text-shadow: 0 0 10px var(--accent-gold);
   padding: 0 0.5rem;
 }
 .pag-btn {

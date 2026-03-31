@@ -284,7 +284,7 @@ const goToDeck = () => {
   gap: clamp(1.25rem, 4vw, 3rem);
   padding: clamp(1.25rem, 4vw, 3rem);
   margin-bottom: clamp(1.5rem, 4vw, 3rem);
-  border-left: 5px solid var(--accent-cyan);
+  border-left: 5px solid var(--accent-gold);
 }
 
 .cyber-avatar {
@@ -293,7 +293,7 @@ const goToDeck = () => {
   height: clamp(96px, 18vw, 150px);
   border-radius: 50%;
   background: rgba(212, 175, 55, 0.08);
-  border: 2px solid var(--accent-cyan);
+  border: 2px solid var(--accent-gold);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -327,8 +327,8 @@ const goToDeck = () => {
 .avatar-symbol {
   font-family: var(--font-display);
   font-size: clamp(3rem, 7vw, 5rem);
-  color: var(--accent-cyan);
-  text-shadow: 0 0 20px var(--accent-cyan);
+  color: var(--accent-gold);
+  text-shadow: 0 0 20px var(--accent-gold);
 }
 
 .username-title {
@@ -399,7 +399,7 @@ const goToDeck = () => {
 .cyber-subtitle {
   font-size: clamp(0.95rem, 2.5vw, 1.2rem);
   letter-spacing: clamp(2px, 0.6vw, 5px);
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   margin: 0;
 }
 
@@ -418,7 +418,7 @@ const goToDeck = () => {
 .header-line {
   flex-grow: 1;
   height: 1px;
-  background: linear-gradient(90deg, var(--accent-cyan), transparent);
+  background: linear-gradient(90deg, var(--accent-gold), transparent);
 }
 
 .header-line.magenta {
@@ -441,7 +441,7 @@ const goToDeck = () => {
 
 .deck-card:hover {
   transform: translateY(-10px);
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
   background: rgba(212, 175, 55, 0.08);
 }
 
@@ -502,8 +502,8 @@ const goToDeck = () => {
 }
 
 .privacy-tag.public {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
 }
 
 .deck-footer {
@@ -520,7 +520,7 @@ const goToDeck = () => {
   align-items: center;
   gap: 0.35rem;
   font-size: 0.75rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   font-weight: 700;
 }
 

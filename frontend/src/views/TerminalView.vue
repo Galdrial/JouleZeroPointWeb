@@ -187,17 +187,17 @@ onMounted(scrollToBottom);
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid rgba(212, 175, 55, 0.12);
-  border-right: 1px solid rgba(212, 175, 55, 0.12);
+  border-left: 1px solid rgba(var(--accent-gold-rgb), 0.12);
+  border-right: 1px solid rgba(var(--accent-gold-rgb), 0.12);
   background:
     radial-gradient(
       circle at top right,
-      rgba(255, 159, 28, 0.08) 0%,
+      rgba(var(--accent-magenta-rgb), 0.08) 0%,
       transparent 40%
     ),
     radial-gradient(
       circle at bottom left,
-      rgba(212, 175, 55, 0.08) 0%,
+      rgba(var(--accent-gold-rgb), 0.08) 0%,
       transparent 40%
     );
 }
@@ -218,15 +218,15 @@ onMounted(scrollToBottom);
   gap: 10px;
   font-size: 0.8rem;
   letter-spacing: 2px;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 
 .pulse-dot {
   width: 8px;
   height: 8px;
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   border-radius: 50%;
-  box-shadow: 0 0 10px var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-gold);
   animation: pulse 2s infinite;
 }
 
@@ -271,7 +271,7 @@ onMounted(scrollToBottom);
   flex-direction: column;
   gap: 1.5rem;
   scrollbar-width: thin;
-  scrollbar-color: var(--accent-cyan) transparent;
+  scrollbar-color: var(--accent-gold) transparent;
 }
 
 .message-row {
@@ -287,15 +287,15 @@ onMounted(scrollToBottom);
   max-width: 85%;
   padding: 1.2rem;
   border-radius: 4px;
-  background: rgba(255, 159, 28, 0.08);
+  background: rgba(var(--accent-magenta-rgb), 0.08);
   border-left: 2px solid var(--accent-magenta);
   position: relative;
 }
 
 .user .message-bubble {
   border-left: none;
-  border-right: 2px solid var(--accent-cyan);
-  background: rgba(212, 175, 55, 0.08);
+  border-right: 2px solid var(--accent-gold);
+  background: rgba(var(--accent-gold-rgb), 0.08);
   text-align: right;
 }
 
@@ -313,7 +313,7 @@ onMounted(scrollToBottom);
   opacity: 1;
 }
 .constructor-tag {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   opacity: 1;
 }
 
@@ -346,8 +346,8 @@ input {
 
 input:focus {
   outline: none;
-  border-color: var(--accent-cyan);
-  background: rgba(212, 175, 55, 0.08);
+  border-color: var(--accent-gold);
+  background: rgba(var(--accent-gold-rgb), 0.08);
 }
 
 .send-btn {
@@ -394,7 +394,7 @@ input:focus {
 .typing-dots span {
   width: 6px;
   height: 6px;
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   border-radius: 50%;
   animation: typing 1.4s infinite;
 }

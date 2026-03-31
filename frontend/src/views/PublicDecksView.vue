@@ -486,7 +486,7 @@ onMounted(async () => {
   font-size: 3.5rem;
   font-family: var(--font-display);
   letter-spacing: 0.5rem;
-  background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -539,7 +539,7 @@ onMounted(async () => {
 }
 
 .dropdown-trigger:hover {
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
 }
 
 .dropdown-trigger .arrow {
@@ -560,7 +560,7 @@ onMounted(async () => {
   width: 100%;
   z-index: 10;
   background: rgba(10, 15, 25, 0.98);
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -576,7 +576,7 @@ onMounted(async () => {
 .dropdown-item:hover,
 .dropdown-item.active {
   background: rgba(212, 175, 55, 0.12);
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 
 .stats-box {
@@ -586,7 +586,7 @@ onMounted(async () => {
 
 .count-tag {
   background: rgba(212, 175, 55, 0.12);
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
   padding: 0 1.2rem;
   height: 50px;
   display: flex;
@@ -594,7 +594,7 @@ onMounted(async () => {
   border-radius: 6px;
   font-size: 0.85rem;
   font-family: var(--font-display);
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   white-space: nowrap;
 }
 
@@ -638,7 +638,7 @@ onMounted(async () => {
 
 .deck-card:hover {
   transform: translateY(-8px);
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
   box-shadow: 0 15px 40px rgba(212, 175, 55, 0.18);
   background: rgba(255, 255, 255, 0.05);
 }
@@ -658,7 +658,7 @@ onMounted(async () => {
 
 .deck-title-row h3 {
   margin: 0;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   font-family: var(--font-display);
   font-size: 1.3rem;
   line-height: 1.25;
@@ -727,7 +727,7 @@ onMounted(async () => {
 }
 
 .stat-key { color: var(--text-muted); }
-.stat-val { color: var(--accent-cyan); font-weight: bold; }
+.stat-val { color: var(--accent-gold); font-weight: bold; }
 
 .deck-export-actions {
   display: flex;
@@ -808,7 +808,7 @@ onMounted(async () => {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.preview-count { color: var(--accent-cyan); font-weight: bold; }
+.preview-count { color: var(--accent-gold); font-weight: bold; }
 .preview-name { flex: 1; }
 .preview-type { font-size: 0.8rem; color: var(--text-muted); }
 
@@ -842,8 +842,8 @@ onMounted(async () => {
 
 .page-btn {
   background: transparent;
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
   padding: 0.6rem 1.5rem;
   cursor: pointer;
   font-family: var(--font-display);
@@ -851,7 +851,7 @@ onMounted(async () => {
 }
 
 .page-btn:hover:not(:disabled) {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   color: #000;
 }
 

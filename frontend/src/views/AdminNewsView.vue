@@ -712,7 +712,7 @@ onMounted(() => {
   font-family: var(--font-display, monospace);
   font-size: 0.9rem;
   letter-spacing: 3px;
-  color: var(--accent-cyan, #00e5ff);
+  color: var(--accent-gold, #fedc68);
 }
 
 .admin-header-right {
@@ -770,7 +770,7 @@ onMounted(() => {
 .admin-login-box h2 {
   margin: 0;
   font-family: var(--font-display, monospace);
-  color: var(--accent-cyan, #00e5ff);
+  color: var(--accent-gold, #fedc68);
   letter-spacing: 2px;
   font-size: 1rem;
 }
@@ -798,7 +798,7 @@ onMounted(() => {
   font-family: var(--font-display, monospace);
   font-size: 0.95rem;
   letter-spacing: 2px;
-  color: var(--accent-cyan, #00e5ff);
+  color: var(--accent-gold, #fedc68);
 }
 
 .admin-count {
@@ -958,7 +958,7 @@ onMounted(() => {
 }
 
 .news-row-meta a {
-  color: var(--accent-cyan, #00e5ff);
+  color: var(--accent-gold, #fedc68);
   text-decoration: none;
 }
 
@@ -967,7 +967,7 @@ onMounted(() => {
   padding: 0.1rem 0.3rem;
   border-radius: 3px;
   font-size: 0.75rem;
-  color: var(--accent-cyan, #00e5ff);
+  color: var(--accent-gold, #fedc68);
 }
 
 .news-row-actions {
@@ -988,7 +988,7 @@ onMounted(() => {
 
 .badge-pub {
   background: rgba(0, 229, 255, 0.12);
-  color: var(--accent-cyan, #00e5ff);
+  color: var(--accent-gold, #fedc68);
   border: 1px solid rgba(0, 229, 255, 0.3);
 }
 
@@ -1006,7 +1006,7 @@ onMounted(() => {
 
 .badge-news {
   background: rgba(0, 229, 255, 0.12);
-  color: var(--accent-cyan, #00e5ff);
+  color: var(--accent-gold, #fedc68);
   border: 1px solid rgba(0, 229, 255, 0.28);
 }
 
@@ -1037,7 +1037,7 @@ onMounted(() => {
 
 .admin-input:focus {
   outline: none;
-  border-color: var(--accent-cyan, #00e5ff);
+  border-color: var(--accent-gold, #fedc68);
 }
 
 .admin-input:disabled {
@@ -1061,7 +1061,7 @@ onMounted(() => {
 
 .admin-textarea:focus {
   outline: none;
-  border-color: var(--accent-cyan, #00e5ff);
+  border-color: var(--accent-gold, #fedc68);
 }
 
 /* BUTTONS */
@@ -1082,10 +1082,10 @@ onMounted(() => {
 }
 
 .btn-primary {
-  background: var(--accent-cyan, #00e5ff);
+  background: var(--accent-gold, #fedc68);
   color: #0a0e1a;
   font-weight: 700;
-  border-color: var(--accent-cyan, #00e5ff);
+  border-color: var(--accent-gold, #fedc68);
 }
 
 .btn-primary:hover {

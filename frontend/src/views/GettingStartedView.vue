@@ -187,12 +187,12 @@ const tabletopModUrl =
 }
 
 .directive-list li::marker {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 
 .closing {
   margin-top: 0.6rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   font-family: var(--font-display);
   letter-spacing: 0.5px;
 }
@@ -211,7 +211,7 @@ const tabletopModUrl =
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-family: var(--font-display);
   letter-spacing: clamp(0.18rem, 1vw, 0.5rem);
-  background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

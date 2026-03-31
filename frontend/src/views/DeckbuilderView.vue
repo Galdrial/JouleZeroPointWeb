@@ -1068,7 +1068,7 @@ onMounted(async () => {
   font-size: 3.5rem;
   font-family: var(--font-display);
   letter-spacing: 0.5rem;
-  background: linear-gradient(135deg, #fff 0%, var(--accent-cyan) 100%);
+  background: linear-gradient(135deg, #fff 0%, var(--accent-gold) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -1150,7 +1150,7 @@ onMounted(async () => {
 }
 
 .dropdown-trigger:hover {
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
 }
 
 .dropdown-trigger .arrow {
@@ -1172,7 +1172,7 @@ onMounted(async () => {
   z-index: 999;
   background: rgba(10, 15, 25, 0.98);
   backdrop-filter: blur(15px);
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8);
@@ -1197,7 +1197,7 @@ onMounted(async () => {
 
 .dropdown-item.active {
   background: rgba(212, 175, 55, 0.12);
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 
 .dot {
@@ -1215,7 +1215,7 @@ onMounted(async () => {
 
 .count-tag {
   background: rgba(212, 175, 55, 0.12);
-  border: 1px solid var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
   padding: 0 1.2rem;
   height: 50px;
   display: flex;
@@ -1223,7 +1223,7 @@ onMounted(async () => {
   border-radius: 6px;
   font-size: 0.85rem;
   font-family: var(--font-display);
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   white-space: nowrap;
 }
 
@@ -1257,7 +1257,7 @@ onMounted(async () => {
 
 .deck-card:hover {
   transform: translateY(-8px);
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
   box-shadow: 0 15px 40px rgba(212, 175, 55, 0.18);
   background: rgba(255, 255, 255, 0.05);
 }
@@ -1284,7 +1284,7 @@ onMounted(async () => {
   line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
@@ -1363,8 +1363,8 @@ onMounted(async () => {
 }
 .deck-privacy.public {
   background: rgba(212, 175, 55, 0.12);
-  color: var(--accent-cyan);
-  border: 1px solid var(--accent-cyan);
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
 }
 .deck-privacy.private {
   background: rgba(255, 159, 28, 0.14);
@@ -1434,7 +1434,7 @@ onMounted(async () => {
 
 .deck-meta {
   font-size: 0.85rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 
 .deck-footer {
@@ -1453,7 +1453,7 @@ onMounted(async () => {
 
 .deck-card:hover .edit-hint {
   opacity: 1;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 
 .pagination {
@@ -1465,8 +1465,8 @@ onMounted(async () => {
 
 .page-btn {
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
   padding: 0.8rem 1.5rem;
   cursor: pointer;
   border-radius: 4px;
@@ -1474,7 +1474,7 @@ onMounted(async () => {
 }
 
 .page-btn:hover:not(:disabled) {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   color: #000;
 }
 
@@ -1551,7 +1551,7 @@ onMounted(async () => {
   border-radius: 10px;
 }
 .library-grid-container::-webkit-scrollbar-thumb {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   border-radius: 10px;
 }
 
@@ -1575,7 +1575,7 @@ onMounted(async () => {
 
 .card-item:hover {
   transform: translateY(-8px);
-  border-color: var(--accent-cyan);
+  border-color: var(--accent-gold);
   box-shadow: 0 10px 30px rgba(212, 175, 55, 0.18);
   position: relative;
   z-index: 10;
@@ -1657,7 +1657,7 @@ onMounted(async () => {
 .current-count {
   font-family: var(--font-display);
   font-size: 2rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   min-width: 60px;
   text-align: center;
 }
@@ -1677,13 +1677,13 @@ onMounted(async () => {
 }
 
 .cyber-btn.cyan {
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
 }
 .cyber-btn.cyan:hover {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   color: #000;
-  box-shadow: 0 0 15px var(--accent-cyan);
+  box-shadow: 0 0 15px var(--accent-gold);
 }
 
 .cyber-btn.magenta {
@@ -1732,7 +1732,7 @@ onMounted(async () => {
   font-family: var(--font-display);
   font-size: 0.8rem;
   margin-bottom: 0.5rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
 }
 
 .privacy-area {
@@ -1758,7 +1758,7 @@ onMounted(async () => {
 .checkmark {
   width: 20px;
   height: 20px;
-  border: 2px solid var(--accent-cyan);
+  border: 2px solid var(--accent-gold);
   border-radius: 4px;
   position: relative;
 }
@@ -1769,10 +1769,10 @@ onMounted(async () => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   font-size: 1.2rem;
   font-weight: bold;
-  text-shadow: 0 0 5px var(--accent-cyan);
+  text-shadow: 0 0 5px var(--accent-gold);
 }
 
 .stat.success {
@@ -1783,7 +1783,7 @@ onMounted(async () => {
 .deck-name-input {
   background: none;
   border: none;
-  border-bottom: 2px solid var(--accent-cyan);
+  border-bottom: 2px solid var(--accent-gold);
   color: #fff;
   font-size: 1.5rem;
   font-family: var(--font-display);
@@ -1821,7 +1821,7 @@ onMounted(async () => {
   border-radius: 10px;
 }
 .current-deck-list::-webkit-scrollbar-thumb {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   border-radius: 10px;
 }
 
@@ -1840,7 +1840,7 @@ onMounted(async () => {
 }
 
 .cyan-bg {
-  background: var(--accent-cyan) !important;
+  background: var(--accent-gold) !important;
   color: #000 !important;
 }
 
@@ -1892,10 +1892,10 @@ onMounted(async () => {
 }
 
 .export-mini-btn:hover {
-  background: var(--accent-cyan);
-  border-color: var(--accent-cyan);
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
   transform: scale(1.1);
-  box-shadow: 0 0 10px var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-gold);
 }
 
 .export-group-vertical {
@@ -1906,14 +1906,14 @@ onMounted(async () => {
 }
 
 .btn-secondary {
-  border-color: var(--accent-cyan) !important;
-  color: var(--accent-cyan) !important;
+  border-color: var(--accent-gold) !important;
+  color: var(--accent-gold) !important;
   font-size: 0.8rem !important;
   background: rgba(0, 255, 255, 0.05) !important;
 }
 
 .btn-secondary:hover {
-  background: var(--accent-cyan) !important;
+  background: var(--accent-gold) !important;
   color: #000 !important;
 }
 
@@ -2041,7 +2041,7 @@ onMounted(async () => {
   font-size: 1.8rem;
   margin: 0;
   color: var(--text-main);
-  background: linear-gradient(to right, #fff, var(--accent-cyan));
+  background: linear-gradient(to right, #fff, var(--accent-gold));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2064,7 +2064,7 @@ onMounted(async () => {
   border-radius: 10px;
 }
 .stats-modal-body::-webkit-scrollbar-thumb {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   border-radius: 10px;
 }
 
@@ -2078,7 +2078,7 @@ onMounted(async () => {
 .stats-section h3 {
   font-family: var(--font-display);
   font-size: 1.1rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   margin: 0 0 1.5rem 0;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -2108,7 +2108,7 @@ onMounted(async () => {
 
 .cost-bar-fill {
   flex: 0 0 auto;
-  background: linear-gradient(90deg, var(--accent-cyan), #00ff88);
+  background: linear-gradient(90deg, var(--accent-gold), #00ff88);
   min-height: 28px;
   border-radius: 4px;
   position: relative;
@@ -2154,7 +2154,7 @@ onMounted(async () => {
   display: block;
   font-family: var(--font-display);
   font-size: 2rem;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
 }
 
@@ -2502,8 +2502,8 @@ onMounted(async () => {
 .cyber-export-btn {
   flex: 1;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
+  border: 1px solid var(--accent-gold);
+  color: var(--accent-gold);
   font-family: var(--font-display);
   font-size: 0.75rem;
   padding: 0.35rem 0.8rem;
@@ -2516,14 +2516,14 @@ onMounted(async () => {
 }
 
 .cyber-export-btn.pdf {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
 }
 
 .cyber-export-btn.pdf:hover {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   color: #000;
-  box-shadow: 0 0 15px var(--accent-cyan);
+  box-shadow: 0 0 15px var(--accent-gold);
 }
 
 .cyber-export-btn.tts {
@@ -2601,9 +2601,9 @@ onMounted(async () => {
 .core-ring:nth-child(1) {
   width: 100%;
   height: 100%;
-  border-top-color: var(--accent-cyan);
+  border-top-color: var(--accent-gold);
   animation: rotate 2s linear infinite;
-  box-shadow: 0 0 20px var(--accent-cyan);
+  box-shadow: 0 0 20px var(--accent-gold);
 }
 
 .core-ring:nth-child(2) {
@@ -2616,7 +2616,7 @@ onMounted(async () => {
 .core-ring:nth-child(3) {
   width: 50%;
   height: 50%;
-  border-left-color: var(--accent-cyan);
+  border-left-color: var(--accent-gold);
   animation: rotate 3s linear infinite;
 }
 
@@ -2633,8 +2633,8 @@ onMounted(async () => {
   position: absolute;
   width: 250px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-  box-shadow: 0 0 15px var(--accent-cyan);
+  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+  box-shadow: 0 0 15px var(--accent-gold);
   animation: scan 4s ease-in-out infinite;
 }
 
@@ -2647,7 +2647,7 @@ onMounted(async () => {
 }
 
 .status-indicator {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   animation: blink 0.8s infinite;
 }
 

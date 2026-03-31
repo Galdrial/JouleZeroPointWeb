@@ -278,7 +278,7 @@ onMounted(async () => {
 }
 
 .archive-primary-link {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   text-decoration: none;
   font-weight: 700;
   font-size: 0.85rem;

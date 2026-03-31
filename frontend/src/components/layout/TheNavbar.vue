@@ -158,8 +158,8 @@ watch(isMenuOpen, (val) => {
 }
 
 .user-btn {
-  border-color: var(--accent-cyan) !important;
-  color: var(--accent-cyan) !important;
+  border-color: var(--accent-gold) !important;
+  color: var(--accent-gold) !important;
 }
 
 .logout-btn {
@@ -174,8 +174,8 @@ watch(isMenuOpen, (val) => {
 .logo-link:hover { opacity: 0.8; }
 
 .logo .joule {
-  color: #fedc68;
-  text-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+  color: var(--accent-gold);
+  text-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.35);
 }
 
 .logo .zp { color: #ffffff; }
@@ -290,8 +290,8 @@ watch(isMenuOpen, (val) => {
 
   .mobile-nav-link:hover,
   .mobile-nav-link.router-link-active {
-    color: var(--accent-cyan);
-    text-shadow: 0 0 10px rgba(254, 220, 104, 0.4);
+    color: var(--accent-gold);
+    text-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.4);
   }
 
   .mobile-nav-link.logout-link {

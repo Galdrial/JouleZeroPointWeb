@@ -8,8 +8,9 @@
   --text-main: #e2e8f0;
   --text-muted: #94a3b8;
   --accent-gold: #fedc68;
-  --accent-cyan: #fedc68;
   --accent-magenta: #ff003c;
+  --accent-gold-rgb: 254, 220, 104;
+  --accent-magenta-rgb: 255, 0, 60;
   --font-display: "Outfit", sans-serif;
   --font-body: "Inter", sans-serif;
   --space-page-x: clamp(0.5rem, 2.2vw, 2rem);
@@ -54,8 +55,8 @@ body {
   height: 60vw;
   background: radial-gradient(
     circle,
-    rgba(212, 175, 55, 0.08) 0%,
-    rgba(255, 159, 28, 0.04) 50%,
+    rgba(var(--accent-gold-rgb), 0.08) 0%,
+    rgba(var(--accent-gold-rgb), 0.04) 50%,
     rgba(0, 0, 0, 0) 70%
   );
   pointer-events: none;
@@ -97,7 +98,7 @@ body {
 
 .logo .zp {
   color: var(--accent-gold);
-  text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  text-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.5);
 }
 
 nav {
@@ -116,8 +117,8 @@ nav a {
 
 nav a:hover,
 nav a.router-link-active {
-  color: var(--accent-cyan);
-  text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+  color: var(--accent-gold);
+  text-shadow: 0 0 8px rgba(var(--accent-gold-rgb), 0.4);
 }
 
 /* Glassmorphism Panels */
@@ -146,8 +147,8 @@ nav a.router-link-active {
 
 .glass-input:focus {
   outline: none;
-  border-color: var(--accent-cyan);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.25);
 }
 
 .cyber-btn {
@@ -167,13 +168,13 @@ nav a.router-link-active {
 }
 
 .btn-primary {
-  background: var(--accent-cyan);
+  background: var(--accent-gold);
   color: #000;
 }
 
 .btn-primary:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 0 20px var(--accent-cyan);
+  box-shadow: 0 0 20px var(--accent-gold);
   filter: brightness(1.2);
   color: #000 !important;
 }

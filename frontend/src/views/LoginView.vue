@@ -156,7 +156,7 @@ const submitForm = async () => {
   color: var(--text-muted);
 }
 .toggle-text a {
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   text-decoration: none;
   font-weight: 600;
   margin-left: 0.5rem;
