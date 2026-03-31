@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Vista statica per l'Informativa sulla Privacy GDPR
+// Static view for the GDPR Privacy Policy
 </script>
 
 <template>

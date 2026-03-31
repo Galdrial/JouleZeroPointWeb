@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Vista statica per il Codice di Condotta
+// Static view for the Code of Conduct
 </script>
 
 <template>

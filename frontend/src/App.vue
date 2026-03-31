@@ -9,6 +9,7 @@ import TheFooter from "./components/layout/TheFooter.vue";
 import FloatingTerminalTrigger from "./components/layout/FloatingTerminalTrigger.vue";
 import JouleTerminal from "./components/JouleTerminal.vue";
 import JouleNotification from "./components/ui/JouleNotification.vue";
+import CookieBanner from "./components/ui/CookieBanner.vue";
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -55,6 +56,8 @@ watch(
       :is-open="isTerminalOpen" 
       @toggle="isTerminalOpen = !isTerminalOpen" 
     />
+
+    <CookieBanner />
 
     <Teleport to="body">
       <JouleTerminal

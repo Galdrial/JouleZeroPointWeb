@@ -11,6 +11,11 @@ const route = useRoute();
  * Commonly disabled in immersive views like the Terminal or specialized dashboards.
  */
 const hideUI = computed(() => route.meta.hideUI === true);
+
+// Cookie Consent Trigger
+const openCookieSettings = () => {
+  window.dispatchEvent(new CustomEvent("open-cookie-banner"));
+};
 </script>
 
 <template>
@@ -40,6 +45,7 @@ const hideUI = computed(() => route.meta.hideUI === true);
       <RouterLink to="/terms">Termini di utilizzo</RouterLink>
       <RouterLink to="/code-of-conduct">Codice di condotta</RouterLink>
       <RouterLink to="/privacy">Informativa sulla privacy</RouterLink>
+      <a href="#" @click.prevent="openCookieSettings" aria-label="Impostazioni Sensori e Cookie">Impostazioni Cookie</a>
     </div>
     <div class="footer-divider footer-divider--secondary"></div>
     <div class="footer-copyright">

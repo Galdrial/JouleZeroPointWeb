@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Vista statica per i Termini di Utilizzo
+// Static view for the Terms of Use
 </script>
 
 <template>
