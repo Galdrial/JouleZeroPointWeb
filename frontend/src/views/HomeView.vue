@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import api from "../utils/api";
-import heroImg from "../assets/hero.png";
+import heroImg from "../assets/hero.webp";
 import {
   getNewsCategoryLabel,
   isStoryCategory,
@@ -90,7 +90,7 @@ onMounted(async () => {
   <div class="home-view fade-in">
     <section class="hero-section">
       <div class="hero-image-stage">
-        <img :src="heroImg" alt="Joule Zero Point Hero" class="hero-bg-image" />
+        <img :src="heroImg" alt="Joule Zero Point Hero" width="1920" height="1080" class="hero-bg-image" />
         <div class="hero-particles" aria-hidden="true">
           <span
             v-for="(style, index) in particleStyles"
@@ -246,6 +246,8 @@ onMounted(async () => {
             v-if="news.imageUrl"
             :src="news.imageUrl"
             :alt="news.title"
+            width="800"
+            height="450"
             class="news-cover"
           />
           <p class="news-date">{{ formatNewsDate(news.publishedAt) }}</p>
