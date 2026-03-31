@@ -22,18 +22,32 @@ const getDecks = async (req, res) => {
       if (requester !== creatorLower) {
         query.isPublic = true;
       }
-    } else {
+    } else if (requester) {
       // By default, show requester's decks
       query.creator = requester;
     }
 
-    if (q) {
-      query.name = { $regex: q, $options: 'i' };
+    if (q && q.trim()) {
+      const searchRegex = new RegExp(q.trim(), 'i');
+      
+      // NEW: Search for costruttori matching names first
+      const matchingCards = await Card.find({ 
+        name: searchRegex, 
+        type: 'Costruttore' 
+      }).select('cardId');
+      const costruttoreIds = matchingCards.map(c => c.cardId);
+
+      query.$or = [
+        { name: searchRegex },
+        { costruttoreId: { $in: costruttoreIds } }
+      ];
     }
 
-    if (costruttoreId) {
-      query.costruttoreId = costruttoreId;
+    if (costruttoreId && costruttoreId !== '') {
+      query.costruttoreId = Number(costruttoreId);
     }
+
+    logger.debug(`QUERY_FILTER_PRIVATE: ${JSON.stringify(query)}`);
 
     const total = await Deck.countDocuments(query);
     const decks = await Deck.find(query)
@@ -58,15 +72,25 @@ const getPublicDecks = async (req, res) => {
 
     let query = { isPublic: true };
 
-    if (q) {
+    if (q && q.trim()) {
+      const searchRegex = new RegExp(q.trim(), 'i');
+
+      // NEW: Search for costruttori matching names first
+      const matchingCards = await Card.find({ 
+        name: searchRegex, 
+        type: 'Costruttore' 
+      }).select('cardId');
+      const costruttoreIds = matchingCards.map(c => c.cardId);
+
       query.$or = [
-        { name: { $regex: q, $options: 'i' } },
-        { creator: { $regex: q, $options: 'i' } }
+        { name: searchRegex },
+        { creator: searchRegex },
+        { costruttoreId: { $in: costruttoreIds } }
       ];
     }
 
-    if (costruttoreId) {
-      query.costruttoreId = costruttoreId;
+    if (costruttoreId && costruttoreId !== '') {
+      query.costruttoreId = Number(costruttoreId);
     }
 
     let sortOption = { createdAt: -1 };

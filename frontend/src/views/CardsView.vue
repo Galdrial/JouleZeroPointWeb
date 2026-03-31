@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
 import {
   CARDS_VIEW_TYPE_OPTIONS,
   type CardTypeOption,
 } from "../constants/cardTypes";
+import { useCardStore, type Card } from "../stores/cardStore";
+import { storeToRefs } from "pinia";
 
-const cards = ref<any[]>([]);
-const loading = ref(true);
-const error = ref("");
+const cardStore = useCardStore();
+const { cards, loading, error } = storeToRefs(cardStore);
 
 // Filtri Reattivi
 const searchQuery = ref("");
@@ -18,7 +18,7 @@ const filterPep = ref(10);
 const filterRp = ref(10);
 
 // Stato Modal
-const selectedCard = ref<any | null>(null);
+const selectedCard = ref<Card | null>(null);
 
 // Stato Filtri
 const showFilters = ref(false);
@@ -70,8 +70,8 @@ const handleImgError = (e: Event) => {
 };
 
 const filteredCards = computed(() => {
-  return cards.value
-    .filter((card) => {
+  return (cards.value as Card[])
+    .filter((card: Card) => {
       const nameMatch = card.name
         .toLowerCase()
         .includes(searchQuery.value.toLowerCase());
@@ -90,7 +90,7 @@ const filteredCards = computed(() => {
 
       return nameMatch && typeMatch && etMatch && pepMatch && rpMatch;
     })
-    .sort((a, b) => {
+    .sort((a: Card, b: Card) => {
       if (sortBy.value === "id") return 0; // Mantieni ordine originale
       if (sortBy.value === "name") return a.name.localeCompare(b.name);
       if (sortBy.value === "pep" || sortBy.value === "rp") {
@@ -127,17 +127,8 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-onMounted(async () => {
-  try {
-    const response = await axios.get("/api/v1/cards");
-    cards.value = response.data;
-  } catch (e) {
-    error.value =
-      "Errore critico di sincronizzazione col Nucleo (Backend Node.js offline).";
-    console.error(e);
-  } finally {
-    loading.value = false;
-  }
+onMounted(() => {
+  cardStore.fetchCards();
 });
 
 // Direttiva click-outside

@@ -9,35 +9,17 @@ import {
   TYPE_GLOWS,
 } from "../constants/cardTypes";
 import { useAuthStore } from "../stores/auth";
-
-interface Card {
-  id: number;
-  name: string;
-  type: string;
-  rarity: string;
-  cost_et: number | null;
-  pep: number | null;
-  rp: number | null;
-  effect: string;
-  role: string | null;
-  image_url: string;
-}
-
-interface DeckCard {
-  card: Card;
-  count: number;
-}
-
-interface SavedDeck {
-  id?: string | number;
-  name: string;
-  cards: { cardId: number; count: number }[];
-  costruttoreId: number | null;
-  creator?: string;
-  isPublic?: boolean;
-}
+import { useCardStore, type Card } from "../stores/cardStore";
+import { useDeckStore, type SavedDeck } from "../stores/deckStore";
+import { storeToRefs } from "pinia";
 
 const authStore = useAuthStore();
+const cardStore = useCardStore();
+const deckStore = useDeckStore();
+
+const { cards: allCards } = storeToRefs(cardStore);
+const { userDecks: decks, totalUserDecks: totalDecks, loading: decksLoading, error: decksError } = storeToRefs(deckStore);
+
 const username = computed(() => authStore.username);
 
 // UI State
@@ -71,7 +53,6 @@ const showTerminalAlert = (msg: string) => {
 };
 
 // Editor State
-const allCards = ref<Card[]>([]);
 const currentDeck = ref<DeckCard[]>([]);
 const selectedCostruttore = ref<Card | null>(null);
 const deckName = ref("Nuovo Mazzo");
@@ -81,12 +62,15 @@ const editorSelectedType = ref("");
 const typeOptions = DECKBUILDER_TYPE_OPTIONS;
 
 // Dashboard State
-const decks = ref<SavedDeck[]>([]);
-const totalDecks = ref(0);
 const searchDashboard = ref("");
 const filterCostruttore = ref<number | "">("");
 const currentPage = ref(1);
 const limit = 12;
+
+interface DeckCard {
+  card: Card;
+  count: number;
+}
 
 // Computed for Editor
 const filteredLibrary = computed(() => {
@@ -289,25 +273,12 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
 
 // Funzioni Dashboard
 const loadDecks = async () => {
-  loading.value = true;
-  try {
-    const res = await axios.get("/api/v1/decks", {
-      params: {
-        q: searchDashboard.value,
-        costruttoreId: filterCostruttore.value,
-        page: currentPage.value,
-        limit: limit,
-      },
-      headers: {
-        "x-user": username.value,
-        "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
-      },
-    });
-    decks.value = res.data.decks;
-    totalDecks.value = res.data.total;
-  } finally {
-    loading.value = false;
-  }
+  await deckStore.fetchUserDecks({
+    q: searchDashboard.value,
+    costruttoreId: filterCostruttore.value,
+    page: currentPage.value,
+    limit: limit,
+  });
 };
 
 const selectDashboardCostruttore = (id: number | "") => {
@@ -337,12 +308,14 @@ const confirmDelete = (id: string | number) => {
 
 const executeDelete = async () => {
   if (deckToDelete.value) {
-    await axios.delete(`/api/v1/decks/${deckToDelete.value}`, {
-      headers: { "Authorization": authStore.token ? `Bearer ${authStore.token}` : "" }
-    });
-    deckToDelete.value = null;
-    showDeleteConfirm.value = false;
-    loadDecks();
+    const success = await deckStore.deleteDeck(deckToDelete.value);
+    if (success) {
+      deckToDelete.value = null;
+      showDeleteConfirm.value = false;
+      loadDecks();
+    } else {
+      showTerminalAlert("ERRORE DURANTE LA CANCELLAZIONE DEL MAZZO.");
+    }
   }
 };
 
@@ -393,20 +366,27 @@ watch([searchDashboard, filterCostruttore], () => {
   loadDecks();
 });
 
-watch(currentPage, loadDecks);
+watch(decksError, (newError) => {
+  if (newError) {
+    showTerminalAlert(`ERRORE MATRICE: ${newError}`);
+  }
+});
 
 onMounted(async () => {
-  const [cardsRes] = await Promise.all([axios.get("/api/v1/cards")]);
-  allCards.value = cardsRes.data;
+  loading.value = true;
+  
+  // Caricamento Matrice Carte (una sola volta grazie al caching dello store)
+  await cardStore.fetchCards();
 
   const editId = new URLSearchParams(window.location.search).get("edit");
   if (editId) {
     try {
-      loading.value = true;
-      const res = await axios.get(`/api/v1/decks/${editId}`, {
-        headers: { "Authorization": authStore.token ? `Bearer ${authStore.token}` : "" }
-      });
-      editDeck(res.data);
+      const deckData = await deckStore.fetchDeckById(editId);
+      if (deckData) {
+        editDeck(deckData);
+      } else {
+        await loadDecks();
+      }
     } catch (e) {
       console.error("Errore caricamento mazzo edit:", e);
       await loadDecks();
@@ -494,7 +474,7 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div v-if="loading" class="dashboard-loading">
+      <div v-if="decksLoading" class="dashboard-loading">
         <div class="loader"></div>
       </div>
 

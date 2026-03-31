@@ -2,38 +2,25 @@
 import axios from "axios";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useAuthStore } from "../stores/auth";
+import { useCardStore, type Card } from "../stores/cardStore";
+import { useDeckStore, type PublicDeck } from "../stores/deckStore";
+import { storeToRefs } from "pinia";
 
 interface CardRef {
   cardId: number;
   count: number;
 }
 
-interface PublicDeck {
-  id: number;
-  name: string;
-  creator: string;
-  costruttoreId: number | null;
-  cards: CardRef[];
-  createdAt: number;
-  importsCount: number;
-  votesCount: number;
-  userVoted: boolean;
-}
-
-interface Card {
-  id: number;
-  name: string;
-  image_url: string;
-  type: string;
-}
-
 const authStore = useAuthStore();
 const username = computed(() => authStore.username);
-const loading = ref(true);
-const error = ref("");
+const cardStore = useCardStore();
+const deckStore = useDeckStore();
+
+const { cards: allCards } = storeToRefs(cardStore);
+const { publicDecks: decks, loading, error } = storeToRefs(deckStore);
+
 const successMessage = ref("");
 let successMessageTimer: ReturnType<typeof setTimeout> | null = null;
-const decks = ref<PublicDeck[]>([]);
 const totalDecks = ref(0);
 const currentPage = ref(1);
 const limit = 12;
@@ -42,13 +29,12 @@ const searchQuery = ref("");
 const filterCostruttore = ref<number | "">("");
 const sortBy = ref<"recent" | "top" | "imports">("recent");
 
-const allCards = ref<Card[]>([]);
 const selectedDeck = ref<PublicDeck | null>(null);
 const isCostruttoreDropdownOpen = ref(false);
 const isSortDropdownOpen = ref(false);
 
 const costruttori = computed(() =>
-  allCards.value.filter((c) => c.type === "Costruttore"),
+  (allCards.value as Card[]).filter((c) => c.type === "Costruttore"),
 );
 
 const sortOptions = [
@@ -99,8 +85,8 @@ const getCostruttoreImg = (id: number | string | null) => {
 const previewCards = computed(() => {
   if (!selectedDeck.value) return [];
   return selectedDeck.value.cards
-    .map((item) => {
-      const card = allCards.value.find((c) => String(c.id) === String(item.cardId));
+    .map((item: CardRef) => {
+      const card = (allCards.value as Card[]).find((c: Card) => String(c.id) === String(item.cardId));
       return {
         cardId: item.cardId,
         count: item.count,
@@ -108,43 +94,20 @@ const previewCards = computed(() => {
         type: card?.type || "Sconosciuto",
       };
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a: any, b: any) => a.name.localeCompare(b.name));
 });
 
-const loadCostruttori = async () => {
-  try {
-    const response = await axios.get("/api/v1/cards");
-    allCards.value = response.data;
-  } catch (e) {
-    console.error("ERRORE_CARTE:", e);
-    error.value = "Impossibile recuperare l'archivio frammenti del Nucleo Centrale.";
-  }
-};
-
 const loadPublicDecks = async () => {
-  loading.value = true;
-  error.value = "";
-  try {
-    const response = await axios.get("/api/v1/decks/public", {
-      params: {
-        q: searchQuery.value,
-        costruttoreId: filterCostruttore.value,
-        sort: sortBy.value,
-        page: currentPage.value,
-        limit,
-      },
-      headers: {
-        "x-user": username.value,
-      },
-    });
+  const result = await deckStore.fetchPublicDecks({
+    q: searchQuery.value,
+    costruttoreId: filterCostruttore.value,
+    sort: sortBy.value,
+    page: currentPage.value,
+    limit,
+  });
 
-    decks.value = response.data.decks;
-    totalDecks.value = response.data.total;
-  } catch (e) {
-    console.error(e);
-    error.value = "Errore caricamento mazzi pubblici dalla rete.";
-  } finally {
-    loading.value = false;
+  if (result) {
+    totalDecks.value = result.total;
   }
 };
 
@@ -271,7 +234,7 @@ watch(selectedDeck, (value) => {
 });
 
 onMounted(async () => {
-  await Promise.all([loadCostruttori(), loadPublicDecks()]);
+  await Promise.all([cardStore.fetchCards(), loadPublicDecks()]);
 });
 
 onBeforeUnmount(() => {
