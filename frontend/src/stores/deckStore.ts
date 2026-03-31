@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuthStore } from './auth';
+import { useNotificationStore } from './notificationStore';
 
 export interface SavedDeck {
   id?: string | number;
@@ -21,6 +22,7 @@ export interface PublicDeck extends SavedDeck {
 
 export const useDeckStore = defineStore('decks', () => {
   const authStore = useAuthStore();
+  const notifications = useNotificationStore();
   const userDecks = ref<SavedDeck[]>([]);
   const publicDecks = ref<PublicDeck[]>([]);
   const totalUserDecks = ref(0);
@@ -32,20 +34,11 @@ export const useDeckStore = defineStore('decks', () => {
     
     loading.value = true;
     try {
-      const res = await axios.get('/api/v1/decks', {
-        params: {
-          ...params,
-        },
-        headers: {
-          "x-user": authStore.username,
-          "Authorization": `Bearer ${authStore.token}`
-        },
-      });
+      const res = await api.get('/decks', { params });
       userDecks.value = res.data.decks;
       totalUserDecks.value = res.data.total;
     } catch (err: any) {
       error.value = err.message || 'Errore durante il caricamento dei mazzi.';
-      console.error('ERRORE_DECK_STORE_USER:', err);
     } finally {
       loading.value = false;
     }
@@ -54,19 +47,11 @@ export const useDeckStore = defineStore('decks', () => {
   async function fetchPublicDecks(params: any = {}) {
     loading.value = true;
     try {
-      const res = await axios.get('/api/v1/decks/public', {
-        params: {
-          ...params,
-        },
-        headers: {
-          "x-user": authStore.username
-        }
-      });
+      const res = await api.get('/decks/public', { params });
       publicDecks.value = res.data.decks || res.data;
       return res.data;
     } catch (err: any) {
       error.value = err.message || 'Errore durante il caricamento dei mazzi pubblici.';
-      console.error('ERRORE_DECK_STORE_PUBLIC:', err);
     } finally {
       loading.value = false;
     }
@@ -76,14 +61,12 @@ export const useDeckStore = defineStore('decks', () => {
     if (!authStore.isLoggedIn) return;
     
     try {
-      await axios.delete(`/api/v1/decks/${id}`, {
-        headers: { "Authorization": `Bearer ${authStore.token}` }
-      });
+      await api.delete(`/decks/${id}`);
       userDecks.value = userDecks.value.filter(d => d.id !== id);
       totalUserDecks.value--;
+      notifications.success("Mazzo rimosso dalla memoria con successo.");
       return true;
     } catch (err) {
-      console.error('ERRORE_DECK_DELETE:', err);
       return false;
     }
   }
@@ -91,13 +74,10 @@ export const useDeckStore = defineStore('decks', () => {
   async function fetchDeckById(id: string | number) {
     loading.value = true;
     try {
-      const res = await axios.get(`/api/v1/decks/${id}`, {
-        headers: { "Authorization": `Bearer ${authStore.token}` }
-      });
+      const res = await api.get(`/decks/${id}`);
       return res.data;
     } catch (err: any) {
       error.value = err.message || 'Errore durante il caricamento del mazzo.';
-      console.error('ERRORE_DECK_FETCH_ID:', err);
       return null;
     } finally {
       loading.value = false;

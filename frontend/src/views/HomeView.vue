@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from "axios";
 import { onMounted, ref } from "vue";
+import api from "../utils/api";
 import heroImg from "../assets/hero.png";
 import {
   getNewsCategoryLabel,
@@ -54,20 +54,18 @@ const particleStyles = Array.from({ length: 150 }, () => ({
 }));
 
 onMounted(async () => {
-  // isAuthenticated è ora gestito automaticamente dallo store centralizzato
-
   try {
-    const response = await axios.get("/api/v1/cards");
+    const response = await api.get("/cards");
     fragmentCount.value = response.data.length;
   } catch (err) {
-    console.error("Errore sincronizzazione frammenti:", err);
+    // Gestito globalmente
   }
 
   try {
-    const response = await axios.get("/api/v1/news", { params: { limit: 6 } });
+    const response = await api.get("/news", { params: { limit: 6 } });
     latestNews.value = response.data;
   } catch (err) {
-    console.error("Errore caricamento news home:", err);
+    // Gestito globalmente
   }
 });
 </script>

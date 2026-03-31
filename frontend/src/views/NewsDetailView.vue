@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from "axios";
 import { computed, onMounted, ref } from "vue";
+import api from "../utils/api";
 import { useRoute } from "vue-router";
 import {
   getNewsCategoryLabel,
@@ -51,7 +51,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get(`/api/v1/news/${slug}`);
+    const response = await api.get(`/news/${slug}`);
     news.value = response.data;
   } catch (_error) {
     errorMessage.value = "La news richiesta non è disponibile.";

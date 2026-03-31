@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
+import api from "../utils/api";
 import {
   DECKBUILDER_TYPE_OPTIONS,
   EVENT_TYPES,
@@ -9,6 +9,7 @@ import {
   TYPE_GLOWS,
 } from "../constants/cardTypes";
 import { useAuthStore } from "../stores/auth";
+import { useNotificationStore } from "../stores/notificationStore";
 import { useCardStore, type Card } from "../stores/cardStore";
 import { useDeckStore, type SavedDeck } from "../stores/deckStore";
 import { storeToRefs } from "pinia";
@@ -16,6 +17,7 @@ import { storeToRefs } from "pinia";
 const authStore = useAuthStore();
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
+const notifications = useNotificationStore();
 
 const { cards: allCards } = storeToRefs(cardStore);
 const { userDecks: decks, totalUserDecks: totalDecks, loading: decksLoading, error: decksError } = storeToRefs(deckStore);
@@ -43,13 +45,8 @@ const showDeleteConfirm = ref(false);
 const selectedCard = ref<Card | null>(null);
 const showStatsModal = ref(false);
 
-// Alert State
-const alertMessage = ref("");
-const showAlert = ref(false);
-
 const showTerminalAlert = (msg: string) => {
-  alertMessage.value = msg;
-  showAlert.value = true;
+  notifications.error(msg);
 };
 
 // Editor State
@@ -225,9 +222,8 @@ const executeSave = async (overwrite: boolean) => {
       creator: username.value,
       isPublic: isPublic.value,
     };
-    await axios.post("/api/v1/decks", payload, {
-      headers: { "Authorization": authStore.token ? `Bearer ${authStore.token}` : "" }
-    });
+    await api.post("/decks", payload);
+    notifications.success("Mazzo sincronizzato con la Matrice Joule con successo!");
     viewMode.value = "dashboard";
     loadDecks();
   } catch (e: any) {
@@ -241,18 +237,12 @@ const executeSave = async (overwrite: boolean) => {
 };
 
 const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
-  const url = `/api/v1/decks/${deckId}/export?format=${format}`;
-  isExporting.value = true;
-  exportFormat.value = format;
-
   try {
-    const response = await axios({
-      url: url,
+    const response = await api({
+      url: `/decks/${deckId}/export`,
+      params: { format },
       method: 'GET',
       responseType: 'blob',
-      headers: {
-        "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
-      }
     });
 
     const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
@@ -931,28 +921,7 @@ onMounted(async () => {
         </div>
       </Transition>
     </Teleport>
-    <!-- TERMINAL ALERT OVERLAY -->
-    <Transition name="fade">
-      <div v-if="showAlert" class="alert-overlay" @click="showAlert = false">
-        <div class="alert-box glass-panel" @click.stop>
-          <div class="alert-header">
-            <span class="alert-icon">⚠️</span>
-            NOTIFICA TERMINALE
-          </div>
-          <div class="alert-content">
-            {{ alertMessage }}
-          </div>
-          <div class="alert-actions">
-            <button
-              class="cyber-btn btn-primary small-btn"
-              @click="showAlert = false"
-            >
-              RICEVUTO
-            </button>
-          </div>
-        </div>
-      </div>
-    </Transition>
+    <!-- Notifiche gestite globalmente da JouleNotification in App.vue -->
     
     <!-- EXPORT LOADER OVERLAY (CYBER EXTRACTION) -->
     <Transition name="matrix-fade">

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from "axios";
 import { nextTick, onMounted, ref } from "vue";
+import api from "../utils/api";
 import { useRouter } from "vue-router";
 
 const router = useRouter();
@@ -42,7 +42,7 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
-    const response = await axios.post("/api/v1/terminal/chat", {
+    const response = await api.post("/terminal/chat", {
       message: text,
       threadId: threadId.value,
     });

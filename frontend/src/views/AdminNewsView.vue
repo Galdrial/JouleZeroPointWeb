@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import axios from "axios";
 import { computed, onMounted, reactive, ref, watch } from "vue";
+import api from "../utils/api";
+import { useNotificationStore } from "../stores/notificationStore";
 import {
   getNewsCategoryLabel,
   isStoryCategory,
@@ -60,26 +61,21 @@ function logout() {
 // --- DATA ---
 const newsList = ref<NewsItem[]>([]);
 const isLoading = ref(false);
-const globalError = ref("");
+const notifications = useNotificationStore();
 
 async function loadNews() {
   isLoading.value = true;
-  globalError.value = "";
   try {
-    const res = await axios.get("/api/v1/news/admin/all", {
-      headers: { "X-Admin-Key": adminKey.value },
-    });
+    const res = await api.get("/news/admin/all");
     newsList.value = res.data.map((item: NewsItem) => ({
       ...item,
       category: normalizeNewsCategory(item.category),
     }));
   } catch (e: any) {
     if (e?.response?.status === 401) {
-      authError.value = "Chiave non valida.";
+      notifications.error("Chiave amministrativa non valida.");
       adminKey.value = "";
       sessionStorage.removeItem("adminKey");
-    } else {
-      globalError.value = "Errore caricamento news.";
     }
   } finally {
     isLoading.value = false;
@@ -106,11 +102,8 @@ const isEditing = ref(false);
 const editingSlug = ref("");
 const form = reactive<FormData>(emptyForm());
 const formError = ref("");
-const formSuccess = ref("");
 const imagePreviewError = ref(false);
 const selectedImageFile = ref<File | null>(null);
-const uploadImageError = ref("");
-const uploadImageSuccess = ref("");
 const isUploadingImage = ref(false);
 
 const isImageUrlValid = computed(() => {
@@ -160,16 +153,11 @@ function onImagePreviewError() {
 function onImageFileChange(event: Event) {
   const target = event.target as HTMLInputElement;
   selectedImageFile.value = target.files?.[0] || null;
-  uploadImageError.value = "";
-  uploadImageSuccess.value = "";
 }
 
 async function uploadImageFile() {
-  uploadImageError.value = "";
-  uploadImageSuccess.value = "";
-
   if (!selectedImageFile.value) {
-    uploadImageError.value = "Seleziona prima un file immagine.";
+    notifications.warn("Seleziona prima un file immagine.");
     return;
   }
 
@@ -178,19 +166,14 @@ async function uploadImageFile() {
 
   isUploadingImage.value = true;
   try {
-    const response = await axios.post("/api/v1/news/admin/upload-image", data, {
-      headers: {
-        "X-Admin-Key": adminKey.value,
-      },
+    const response = await api.post("/news/admin/upload-image", data, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     form.imageUrl = response.data.imageUrl;
-    imagePreviewError.value = false;
-    uploadImageSuccess.value =
-      "Immagine caricata. URL compilato automaticamente.";
+    notifications.success("Immagine caricata e URL sincronizzato.");
     selectedImageFile.value = null;
   } catch (e: any) {
-    uploadImageError.value =
-      e?.response?.data?.error || "Errore durante l'upload immagine.";
+    // Gestito globalmente
   } finally {
     isUploadingImage.value = false;
   }
@@ -201,10 +184,7 @@ function openCreate() {
   isEditing.value = false;
   editingSlug.value = "";
   formError.value = "";
-  formSuccess.value = "";
   imagePreviewError.value = false;
-  uploadImageError.value = "";
-  uploadImageSuccess.value = "";
   selectedImageFile.value = null;
   showForm.value = true;
 }
@@ -226,10 +206,7 @@ function openEdit(item: NewsItem) {
   isEditing.value = true;
   editingSlug.value = item.slug;
   formError.value = "";
-  formSuccess.value = "";
   imagePreviewError.value = false;
-  uploadImageError.value = "";
-  uploadImageSuccess.value = "";
   selectedImageFile.value = null;
   showForm.value = true;
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -238,16 +215,12 @@ function openEdit(item: NewsItem) {
 function closeForm() {
   showForm.value = false;
   formError.value = "";
-  formSuccess.value = "";
   imagePreviewError.value = false;
-  uploadImageError.value = "";
-  uploadImageSuccess.value = "";
   selectedImageFile.value = null;
 }
 
 async function submitForm() {
   formError.value = "";
-  formSuccess.value = "";
 
   if (!form.slug || !form.title || !form.summary || !form.content) {
     formError.value = "Slug, titolo, sommario e contenuto sono obbligatori.";
@@ -271,35 +244,27 @@ async function submitForm() {
 
   try {
     if (isEditing.value) {
-      await axios.put(`/api/v1/news/${editingSlug.value}`, payload, {
-        headers: { "x-admin-key": adminKey.value },
-      });
-      formSuccess.value = "News aggiornata.";
+      await api.put(`/news/${editingSlug.value}`, payload);
+      notifications.success("News aggiornata nella Matrice.");
     } else {
-      await axios.post("/api/v1/news", payload, {
-        headers: { "x-admin-key": adminKey.value },
-      });
-      formSuccess.value = "News creata con successo.";
+      await api.post("/news", payload);
+      notifications.success("News creata con successo.");
       closeForm();
     }
     await loadNews();
   } catch (e: any) {
-    formError.value =
-      e?.response?.data?.error || "Errore durante il salvataggio.";
+    // Gestito globalmente
   }
 }
 
 // --- TOGGLE / DELETE ---
 async function togglePublished(item: NewsItem) {
   try {
-    await axios.put(
-      `/api/v1/news/${item.slug}`,
-      { isPublished: !item.isPublished },
-      { headers: { "x-admin-key": adminKey.value } },
-    );
+    await api.put(`/news/${item.slug}`, { isPublished: !item.isPublished });
+    notifications.success(`Stato news aggiornato: ${item.isPublished ? "Nascosta" : "Pubblicata"}`);
     await loadNews();
   } catch {
-    globalError.value = "Errore aggiornamento stato.";
+    // Gestito globalmente
   }
 }
 
@@ -312,12 +277,11 @@ async function deleteNews(slug: string) {
   }
   confirmDeleteSlug.value = "";
   try {
-    await axios.delete(`/api/v1/news/${slug}`, {
-      headers: { "x-admin-key": adminKey.value },
-    });
+    await api.delete(`/news/${slug}`);
+    notifications.success("Notizia decomposta dai database Atlas.");
     await loadNews();
   } catch {
-    globalError.value = "Errore eliminazione.";
+    // Gestito globalmente
   }
 }
 
@@ -461,12 +425,6 @@ onMounted(() => {
                 {{ isUploadingImage ? "Caricamento..." : "Carica immagine" }}
               </button>
             </div>
-            <span v-if="uploadImageError" class="form-error-inline">{{
-              uploadImageError
-            }}</span>
-            <span v-if="uploadImageSuccess" class="form-success-inline">{{
-              uploadImageSuccess
-            }}</span>
             <span
               v-if="form.imageUrl && !isImageUrlValid"
               class="form-error-inline"
@@ -539,7 +497,6 @@ onMounted(() => {
 
           <div class="form-actions">
             <p v-if="formError" class="admin-error">{{ formError }}</p>
-            <p v-if="formSuccess" class="admin-success">{{ formSuccess }}</p>
             <button
               class="admin-btn btn-primary"
               :disabled="!canSubmitForm"
@@ -566,7 +523,6 @@ onMounted(() => {
           </button>
         </div>
 
-        <p v-if="globalError" class="admin-error">{{ globalError }}</p>
         <p v-if="isLoading" class="admin-muted">Caricamento…</p>
 
         <div v-else-if="newsList.length === 0" class="admin-muted">

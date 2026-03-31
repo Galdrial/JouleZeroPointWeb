@@ -5,9 +5,11 @@ import {
   type CardTypeOption,
 } from "../constants/cardTypes";
 import { useCardStore, type Card } from "../stores/cardStore";
+import { useNotificationStore } from "../stores/notificationStore";
 import { storeToRefs } from "pinia";
 
 const cardStore = useCardStore();
+const notifications = useNotificationStore();
 const { cards, loading, error } = storeToRefs(cardStore);
 
 // Filtri Reattivi
@@ -127,8 +129,18 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-onMounted(() => {
-  cardStore.fetchCards();
+onMounted(async () => {
+  try {
+    await cardStore.fetchCards();
+  } catch (err) {
+    // Gestito globalmente
+  }
+});
+
+watch(error, (newError) => {
+  if (newError) {
+    notifications.error("Dissonanza nel database carte: " + newError);
+  }
 });
 
 // Direttiva click-outside
@@ -306,7 +318,7 @@ const vClickOutside = {
 
     <div v-else-if="error" class="glass-panel auth-panel text-center">
       <h3 class="text-red">ERRORE IT</h3>
-      <p>{{ error }}</p>
+      <p>Sincronizzazione fallita. Ricaricare la Matrice.</p>
     </div>
 
     <div v-else class="cards-grid">

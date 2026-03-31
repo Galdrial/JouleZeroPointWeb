@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import axios from "axios";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
+import { useNotificationStore } from "../stores/notificationStore";
 
 interface Card {
   id: number;
@@ -24,6 +25,7 @@ interface SavedDeck {
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const notifications = useNotificationStore();
 
 const username = ref(route.query.user?.toString() || authStore.username);
 const isOwnProfile = computed(
@@ -46,18 +48,13 @@ const fetchProfileData = async () => {
   try {
     loading.value = true;
     const [decksRes, cardsRes] = await Promise.all([
-      axios.get(`/api/v1/decks?creator=${username.value}`, {
-        headers: { 
-          "x-user": authStore.username,
-          "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
-        },
-      }),
-      axios.get("/api/v1/cards"),
+      api.get(`/decks?creator=${username.value}`),
+      api.get("/cards"),
     ]);
     userDecks.value = decksRes.data.decks;
     allCards.value = cardsRes.data;
   } catch (error) {
-    console.error("Errore caricamento profilo:", error);
+    // Gestito globalmente
   } finally {
     loading.value = false;
   }
@@ -65,21 +62,20 @@ const fetchProfileData = async () => {
 
 const deleteAccount = async () => {
   try {
-    const headers = { "Authorization": `Bearer ${authStore.token}` };
-
     // 1. Purge Decks
-    await axios.delete(`/api/v1/decks/user/${username.value}`, { headers });
+    await api.delete(`/decks/user/${username.value}`);
     // 2. Delete User
-    await axios.delete(`/api/v1/auth/profile`, { headers });
+    await api.delete(`/auth/profile`);
 
     // 3. Cleanup and redirect
+    notifications.success("Account terminato. Tutti i dati sono stati rimossi dai database Atlas.");
     authStore.logout();
     router.push("/login");
-    window.location.reload(); 
   } catch (error) {
-    alert("Errore critico durante la rimozione dei dati.");
+    // Gestito globalmente
   }
 };
+
 
 onMounted(fetchProfileData);
 

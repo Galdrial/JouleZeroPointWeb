@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import axios from "axios";
-import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
+import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
+import { useNotificationStore } from "../stores/notificationStore";
 import { useCardStore, type Card } from "../stores/cardStore";
 import { useDeckStore, type PublicDeck } from "../stores/deckStore";
 import { storeToRefs } from "pinia";
@@ -15,12 +16,11 @@ const authStore = useAuthStore();
 const username = computed(() => authStore.username);
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
+const notifications = useNotificationStore();
 
 const { cards: allCards } = storeToRefs(cardStore);
-const { publicDecks: decks, loading, error } = storeToRefs(deckStore);
+const { publicDecks: decks, loading } = storeToRefs(deckStore);
 
-const successMessage = ref("");
-let successMessageTimer: ReturnType<typeof setTimeout> | null = null;
 const totalDecks = ref(0);
 const currentPage = ref(1);
 const limit = 12;
@@ -113,32 +113,23 @@ const loadPublicDecks = async () => {
 
 const voteDeck = async (deck: PublicDeck) => {
   if (!username.value) {
-    error.value = "Effettua il login per votare i mazzi.";
+    notifications.warn("Effettua il login per votare i mazzi.");
     return;
   }
 
   try {
-    const response = await axios.post(
-      `/api/v1/decks/${deck.id}/vote`,
-      {},
-      {
-        headers: { 
-          "x-user": username.value,
-          "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
-        },
-      },
-    );
-
+    const response = await api.post(`/decks/${deck.id}/vote`);
     deck.votesCount = response.data.votesCount;
     deck.userVoted = response.data.userVoted;
+    notifications.success(deck.userVoted ? "Voto registrato nella Matrice!" : "Voto rimosso.");
   } catch (e: any) {
-    error.value = e?.response?.data?.error || "Errore durante il voto.";
+    // Gestito globalmente
   }
 };
 
 const importDeck = async (deck: PublicDeck) => {
   if (!username.value) {
-    error.value = "Effettua il login per importare i mazzi.";
+    notifications.warn("Effettua il login per importare i mazzi.");
     return;
   }
 
@@ -146,44 +137,27 @@ const importDeck = async (deck: PublicDeck) => {
     (deck.creator || "").trim().toLowerCase() ===
     username.value.trim().toLowerCase()
   ) {
-    error.value = "Non puoi importare un tuo mazzo.";
+    notifications.info("Non puoi importare un tuo mazzo.");
     return;
   }
 
   try {
-    const response = await axios.post(
-      `/api/v1/decks/${deck.id}/import`,
-      {},
-      {
-        headers: { 
-          "x-user": username.value,
-          "Authorization": authStore.token ? `Bearer ${authStore.token}` : ""
-        },
-      },
-    );
-
+    const response = await api.post(`/decks/${deck.id}/import`);
     deck.importsCount += 1;
-    const importedDeckName =
-      response?.data?.importedDeck?.name || "Mazzo importato";
-    showSuccessMessage(`Import riuscito: ${importedDeckName}`);
-    error.value = "";
+    const importedDeckName = response?.data?.importedDeck?.name || "Mazzo importato";
+    notifications.success(`Import riuscito: ${importedDeckName}`);
   } catch (e: any) {
-    clearSuccessMessage();
-    error.value = e?.response?.data?.error || "Errore durante l'import.";
+    // Gestito globalmente
   }
 };
 
 const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
-  const url = `/api/v1/decks/${deckId}/export?format=${format}`;
-  
   try {
-    const response = await axios({
-      url: url,
+    const response = await api({
+      url: `/decks/${deckId}/export`,
+      params: { format },
       method: "GET",
       responseType: "blob",
-      headers: {
-        Authorization: authStore.token ? `Bearer ${authStore.token}` : "",
-      },
     });
 
     const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
@@ -195,26 +169,10 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
+    notifications.success(`Esportazione ${format.toUpperCase()} iniziata.`);
   } catch (e) {
-    error.value = "Errore durante l'esportazione dei dati dalla Matrice.";
+    // Gestito globalmente
   }
-};
-
-const clearSuccessMessage = () => {
-  successMessage.value = "";
-  if (successMessageTimer) {
-    clearTimeout(successMessageTimer);
-    successMessageTimer = null;
-  }
-};
-
-const showSuccessMessage = (message: string) => {
-  clearSuccessMessage();
-  successMessage.value = message;
-  successMessageTimer = setTimeout(() => {
-    successMessage.value = "";
-    successMessageTimer = null;
-  }, 3500);
 };
 
 const openPreview = (deck: PublicDeck) => {
@@ -223,22 +181,13 @@ const openPreview = (deck: PublicDeck) => {
 
 watch([searchQuery, filterCostruttore, sortBy], () => {
   currentPage.value = 1;
-  clearSuccessMessage();
   loadPublicDecks();
 });
 
 watch(currentPage, loadPublicDecks);
 
-watch(selectedDeck, (value) => {
-  document.body.style.overflow = value ? "hidden" : "";
-});
-
 onMounted(async () => {
   await Promise.all([cardStore.fetchCards(), loadPublicDecks()]);
-});
-
-onBeforeUnmount(() => {
-  clearSuccessMessage();
 });
 </script>
 
@@ -326,10 +275,7 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div v-if="successMessage" class="success-banner">
-      <span>{{ successMessage }}</span>
-      <button class="success-close" @click="clearSuccessMessage">×</button>
-    </div>
+    <!-- Notifiche gestite globalmente -->
 
     <div v-if="loading" class="dashboard-loading">
       <div class="loader"></div>
@@ -468,23 +414,7 @@ onBeforeUnmount(() => {
     </div>
   </div>
 
-  <!-- ALERT ERRORE -->
-  <Transition name="fade">
-    <div v-if="error" class="alert-overlay" @click="error = ''">
-      <div class="alert-box glass-panel" @click.stop>
-        <div class="alert-header">
-          <span class="alert-icon">⚠️</span>
-          NOTIFICA TERMINALE
-        </div>
-        <div class="alert-content">{{ error }}</div>
-        <div class="alert-actions">
-          <button class="cyber-btn btn-primary small-btn" @click="error = ''">
-            RICEVUTO
-          </button>
-        </div>
-      </div>
-    </div>
-  </Transition>
+  <!-- Notifiche gestite globalmente -->
 </template>
 
 <style scoped>
@@ -635,83 +565,6 @@ onBeforeUnmount(() => {
   box-shadow: 0 0 5px #ffd700;
 }
 
-.alert-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.alert-box {
-  width: 90%;
-  max-width: 450px;
-  padding: 2.5rem;
-  border: 1px solid var(--accent-magenta);
-  box-shadow: 0 0 30px rgba(255, 159, 28, 0.24);
-  text-align: center;
-}
-
-.alert-header {
-  font-family: var(--font-display);
-  color: var(--accent-magenta);
-  font-size: 1.2rem;
-  margin-bottom: 1.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
-
-.alert-content {
-  color: #fff;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 2rem;
-  font-family: var(--font-body);
-}
-
-.alert-actions {
-  display: flex;
-  justify-content: center;
-}
-
-.small-btn {
-  padding: 0.5rem 1.2rem;
-  font-size: 0.8rem;
-  height: auto;
-}
-
-.success-banner {
-  margin: 0;
-  border: 1px solid rgba(0, 255, 136, 0.6);
-  color: #00ff88;
-  background: rgba(0, 255, 136, 0.1);
-  box-shadow: 0 0 18px rgba(0, 255, 136, 0.15);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.8rem;
-}
-
-.success-close {
-  border: 0;
-  background: transparent;
-  color: #00ff88;
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-}
-
 .decks-grid {
   width: 100%;
   display: grid;
@@ -797,315 +650,162 @@ onBeforeUnmount(() => {
 
 .deck-hero-caption {
   display: flex;
-  align-items: flex-start;
-  padding: 0 0.4rem;
-  min-height: 42px;
+  flex-direction: column;
+  gap: 0.3rem;
 }
+
+.caption-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent-gold);
+}
+
+.deck-footer-row {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: auto;
+}
+
+.stat-chip {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+}
+
+.stat-key { color: var(--text-muted); }
+.stat-val { color: var(--accent-cyan); font-weight: bold; }
 
 .deck-export-actions {
   display: flex;
   gap: 0.5rem;
-  margin-left: auto;
 }
 
-.deck-export-actions.side-icons {
-  padding-left: 0.5rem;
-}
-
-.export-mini-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-  padding: 4px 6px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
-}
-
-.export-mini-btn:hover {
-  background: var(--accent-cyan);
-  border-color: var(--accent-cyan);
-  transform: scale(1.1);
-  box-shadow: 0 0 10px var(--accent-cyan);
-}
-
-.modal-export-group {
-  display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.caption-name {
-  font-size: 0.92rem;
-  color: #fff;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.45px;
-  line-height: 1.2;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.deck-footer-row {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: center;
-  gap: 0.8rem;
-  padding-top: 0.5rem;
-  min-height: 44px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.stat-chip {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 30px;
-  padding: 0.35rem 0.6rem;
-  border-radius: 6px;
-  border: 1px solid rgba(212, 175, 55, 0.22);
-  background: rgba(212, 175, 55, 0.08);
-}
-
-.stat-key {
-  font-size: 0.68rem;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  font-family: var(--font-display);
-}
-
-.stat-val {
-  font-size: 0.85rem;
-  color: var(--accent-cyan);
-  font-family: var(--font-display);
-}
-
-.cyber-btn.small {
-  width: 100%;
-  height: 36px;
+.deck-export-actions .cyber-export-btn {
+  flex: 1;
+  font-size: 0.7rem;
+  padding: 0.3rem;
 }
 
 .deck-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.55rem;
-  margin-top: auto;
-}
-
-.preview-btn {
-  grid-column: 1 / -1;
-}
-
-.cyber-btn.voted {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-}
-
-.empty-dashboard {
-  grid-column: 1 / -1;
-  padding: 1rem;
-  text-align: center;
-}
-
-.pagination {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.page-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+.deck-actions .cyber-btn {
+  flex: 1;
+  min-width: 80px;
 }
 
-.page-btn:disabled {
-  opacity: 0.4;
+.voted {
+  background: var(--accent-gold) !important;
+  color: #000 !important;
 }
 
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all 0.2s ease;
-}
-
-.slide-up-enter-from,
-.slide-up-leave-to {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
+/* Modale */
 .modal-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.82);
-  backdrop-filter: blur(6px);
-  z-index: 9999;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
 }
 
 .modal-content {
-  width: 100%;
-  max-width: 760px;
-  max-height: 82vh;
-  overflow-y: auto;
-  padding: 1.5rem;
-  border: 1px solid var(--accent-cyan);
+  width: 90%;
+  max-width: 600px;
+  max-height: 85vh;
+  padding: 2.5rem;
   position: relative;
-}
-
-.close-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.9rem;
-  background: transparent;
-  border: 0;
-  color: var(--text-muted);
-  font-size: 2rem;
-  cursor: pointer;
+  overflow-y: auto;
 }
 
 .modal-title {
-  margin: 0 0 0.7rem 0;
-  color: var(--accent-cyan);
+  color: var(--accent-gold);
   font-family: var(--font-display);
+  margin-bottom: 0.5rem;
 }
 
 .modal-subtitle {
   display: flex;
-  gap: 0.8rem;
-  flex-wrap: wrap;
+  gap: 1.5rem;
   color: var(--text-muted);
-  margin-bottom: 1rem;
   font-size: 0.9rem;
+  margin-bottom: 2rem;
 }
 
 .preview-list {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
 }
 
 .preview-row {
-  display: grid;
-  grid-template-columns: 56px 1fr auto;
-  gap: 0.75rem;
-  align-items: center;
-  padding: 0.55rem 0.8rem;
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.6rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.preview-row:last-child {
-  border-bottom: 0;
+.preview-count { color: var(--accent-cyan); font-weight: bold; }
+.preview-name { flex: 1; }
+.preview-type { font-size: 0.8rem; color: var(--text-muted); }
+
+.modal-export-group {
+  display: flex;
+  gap: 1rem;
 }
 
-.preview-count {
-  color: var(--accent-cyan);
-  font-family: var(--font-display);
+.modal-export-group .cyber-export-btn {
+  padding: 0.8rem;
 }
 
-.preview-name {
-  color: var(--text-main);
-}
-
-.preview-type {
+.close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  background: transparent;
+  border: none;
   color: var(--text-muted);
-  font-size: 0.82rem;
+  cursor: pointer;
 }
 
-@media (max-width: 980px) {
-  .search-container {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .custom-dropdown {
-    min-width: 100%;
-  }
-}
-
-@media (max-width: 480px) {
-  .public-decks-view {
-    padding: 1rem 0.5rem;
-  }
-
-  .decks-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .deck-hero-container {
-    height: 200px;
-  }
-
-  .pagination {
-    gap: 1rem;
-  }
-}
-.deck-export-actions {
+.pagination {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.2rem;
-  width: 100%;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
 }
 
-.cyber-export-btn {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.4);
+.page-btn {
+  background: transparent;
   border: 1px solid var(--accent-cyan);
   color: var(--accent-cyan);
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  padding: 0.35rem 0.8rem;
+  padding: 0.6rem 1.5rem;
   cursor: pointer;
-  letter-spacing: 1px;
+  font-family: var(--font-display);
   transition: all 0.3s;
-  text-align: center;
-  border-radius: 4px;
-  text-transform: uppercase;
 }
 
-.cyber-export-btn.pdf {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-}
-
-.cyber-export-btn.pdf:hover {
+.page-btn:hover:not(:disabled) {
   background: var(--accent-cyan);
   color: #000;
-  box-shadow: 0 0 15px var(--accent-cyan);
 }
 
-.cyber-export-btn.tts {
-  border-color: var(--accent-magenta);
-  color: var(--accent-magenta);
-}
-
-.cyber-export-btn.tts:hover {
-  background: var(--accent-magenta);
-  color: #fff;
-  box-shadow: 0 0 15px var(--accent-magenta);
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 </style>

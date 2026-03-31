@@ -1,64 +1,28 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
+import { onMounted, ref, watch } from "vue";
+import { RouterView, useRoute } from "vue-router";
 import { useAuthStore } from "./stores/auth";
-import logo2 from "./assets/logo2.png";
-import JouleTerminal from "./components/JouleTerminal.vue";
 
-const router = useRouter();
+// Componenti Layout (100% Pro Edition)
+import TheNavbar from "./components/layout/TheNavbar.vue";
+import TheFooter from "./components/layout/TheFooter.vue";
+import FloatingTerminalTrigger from "./components/layout/FloatingTerminalTrigger.vue";
+import JouleTerminal from "./components/JouleTerminal.vue";
+import JouleNotification from "./components/ui/JouleNotification.vue";
+
 const route = useRoute();
 const authStore = useAuthStore();
 
 const isTerminalOpen = ref(false);
-const isMenuOpen = ref(false);
-const hideUI = computed(() => route.meta.hideUI === true);
-
-// Sincronizzazione automatica ad ogni cambio rotta
-watch(
-  () => route.fullPath,
-  () => {
-    authStore.initialize();
-    isMenuOpen.value = false;
-  },
-);
-
-const logout = () => {
-  authStore.logout();
-  isMenuOpen.value = false;
-  router.push("/login");
-};
-
-// Applica blur al contenuto e permette lo scroll sotto il menu mobile
-watch(isMenuOpen, (val) => {
-  const content = document.querySelector(
-    ".content-wrapper",
-  ) as HTMLElement | null;
-  if (content) {
-    content.style.transition = "filter 0.3s";
-    content.style.filter = val ? "blur(3px)" : "";
-    content.style.pointerEvents = val ? "none" : "";
-  }
-});
-
-const handleResize = () => {
-  if (window.innerWidth > 1690 && isMenuOpen.value) {
-    isMenuOpen.value = false;
-  }
-};
 
 onMounted(() => {
   authStore.initialize();
-  window.addEventListener("resize", handleResize);
   if (route.query.terminal === "1") {
     isTerminalOpen.value = true;
   }
 });
 
-onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
-});
-
-// Watcher per cambiamenti rotta (es: navigazione verso un link con query)
+// Watcher per cambiamenti rotta tramite query (es: link terminale)
 watch(
   () => route.query.terminal,
   (newVal) => {
@@ -71,230 +35,27 @@ watch(
 
 <template>
   <div class="app-layout">
-    <header v-if="!hideUI" class="glass-navbar">
-      <RouterLink to="/" class="logo-link" @click="isMenuOpen = false">
-        <div class="logo">
-          <span class="joule">JOULE</span> <span class="zp">ZERO POINT</span>
-        </div>
-      </RouterLink>
+    <!-- Feedback Visivo Globale (100% Pro) -->
+    <JouleNotification />
 
-      <!-- Hamburger (mobile only) -->
-      <button
-        class="hamburger"
-        :class="{ open: isMenuOpen }"
-        @click="isMenuOpen = !isMenuOpen"
-        aria-label="Menu"
-      >
-        <span></span><span></span><span></span>
-      </button>
-
-      <!-- Navigazione Desktop (Intatta per layout desktop) -->
-      <nav class="desktop-nav">
-        <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
-          >Database</RouterLink
-        >
-        <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item"
-          >Come iniziare</RouterLink
-        >
-        <RouterLink to="/news" class="cyber-btn btn-secondary nav-item"
-          >News</RouterLink
-        >
-        <RouterLink to="/storia" class="cyber-btn btn-secondary nav-item"
-          >Storia</RouterLink
-        >
-        <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
-          >Mazzi pubblici</RouterLink
-        >
-
-        <template v-if="authStore.username">
-          <RouterLink
-            to="/profile"
-            class="cyber-btn btn-secondary nav-item user-btn"
-            >{{ authStore.username }}</RouterLink
-          >
-          <button
-            @click="logout"
-            class="cyber-btn btn-danger nav-item logout-btn"
-          >
-            Logout
-          </button>
-        </template>
-        <template v-else>
-          <RouterLink
-            to="/login"
-            class="cyber-btn btn-primary nav-item auth-btn"
-            >Accedi</RouterLink
-          >
-        </template>
-      </nav>
-    </header>
-
-    <!-- Modal Mobile (Teleported to avoid z-index/stacking conflicts with header) -->
-    <Teleport to="body">
-      <Transition name="fade-overlay">
-        <div
-          v-if="isMenuOpen"
-          class="nav-overlay"
-          @click="isMenuOpen = false"
-        ></div>
-      </Transition>
-      <Transition name="fade-overlay">
-        <div
-          v-if="isMenuOpen"
-          class="blur-overlay-clickable"
-          @click="isMenuOpen = false"
-        ></div>
-      </Transition>
-
-      <nav class="mobile-nav" :class="{ 'nav--open': isMenuOpen }">
-        <RouterLink to="/cards" class="mobile-nav-link" @click="isMenuOpen = false"
-          >Database</RouterLink
-        >
-        <RouterLink to="/come-iniziare" class="mobile-nav-link" @click="isMenuOpen = false"
-          >Come iniziare</RouterLink
-        >
-        <RouterLink to="/news" class="mobile-nav-link" @click="isMenuOpen = false"
-          >News</RouterLink
-        >
-        <RouterLink to="/storia" class="mobile-nav-link" @click="isMenuOpen = false"
-          >Storia</RouterLink
-        >
-        <RouterLink to="/public-decks" class="mobile-nav-link" @click="isMenuOpen = false"
-          >Mazzi pubblici</RouterLink
-        >
-        <template v-if="authStore.username">
-          <RouterLink to="/profile" class="mobile-nav-link user-link" @click="isMenuOpen = false"
-            >{{ authStore.username }}</RouterLink
-          >
-          <button @click="logout" class="mobile-nav-link logout-link">
-            Logout
-          </button>
-        </template>
-        <template v-else>
-          <RouterLink to="/login" class="mobile-nav-link auth-link" @click="isMenuOpen = false"
-            >Accedi</RouterLink
-          >
-        </template>
-      </nav>
-    </Teleport>
+    <!-- Direttore d'Orchestra Layout -->
+    <TheNavbar />
 
     <main
       class="content-wrapper"
-      :class="{
-        'content-wrapper--flush-top': route.path === '/',
-        blurred: isMenuOpen,
-      }"
+      :class="{ 'content-wrapper--flush-top': route.path === '/' }"
     >
       <RouterView />
     </main>
 
-    <footer v-if="!hideUI" class="app-footer">
-      <div class="footer-social-section">
-        <div class="footer-section-title">SOCIAL NETWORK</div>
-        <div class="footer-socials">
-          <a
-            href="https://example.com/facebook"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Facebook"
-            class="footer-social-link"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              class="footer-social-icon"
-              aria-hidden="true"
-            >
-              <path
-                fill="currentColor"
-                d="M13.5 8.5V6.9c0-.6.4-1 1-1h1.2V3h-2c-2.2 0-3.7 1.5-3.7 3.7v1.8H8v3h2v9h3.5v-9h2.3l.5-3z"
-              />
-            </svg>
-          </a>
-          <a
-            href="https://example.com/instagram"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Instagram"
-            class="footer-social-link"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              class="footer-social-icon"
-              aria-hidden="true"
-            >
-              <path
-                fill="currentColor"
-                d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm11 1.8a1.2 1.2 0 1 1 0 2.4a1.2 1.2 0 0 1 0-2.4M12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6a3 3 0 0 0 0-6"
-              />
-            </svg>
-          </a>
-          <a
-            href="https://example.com/discord"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Discord"
-            class="footer-social-link"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              class="footer-social-icon"
-              aria-hidden="true"
-            >
-              <path
-                fill="currentColor"
-                d="M19.6 5.7a15 15 0 0 0-3.8-1.2l-.2.4c1.5.4 2.2 1 2.2 1a11 11 0 0 0-5.8-1.5A11 11 0 0 0 6.2 6s.7-.6 2.2-1l-.2-.4a15 15 0 0 0-3.8 1.2C2 9.2 1.4 12.5 1.6 15.8a15.6 15.6 0 0 0 4.6 2.3l1-1.6c-.6-.2-1.1-.5-1.6-.8l.4-.3c2 1 4.2 1.5 6.4 1.5s4.4-.5 6.4-1.5l.4.3c-.5.3-1 .6-1.6.8l1 1.6a15.6 15.6 0 0 0 4.6-2.3c.3-3.8-.6-7.1-3.6-10.1M8.9 14.1c-.8 0-1.4-.7-1.4-1.5c0-.9.6-1.5 1.4-1.5c.8 0 1.4.7 1.4 1.5c0 .9-.6 1.5-1.4 1.5m6.2 0c-.8 0-1.4-.7-1.4-1.5c0-.9.6-1.5 1.4-1.5c.8 0 1.4.7 1.4 1.5c0 .9-.6 1.5-1.4 1.5"
-              />
-            </svg>
-          </a>
-        </div>
-      </div>
-      <div class="footer-divider"></div>
-      <div class="footer-links">
-        <a
-          href="https://example.com/terms"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Termini di utilizzo
-        </a>
-        <a
-          href="https://example.com/code-of-conduct"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Codice di condotta
-        </a>
-        <a
-          href="https://example.com/privacy"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Informativa sulla privacy
-        </a>
-      </div>
-      <div class="footer-divider footer-divider--secondary"></div>
-      <div class="footer-copyright">
-        © 2026 Simone Camerano. All Right Reserved.
-      </div>
-    </footer>
+    <TheFooter />
 
-    <!-- Trigger Flottante Terminale -->
-    <button
-      v-if="!hideUI"
-      class="terminal-trigger"
-      :class="{ active: isTerminalOpen }"
-      @click.stop="isTerminalOpen = !isTerminalOpen"
-      title="Terminale Punto Zero"
-    >
-      <img
-        :src="logo2"
-        alt="Terminale Punto Zero"
-        class="terminal-trigger-logo"
-      />
-      <span class="pulse-ring"></span>
-    </button>
+    <!-- Accessori Galattici -->
+    <FloatingTerminalTrigger 
+      :is-open="isTerminalOpen" 
+      @toggle="isTerminalOpen = !isTerminalOpen" 
+    />
 
-    <!-- Modal Terminale (Teleport) -->
     <Teleport to="body">
       <JouleTerminal
         :is-open="isTerminalOpen"
@@ -302,409 +63,53 @@ watch(
       />
     </Teleport>
 
+    <!-- Atmosfera Joule -->
     <div class="ambient-glow"></div>
   </div>
 </template>
 
-<style scoped>
-/* Nav Customizations */
-.desktop-nav {
+<style>
+/* 
+  STILI GLOBALI JOULE: ZERO POINT 
+  Questi stili definiscono l'atmosfera core dell'applicazione.
+*/
+.app-layout {
+  min-height: 100vh;
   display: flex;
-  gap: 1rem;
-  align-items: center;
+  flex-direction: column;
+  overflow-x: clip; /* Previene scorpori orizzontali accidentali */
+  position: relative;
 }
 
-.mobile-nav {
-  display: none;
-}
-
-@media (min-width: 1691px) {
-  .nav-home-link {
-    display: none;
-  }
-}
-
-.nav-item {
-  padding: 0.5rem 1.5rem !important;
-  font-size: 0.8rem !important;
-  height: fit-content;
-}
-
-.auth-btn,
-.auth-btn:hover,
-.auth-btn.router-link-active {
-  color: #0a0e1a !important;
-  text-shadow: none !important;
-}
-
-.user-btn {
-  border-color: var(--accent-cyan) !important;
-  color: var(--accent-cyan) !important;
-}
-
-.logout-btn {
-  margin-left: 0.5rem;
-}
-
-.logo-link {
-  text-decoration: none;
-  transition: opacity 0.3s;
-}
-
-.logo-link:hover {
-  opacity: 0.8;
-}
-
-.logo .joule {
-  color: #fedc68;
-  text-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
-}
-
-.logo .zp {
-  color: #ffffff;
+.content-wrapper {
+  flex: 1;
+  padding-top: 5rem; /* Compensazione altezza Navbar (Fix Dinamico) */
+  transition: filter 0.3s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .content-wrapper--flush-top {
   padding-top: 0;
 }
 
-.app-layout {
-  overflow-x: clip;
-}
-
-.app-footer {
-  width: 100%;
-  text-align: center;
-  padding: 1.8rem 2rem 1.2rem;
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  letter-spacing: 0.6px;
-  border-top: 1px solid var(--glass-border);
-  background: var(--surface-glass);
-}
-
-.footer-social-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.28rem;
-  padding-top: 0.2rem;
-  padding-bottom: 0.5rem;
-}
-
-.footer-section-title {
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  letter-spacing: 0.28rem;
-  color: var(--text-main);
-}
-
-.footer-divider {
-  width: min(320px, 100%);
-  height: 1px;
-  margin: 0.45rem auto 0;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0),
-    rgba(254, 220, 104, 0.5),
-    rgba(255, 255, 255, 0)
-  );
-}
-
-.footer-copyright {
-  margin-top: 0.8rem;
-}
-
-.footer-divider--secondary {
-  margin-top: 1rem;
-}
-
-.footer-links {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.4rem;
-  margin-top: 0.9rem;
-}
-
-.footer-links a {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.8rem;
-  transition: color 0.2s ease;
-}
-
-.footer-links a:hover {
-  color: var(--accent-cyan);
-}
-
-.footer-socials {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
-
-.footer-social-link {
-  color: var(--accent-cyan);
-  text-decoration: none;
-  width: 42px;
-  height: 42px;
-  border: 1px solid rgba(254, 220, 104, 0.5);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.footer-social-link:hover {
-  background: rgba(254, 220, 104, 0.12);
-  box-shadow: 0 0 12px rgba(254, 220, 104, 0.3);
-}
-
-.footer-social-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* Float Trigger Styles */
-.terminal-trigger {
+/* Atmosfera di Background (Matrice Joule ZP) */
+.ambient-glow {
   position: fixed;
-  bottom: max(clamp(0.9rem, 2vw, 1.2rem), env(safe-area-inset-bottom));
-  right: max(clamp(0.9rem, 2vw, 1.2rem), env(safe-area-inset-right));
-  width: clamp(4rem, 8vw, 4.5rem);
-  height: clamp(4rem, 8vw, 4.5rem);
-  border-radius: 50%;
-  background: rgba(10, 15, 20, 0.8);
-  border: 1px solid var(--accent-cyan);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 999;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.22);
-  backdrop-filter: blur(10px);
-  transform-origin: center;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 0;
+  background: 
+    radial-gradient(circle at 15% 15%, rgba(212, 175, 55, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(0, 243, 255, 0.05) 0%, transparent 40%);
 }
 
-.terminal-trigger-logo {
-  width: 88%;
-  height: 88%;
-  object-fit: contain;
-  transition: all 0.3s ease;
-  z-index: 2;
-  filter: drop-shadow(0 0 6px rgba(254, 220, 104, 0.35));
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .terminal-trigger:hover {
-    transform: scale(1.1) rotate(10deg);
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-    border-color: #fff;
-  }
-}
-
-.terminal-trigger.active {
-  background: rgba(255, 159, 28, 0.14);
-  border-color: var(--accent-magenta);
-  transform: scale(1.06) rotate(6deg);
-}
-
-.terminal-trigger.active .terminal-trigger-logo {
-  filter: drop-shadow(0 0 6px var(--accent-magenta));
-}
-
-.pulse-ring {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  border: 2px solid var(--accent-cyan);
-  animation: pulse-ring 2s infinite;
-  opacity: 0;
-}
-
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.8);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(1.5);
-    opacity: 0;
-  }
-}
-
-/* ── Hamburger button ── */
-.hamburger {
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0.4rem;
-  z-index: 201;
-}
-
-.hamburger span {
-  display: block;
-  width: 24px;
-  height: 2px;
-  background: var(--text-main);
-  border-radius: 2px;
-  transition:
-    transform 0.3s ease,
-    opacity 0.3s ease;
-}
-
-.hamburger.open span:nth-child(1) {
-  transform: translateY(7px) rotate(45deg);
-}
-.hamburger.open span:nth-child(2) {
-  opacity: 0;
-}
-.hamburger.open span:nth-child(3) {
-  transform: translateY(-7px) rotate(-45deg);
-}
-
-/* ── Mobile overlay backdrop ── */
-.nav-overlay {
-  display: none;
-}
-
-/* ── Mobile nav drawer ── */
-@media (max-width: 1690px) {
-  .hamburger {
-    display: flex;
-  }
-
-  .nav-overlay {
-    display: block;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: min(80vw, 400px);
-    height: 100dvh;
-    background: rgba(0, 0, 0, 0.18);
-    backdrop-filter: blur(2px);
-    z-index: 150;
-    cursor: pointer;
-    border-radius: 0 0 0 24px;
-    box-shadow: -8px 0 24px 0 rgba(0, 0, 0, 0.12);
-    pointer-events: auto;
-  }
-
-  .blur-overlay-clickable {
-    display: block;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100dvh;
-    z-index: 120;
-    background: transparent;
-    cursor: pointer;
-  }
-  /* Blur effect for content when menu is open */
-  .content-wrapper.blurred {
-    filter: blur(3px);
-    pointer-events: none;
-    transition: filter 0.3s;
-  }
-
-  .desktop-nav {
-    display: none !important;
-  }
-
-  .mobile-nav {
-    display: flex;
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: min(80vw, 400px);
-    height: 100dvh;
-    background: #0a0f16;
-    border-left: 1.5px solid var(--glass-border);
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 6rem 2rem 4rem;
-    gap: 1.2rem;
-    z-index: 200;
-    transform: translateX(100%);
-    visibility: hidden;
-    pointer-events: none;
-    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
-    border-radius: 0 0 0 24px;
-    box-shadow: -8px 0 24px 0 rgba(0, 0, 0, 0.12);
-  }
-
-  .mobile-nav.nav--open {
-    transform: translateX(0);
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .mobile-nav-link {
-    width: 100%;
-    text-align: center;
-    padding: 0.8rem;
-    color: var(--text-main);
-    text-decoration: none;
-    font-size: 1.25rem;
-    font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: all 0.3s ease;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    display: block;
-  }
-
-  .mobile-nav-link:hover,
-  .mobile-nav-link.router-link-active {
-    color: var(--accent-cyan);
-    text-shadow: 0 0 10px rgba(254, 220, 104, 0.4);
-  }
-
-  .mobile-nav-link.logout-link {
-    margin-top: 1rem;
-    color: var(--accent-magenta);
-    opacity: 0.8;
-  }
-
-  .mobile-nav-link.logout-link:hover {
-    opacity: 1;
-    text-shadow: 0 0 10px rgba(255, 0, 60, 0.4);
-  }
-
-  .mobile-nav-link.auth-link,
-  .mobile-nav-link.user-link {
-    color: var(--accent-gold) !important;
-    margin-top: 1rem;
-  }
-
-  .mobile-nav-link.auth-link:hover,
-  .mobile-nav-link.user-link:hover {
-    text-shadow: 0 0 10px rgba(254, 220, 104, 0.4);
-  }
-}
-
-/* Overlay fade transition */
-.fade-overlay-enter-active,
-.fade-overlay-leave-active {
-  transition: opacity 0.25s ease;
-}
-.fade-overlay-enter-from,
-.fade-overlay-leave-to {
-  opacity: 0;
+/* Blur globale per menu mobile (gestito via componente Navbar) */
+.content-wrapper.blurred {
+  filter: blur(4px);
+  pointer-events: none;
 }
 </style>

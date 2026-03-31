@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import axios from 'axios';
+import api from '../utils/api';
 
 export interface Card {
   id: number;
@@ -30,11 +30,10 @@ export const useCardStore = defineStore('cards', () => {
     loading.value = true;
     error.value = null;
     try {
-      const response = await axios.get('/api/v1/cards');
+      const response = await api.get('/cards');
       cards.value = response.data;
     } catch (err: any) {
       error.value = err.message || 'Errore durante la sincronizzazione della Matrice.';
-      console.error('ERRORE_CARD_STORE:', err);
     } finally {
       loading.value = false;
     }

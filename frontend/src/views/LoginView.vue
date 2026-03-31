@@ -1,61 +1,55 @@
 <script setup lang="ts">
-import axios from "axios";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
+import { useNotificationStore } from "../stores/notificationStore";
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+const notifications = useNotificationStore();
 
 const isLogin = ref(route.query.mode !== "register");
 const username = ref("");
 const email = ref("");
 const password = ref("");
-const error = ref("");
-const success = ref("");
 const loading = ref(false);
 
 const toggleMode = () => {
   isLogin.value = !isLogin.value;
-  error.value = "";
-  success.value = "";
 };
 
 const submitForm = async () => {
   loading.value = true;
-  error.value = "";
-  success.value = "";
 
   try {
     if (isLogin.value) {
-      const res = await axios.post("/api/v1/auth/login", {
+      const res = await api.post("/auth/login", {
         email: email.value,
         password: password.value,
       });
       
-      // Utilizziamo lo store centralizzato
       authStore.setAuth(res.data.token, res.data.username);
+      notifications.success("Sincronizzazione completata con successo!");
       
-      success.value = "Sincronizzazione completata!";
       const redirectTo = (route.query.redirect as string) || "/";
-      setTimeout(() => router.push(redirectTo), 1200);
+      setTimeout(() => router.push(redirectTo), 800);
     } else {
-      await axios.post("/api/v1/auth/register", {
+      await api.post("/auth/register", {
         username: username.value,
         email: email.value,
         password: password.value,
       });
-      success.value = "Frequenza registrata con successo!";
+      notifications.success("Frequenza registrata con successo! Inizializzando portale d'accesso...");
       setTimeout(() => {
         isLogin.value = true;
         password.value = "";
       }, 2000);
     }
   } catch (err: any) {
-    error.value =
-      err.response?.data?.error ||
-      "Errore di comunicazione col Nucleo Centrale.";
+    // Gli errori globali sono già gestiti dall'interceptor di api.ts
+    // ma possiamo aggiungere logica specifica qui se necessario (es. focus campi)
   } finally {
     loading.value = false;
   }
@@ -67,8 +61,7 @@ const submitForm = async () => {
     <div class="glass-panel auth-panel">
       <h2>{{ isLogin ? "Accesso Costruttori" : "Nuova Sincronizzazione" }}</h2>
 
-      <div v-if="error" class="alert-box error">{{ error }}</div>
-      <div v-if="success" class="alert-box success">{{ success }}</div>
+      <div v-if="isLogin && route.query.session_expired" class="alert-box error">Frequenza di sessione scaduta. Re-autenticazione richiesta.</div>
 
       <form @submit.prevent="submitForm">
         <input

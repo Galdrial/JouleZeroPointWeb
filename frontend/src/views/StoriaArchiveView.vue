@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from "axios";
 import { onMounted, ref } from "vue";
+import api from "../utils/api";
 import { type NewsCategory } from "../utils/newsCategory";
 
 type StoryPreview = {
@@ -29,7 +29,7 @@ const formatNewsDate = (value: string) =>
 
 onMounted(async () => {
   try {
-    const response = await axios.get("/api/v1/news", {
+    const response = await api.get("/news", {
       params: { category: "storia" },
     });
     storyItems.value = response.data;

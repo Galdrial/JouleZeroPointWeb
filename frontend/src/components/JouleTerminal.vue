@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import axios from "axios";
 import { nextTick, ref, watch } from "vue";
+import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
 
 const props = defineProps<{
@@ -73,13 +73,9 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
-    const response = await axios.post("/api/v1/terminal/chat", {
+    const response = await api.post("/terminal/chat", {
       message: userText,
       threadId: threadId.value,
-    }, {
-      headers: {
-        "x-user": authStore.username
-      }
     });
 
     threadId.value = response.data.threadId;
