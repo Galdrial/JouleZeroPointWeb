@@ -93,7 +93,7 @@ async function loadNews() {
     }));
   } catch (e: any) {
     if (e?.response?.status === 401) {
-      notifications.error("Invalid administrative key.");
+      notifications.error("Chiave amministrativa non valida.");
       adminKey.value = "";
       sessionStorage.removeItem("adminKey");
     }
@@ -197,7 +197,7 @@ function onImageFileChange(event: Event) {
  */
 async function uploadImageFile() {
   if (!selectedImageFile.value) {
-    notifications.warn("Please select an image file first.");
+    notifications.warn("Seleziona prima un file immagine.");
     return;
   }
 
@@ -210,7 +210,7 @@ async function uploadImageFile() {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     form.imageUrl = response.data.imageUrl;
-    notifications.success("Image uploaded. URL synchronized.");
+    notifications.success("Immagine caricata. URL sincronizzato.");
     selectedImageFile.value = null;
   } catch (e: any) {
     // Managed via global notification infrastructure
@@ -278,13 +278,13 @@ async function submitForm() {
 
   // Structural Validation
   if (!form.slug || !form.title || !form.summary || !form.content) {
-    formError.value = "Slug, title, summary, and content are mandatory.";
+    formError.value = "Slug, titolo, sommario e contenuto sono obbligatori.";
     return;
   }
 
   if (!isImageUrlValid.value) {
     formError.value =
-      "Invalid image URL. Use /news/... or a complete http(s) link.";
+      "URL immagine non valido. Usa /news/... o un link completo http(s).";
     return;
   }
 
@@ -300,10 +300,10 @@ async function submitForm() {
   try {
     if (isEditing.value) {
       await api.put(`/news/${editingSlug.value}`, payload);
-      notifications.success("News entry updated in the Matrix.");
+      notifications.success("News aggiornata nella Matrice.");
     } else {
       await api.post("/news", payload);
-      notifications.success("News entry created successfully.");
+      notifications.success("News creata con successo.");
       closeForm();
     }
     await loadNews();
@@ -320,7 +320,7 @@ async function submitForm() {
 async function togglePublished(item: NewsItem) {
   try {
     await api.put(`/news/${item.slug}`, { isPublished: !item.isPublished });
-    notifications.success(`Visibility updated: ${item.isPublished ? "Hidden" : "Published"}`);
+    notifications.success(`Visibilità aggiornata: ${item.isPublished ? "Nascosto" : "Pubblicato"}`);
     await loadNews();
   } catch {
     // Managed via global notification infrastructure
@@ -341,7 +341,7 @@ async function deleteNews(slug: string) {
   confirmDeleteSlug.value = "";
   try {
     await api.delete(`/news/${slug}`);
-    notifications.success("News entry decomposed from Atlas databases.");
+    notifications.success("Voce di news decomposta dai database Atlas.");
     await loadNews();
   } catch {
     // Managed via global notification infrastructure

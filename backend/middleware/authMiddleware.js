@@ -24,20 +24,20 @@ const protect = async (req, res, next) => {
             
             // Integrity check: Ensure the user still exists in the system
             if (!req.user) {
-                return res.status(401).json({ error: 'User identity not found in the database.' });
+                return res.status(401).json({ error: 'Identità utente non trovata nel database.' });
             }
 
             next();
         } catch (error) {
             // Signal Dissonance: Token is malformed, tampered with, or expired
             logger.error(`AUTH_ERROR: Invalid token signature: ${error.message}`);
-            res.status(401).json({ error: 'Access denied. Invalid or expired session token.' });
+            res.status(401).json({ error: 'Accesso negato. Sessione non valida o scaduta.' });
         }
     }
 
     // Shield active: Block request if no token was attempted
     if (!token) {
-        return res.status(401).json({ error: 'Access denied. No authentication token provided.' });
+        return res.status(401).json({ error: 'Accesso negato. Nessun segnale di autenticazione fornito.' });
     }
 };
 

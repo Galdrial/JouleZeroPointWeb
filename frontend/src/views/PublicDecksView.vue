@@ -150,7 +150,7 @@ const loadPublicDecks = async () => {
  */
 const voteDeck = async (deck: PublicDeck) => {
   if (!username.value) {
-    notifications.warn("Please login to vote on decks.");
+    notifications.warn("Effettuare l'accesso per votare i mazzi.");
     return;
   }
 
@@ -158,7 +158,7 @@ const voteDeck = async (deck: PublicDeck) => {
     const response = await api.post(`/decks/${deck.id}/vote`);
     deck.votesCount = response.data.votesCount;
     deck.userVoted = response.data.userVoted;
-    notifications.success(deck.userVoted ? "Vote registered in the Matrix!" : "Vote removed.");
+    notifications.success(deck.userVoted ? "Voto registrato nella Matrice!" : "Voto rimosso.");
   } catch (e: any) {
     // Managed via global notification infrastructure
   }
@@ -170,7 +170,7 @@ const voteDeck = async (deck: PublicDeck) => {
  */
 const importDeck = async (deck: PublicDeck) => {
   if (!username.value) {
-    notifications.warn("Please login to import decks.");
+    notifications.warn("Effettuare l'accesso per importare i mazzi.");
     return;
   }
 
@@ -179,7 +179,7 @@ const importDeck = async (deck: PublicDeck) => {
     (deck.creator || "").trim().toLowerCase() ===
     username.value.trim().toLowerCase()
   ) {
-    notifications.info("Recursion detected: You cannot import your own artifact.");
+    notifications.info("Rilevata ricorsione: Non puoi importare i tuoi stessi mazzi.");
     return;
   }
 
@@ -187,7 +187,7 @@ const importDeck = async (deck: PublicDeck) => {
     const response = await api.post(`/decks/${deck.id}/import`);
     deck.importsCount += 1;
     const importedDeckName = response?.data?.importedDeck?.name || "Imported Deck";
-    notifications.success(`Import successful: ${importedDeckName}`);
+    notifications.success(`Importazione riuscita: ${importedDeckName}`);
   } catch (e: any) {
     // Managed via global notification infrastructure
   }
@@ -215,7 +215,7 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
-    notifications.success(`Exporting ${format.toUpperCase()} sequence initiated.`);
+    notifications.success(`Protocollo di esportazione ${format.toUpperCase()} avviato.`);
   } catch (e) {
     // Managed via global notification infrastructure
   }

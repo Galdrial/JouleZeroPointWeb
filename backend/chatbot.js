@@ -219,7 +219,7 @@ async function search_cards(query) {
         }));
     } catch (error) {
         logger.error(`SEARCH_CARDS_FAILURE: ${error.message}`);
-        return { error: "Matrix database synchronization error during card retrieval." };
+        return { error: "Errore di sincronizzazione con il database della Matrice durante il recupero delle carte." };
     }
 }
 
@@ -253,7 +253,7 @@ router.post('/chat', async (req, res) => {
     const { message, gameState } = req.body;
     const usernameHeader = req.headers['x-user'];
 
-    if (!message) return res.status(400).json({ error: 'Missing input directive.' });
+    if (!message) return res.status(400).json({ error: 'Direttiva di input mancante.' });
 
     // Peripheral Security: Prompt Injection Shield
     if (isLikelyInjection(message)) {
@@ -382,7 +382,7 @@ DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
 
     } catch (error) {
         logger.error(`DIALECTIC_FAILURE: Cognitive engine collision: ${error.message}`);
-        res.status(500).json({ error: "Communication channel interrupted. Please retry the directive." });
+        res.status(500).json({ error: "Canale di comunicazione interrotto. Prego ripetere la direttiva." });
     }
 });
 

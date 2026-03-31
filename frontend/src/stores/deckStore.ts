@@ -55,7 +55,7 @@ export const useDeckStore = defineStore('decks', () => {
       userDecks.value = res.data.decks;
       totalUserDecks.value = res.data.total;
     } catch (err: any) {
-      error.value = err.message || 'Error while loading decks.';
+      error.value = err.message || 'Errore durante il caricamento dei mazzi.';
     } finally {
       loading.value = false;
     }
@@ -73,7 +73,7 @@ export const useDeckStore = defineStore('decks', () => {
       publicDecks.value = res.data.decks || res.data;
       return res.data;
     } catch (err: any) {
-      error.value = err.message || 'Error while loading public decks.';
+      error.value = err.message || 'Errore durante il caricamento dei mazzi pubblici.';
     } finally {
       loading.value = false;
     }
@@ -92,7 +92,7 @@ export const useDeckStore = defineStore('decks', () => {
       // Optimistic UI update: Remove from local state immediately
       userDecks.value = userDecks.value.filter(d => d.id !== id);
       totalUserDecks.value--;
-      notifications.success("Deck successfully removed from memory.");
+      notifications.success("Mazzo rimosso correttamente dalla memoria.");
       return true;
     } catch (err) {
       // Errors are handled by the global api interceptor
@@ -110,7 +110,7 @@ export const useDeckStore = defineStore('decks', () => {
       const res = await api.get(`/decks/${id}`);
       return res.data;
     } catch (err: any) {
-      error.value = err.message || 'Error while loading deck data.';
+      error.value = err.message || 'Errore durante il caricamento del mazzo.';
       return null;
     } finally {
       loading.value = false;

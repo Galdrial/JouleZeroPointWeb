@@ -20,7 +20,7 @@ const inputMessage = ref("");
 const messages = ref<{ role: string; text: string }[]>([
   {
     role: "ai",
-    text: "Operational Status: Online. I am the Zero Point Terminal. You can query me regarding game regulations, lore fragments, or specific card frequencies (stats). Enter your directive, Constructor.",
+    text: "Stato Operativo: Online. Sono il Terminale Punto Zero. Puoi interrogarmi riguardo al regolamento del gioco, frammenti di storia o specifiche frequenze di carte (statistiche). Inserisci la tua direttiva, Costruttore.",
   },
 ]);
 
@@ -50,7 +50,7 @@ const resetChat = () => {
   messages.value = [
     {
       role: "ai",
-      text: "Synchronization complete. Terminal protocol reset. Enter your directive, Constructor.",
+      text: "Sincronizzazione completata. Protocollo terminale resettato. Inserisci la tua direttiva, Costruttore.",
     },
   ];
 };
@@ -89,7 +89,7 @@ const sendMessage = async () => {
   if (inputMessage.value.length > MAX_MESSAGE_LENGTH) {
     messages.value.push({
       role: "error",
-      text: `Input Error: Directive exceeds thermal limit (max ${MAX_MESSAGE_LENGTH} characters).`,
+      text: `Errore di Input: La direttiva supera il limite termico (max ${MAX_MESSAGE_LENGTH} caratteri).`,
     });
     return;
   }
@@ -114,7 +114,7 @@ const sendMessage = async () => {
       role: "error",
       text:
         error.response?.data?.error ||
-        "Quantum Interference detected. Unable to reach the IA core.",
+        "Rilevata Interferenza Quantistica. Impossibile raggiungere il nucleo IA.",
     });
   } finally {
     loading.value = false;

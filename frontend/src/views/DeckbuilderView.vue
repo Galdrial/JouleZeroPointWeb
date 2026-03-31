@@ -230,11 +230,11 @@ const removeFromDeck = (card: Card) => {
  */
 const saveDeck = () => {
   if (totalCards.value !== 40) {
-    showTerminalAlert("THE DECK MUST CONTAIN EXACTLY 40 CARTE.");
+    showTerminalAlert("IL MAZZO DEVE CONTENERE ESATTAMENTE 40 CARTE.");
     return;
   }
   if (!selectedCostruttore.value) {
-    showTerminalAlert("SELECT A CONSTRUCTOR TO SYNCHRONIZE THE DECK.");
+    showTerminalAlert("SELEZIONA UN COSTRUTTORE PER SINCRONIZZARE IL MAZZO.");
     return;
   }
 
@@ -271,13 +271,13 @@ const executeSave = async (overwrite: boolean) => {
       isPublic: isPublic.value,
     };
     await api.post("/decks", payload);
-    notifications.success("Deck successfully synchronized with the Joule Matrix!");
+    notifications.success("Mazzo sincronizzato correttamente con la Matrice Joule!");
     viewMode.value = "dashboard";
     loadDecks();
   } catch (e: any) {
     showTerminalAlert(
       e?.response?.data?.error ||
-        "ERROR DURING TEMPORAL LINE SYNCHRONIZATION.",
+        "ERRORE DURANTE LA SINCRONIZZAZIONE DELLA LINEA TEMPORALE.",
     );
   } finally {
     isSaving.value = false;
@@ -307,7 +307,7 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
   } catch (e) {
-    showTerminalAlert("ERROR RETRIEVING EXPORT DATA FROM THE MATRIX.");
+    showTerminalAlert("ERRORE NEL RECUPERO DEI DATI DI ESPORTAZIONE DALLA MATRICE.");
   } finally {
     isExporting.value = false;
   }
@@ -366,7 +366,7 @@ const executeDelete = async () => {
       showDeleteConfirm.value = false;
       loadDecks();
     } else {
-      showTerminalAlert("ERROR DURING DECK DECOMMISSIONING.");
+      showTerminalAlert("ERRORE DURANTE LA DISMISSIONE DEL MAZZO.");
     }
   }
 };
@@ -427,7 +427,7 @@ watch([searchDashboard, filterCostruttore], () => {
 
 watch(decksError, (newError) => {
   if (newError) {
-    showTerminalAlert(`MATRIX ERROR: ${newError}`);
+    showTerminalAlert(`ERRORE NELLA MATRICE: ${newError}`);
   }
 });
 

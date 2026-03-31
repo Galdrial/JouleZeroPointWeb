@@ -76,7 +76,7 @@ app.use(hpp());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
-  message: { error: 'Too many requests from your galactic coordinate (IP). Please try again in 15 minutes.' },
+  message: { error: 'Troppe richieste dalle tue coordinate galattiche (IP). Prego riprovare tra 15 minuti.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -84,14 +84,31 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 /**
+ * Auth Rate Limiter: Enhanced protection for authentication endpoints.
+ * Strict limits (10 reqs / 15 mins) to prevent brute-force attacks on identity credentials.
+ */
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { error: 'Troppi tentativi di autenticazione. Il tuo portale di accesso è stato temporaneamente bloccato per proteggere i tuoi dati.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use('/api/v1/auth/login', authLimiter);
+app.use('/api/v1/auth/register', authLimiter);
+app.use('/api/v1/auth/forgot-password', authLimiter);
+app.use('/api/v1/auth/resend-verification', authLimiter);
+
+/**
  * Healthy Check Sensor (Operational Synchronia).
  * Exposes a heartbeat endpoint to monitor service availability.
  */
 app.get('/api/v1/health', (req, res) => {
   res.status(200).json({ 
-    status: 'OPERATIONAL', 
+    status: 'OPERATIVO', 
     timestamp: new Date().toISOString(),
-    service: 'zero-point-core'
+    service: 'nucleo-punto-zero'
   });
 });
 

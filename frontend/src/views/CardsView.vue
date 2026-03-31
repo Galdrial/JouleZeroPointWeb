@@ -178,7 +178,7 @@ onMounted(async () => {
  */
 watch(error, (newError) => {
   if (newError) {
-    notifications.error("Card database dissonance: " + newError);
+    notifications.error("Dissonanza nel database delle carte: " + newError);
   }
 });
 

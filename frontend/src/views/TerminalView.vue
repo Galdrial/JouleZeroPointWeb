@@ -12,7 +12,7 @@ const messages = ref([
   {
     role: "assistant",
     content:
-      "DIRECT ACCESS PROTOCOL ACTIVATED. I am the Zero Point Terminal.\n\nEnter your directive, Constructor.",
+      "PROTOCOLLO DI ACCESSO DIRETTO ATTIVATO. Sono il Terminale Punto Zero.\n\nInserisci la tua direttiva, Costruttore.",
   },
 ]);
 
@@ -45,7 +45,7 @@ const sendMessage = async () => {
   if (userInput.value.length > MAX_MESSAGE_LENGTH) {
     messages.value.push({
       role: "assistant",
-      content: `INPUT ERROR: Directive exceeds thermal limit (max ${MAX_MESSAGE_LENGTH} characters).`,
+      content: `ERRORE DI INPUT: La direttiva supera il limite termico (max ${MAX_MESSAGE_LENGTH} caratteri).`,
     });
     return;
   }
@@ -70,7 +70,7 @@ const sendMessage = async () => {
     messages.value.push({
       role: "assistant",
       content:
-        "SYNCHRONIZATION ERROR: Connection to the Matrix severed. Verify database stability.",
+        "ERRORE DI SINCRONIZZAZIONE: Connessione con la Matrice interrotta. Verificare la stabilità del database.",
     });
   } finally {
     isLoading.value = false;
@@ -87,7 +87,7 @@ const resetChat = () => {
     {
       role: "assistant",
       content:
-        "MEMORY PURGED. Connection restored.\n\nAwaiting new directives...",
+        "MEMORIA PURGATA. Connessione ripristinata.\n\nIn attesa di nuove direttive...",
     },
   ];
 };

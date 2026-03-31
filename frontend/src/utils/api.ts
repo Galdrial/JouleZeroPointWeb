@@ -59,7 +59,7 @@ api.interceptors.response.use(
       if (status === 401) {
         if (window.location.pathname !== '/login') {
           authStore.logout();
-          notifications.error(backendError || "Session frequency expired. Re-authentication required.");
+          notifications.error(backendError || "Frequenza di sessione scaduta. Riconnessione richiesta.");
           window.location.href = '/login?session_expired=1';
         } else {
           // Se siamo già in login, mostriamo l'errore specifico (es. credenziali errate)
@@ -72,16 +72,16 @@ api.interceptors.response.use(
       }
       // Backend-level Validation Errors
       else if (status === 422) {
-        notifications.warn(backendError || "Invalid parameters detected.");
+        notifications.warn(backendError || "Parametri non validi rilevati.");
       } 
       // Internal Server Errors (Atlas Core failure)
       else if (status >= 500) {
-        notifications.error("Backend dissonance detected. Please try again later.");
+        notifications.error("Rilevata dissonanza nel Backend. Prego riprovare più tardi.");
       }
     } 
     // Connection/Request failures (No Network Signal)
     else if (error.request) {
-      notifications.error("No signal from Atlas Backend. Check your connection.");
+      notifications.error("Nessun segnale dal Backend Atlas. Controlla la tua connessione.");
     }
     
     return Promise.reject(error);

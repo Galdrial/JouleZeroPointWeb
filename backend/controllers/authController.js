@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const Deck = require('../models/Deck');
 const logger = require('../config/logger');
 const emailService = require('../services/emailService');
 
@@ -29,7 +30,7 @@ const registerUser = async (req, res) => {
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-      return res.status(400).json({ error: 'All fields are mandatory.' });
+      return res.status(400).json({ error: 'Tutti i campi sono obbligatori.' });
     }
 
     // Controlla email o username esistenti
@@ -82,7 +83,7 @@ const registerUser = async (req, res) => {
       return res.status(409).json({ error: 'Email già in uso.' });
     }
     logger.error(`REGISTRATION_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Error during genetic profile encoding.' });
+    res.status(500).json({ error: 'Errore durante la codifica del profilo genetico.' });
   }
 };
 
@@ -125,7 +126,7 @@ const loginUser = async (req, res) => {
     });
   } catch (error) {
     logger.error(`LOGIN_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'System error during access protocol.' });
+    res.status(500).json({ error: 'Errore di sistema durante il protocollo di accesso.' });
   }
 };
 
@@ -140,15 +141,26 @@ const deleteAccount = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     if (user) {
+      const usernameLower = user.username.toLowerCase();
+      
+      // Purge associated decks before removing the identity
+      const deckResult = await Deck.deleteMany({ creator: usernameLower });
+      logger.info(`VIGIL_SYSTEM: ${deckResult.deletedCount} deck artifacts for ${user.username} have been purged.`);
+
+      // Also remove user votes from other constructors' decks
+      await Deck.updateMany({}, { $pull: { votes: user.username } });
+
+      // Purge user identity from the archive
       await User.deleteOne({ _id: req.user._id });
       logger.info(`VIGIL_SYSTEM: Account purged: ${user.username}`);
-      res.json({ message: 'Genetic data successfully removed from the central archive.' });
+      
+      res.json({ message: 'Dati genetici e mazzi associati rimossi con successo dall\'archivio centrale.' });
     } else {
-      res.status(404).json({ error: 'Constructor not found.' });
+      res.status(404).json({ error: 'Costruttore non trovato.' });
     }
   } catch (error) {
     logger.error(`DELETE_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Error during purge sequence.' });
+    res.status(500).json({ error: 'Errore durante la sequenza di eliminazione.' });
   }
 };
 

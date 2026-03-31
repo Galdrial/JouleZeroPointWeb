@@ -85,13 +85,11 @@ const fetchProfileData = async () => {
  */
 const deleteAccount = async () => {
   try {
-    // 1. Purge Deck Artifacts
-    await api.delete(`/decks/user/${username.value}`);
-    // 2. Terminate Identity Record
+    // Terminate Identity Record (Backend handled atomic purge of user + decks)
     await api.delete(`/auth/profile`);
 
     // 3. Cleanup session and redirect to terminal login
-    notifications.success("Account terminated. All data purged from Atlas databases.");
+    notifications.success("Account terminato. Tutti i dati epurati dai database Atlas.");
     authStore.logout();
     router.push("/login");
   } catch (error) {

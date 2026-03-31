@@ -43,7 +43,7 @@ const submitForm = async () => {
       
       // Persist session tokens to the central Auth Store
       authStore.setAuth(res.data.token, res.data.username);
-      notifications.success("Synchronization successfully completed!");
+      notifications.success("Sincronizzazione completata con successo!");
       
       // Redirect handling with intentional delay for UI smoothing
       const redirectTo = (route.query.redirect as string) || "/";

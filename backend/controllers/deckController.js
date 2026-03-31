@@ -61,7 +61,7 @@ const getDecks = async (req, res) => {
     res.json({ decks, total });
   } catch (error) {
     logger.error(`DECK_LIST_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Error during deck registry retrieval.' });
+    res.status(500).json({ error: 'Errore durante il recupero del registro dei mazzi.' });
   }
 };
 
@@ -126,7 +126,7 @@ const getPublicDecks = async (req, res) => {
     res.json({ decks: formattedDecks, total });
   } catch (error) {
     logger.error(`PUBLIC_DECK_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Error during public archive synchronization.' });
+    res.status(500).json({ error: 'Errore durante la sincronizzazione dell\'archivio pubblico.' });
   }
 };
 
@@ -142,7 +142,7 @@ const saveDeck = async (req, res) => {
     const creator = req.user.username;
 
     if (!name) {
-      return res.status(400).json({ error: 'Deck title is mandatory.' });
+      return res.status(400).json({ error: 'Il titolo del mazzo è obbligatorio.' });
     }
 
     // Integrity Check: Prevent duplicate naming within a user context
@@ -153,7 +153,7 @@ const saveDeck = async (req, res) => {
     });
 
     if (duplicate) {
-      return res.status(409).json({ error: 'A deck with this designation already exists in your registry.' });
+      return res.status(409).json({ error: 'Un mazzo con questo nome esiste già nel tuo registro.' });
     }
 
     let savedDeck;
@@ -168,7 +168,7 @@ const saveDeck = async (req, res) => {
       );
 
       if (!savedDeck) {
-        return res.status(404).json({ error: 'Target deck not found or unauthorized access.' });
+        return res.status(404).json({ error: 'Mazzo non trovato o accesso non autorizzato.' });
       }
     } else {
       // Transaction Logic: Construct a new deck entity
@@ -184,7 +184,7 @@ const saveDeck = async (req, res) => {
     res.status(id ? 200 : 201).json(savedDeck);
   } catch (error) {
     logger.error(`DECK_SAVE_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Protocol failure during deck persistence.' });
+    res.status(500).json({ error: 'Fallimento del protocollo durante il salvataggio del mazzo.' });
   }
 };
 
@@ -199,14 +199,14 @@ const deleteDeck = async (req, res) => {
     const deck = await Deck.findOneAndDelete({ _id: req.params.id, creator: req.user.username });
 
     if (!deck) {
-      return res.status(404).json({ error: 'Target deck not found or unauthorized access.' });
+      return res.status(404).json({ error: 'Mazzo non trovato o accesso non autorizzato.' });
     }
 
     logger.info(`VIGIL_SYSTEM: Deck decommissioned: ${deck.name} by ${req.user.username}`);
     res.status(204).send();
   } catch (error) {
     logger.error(`DECK_DELETE_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Protocol failure during deck decommissioning.' });
+    res.status(500).json({ error: 'Fallimento del protocollo durante la dismissione del mazzo.' });
   }
 };
 
@@ -222,7 +222,7 @@ const voteDeck = async (req, res) => {
     const deck = await Deck.findById(req.params.id);
 
     if (!deck || !deck.isPublic) {
-      return res.status(404).json({ error: 'Public deck designation not found.' });
+      return res.status(404).json({ error: 'Designazione del mazzo pubblico non trovata.' });
     }
 
     const voteIndex = deck.votes.indexOf(username);
@@ -241,7 +241,7 @@ const voteDeck = async (req, res) => {
     });
   } catch (error) {
     logger.error(`DECK_VOTE_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Error during influence synchronization.' });
+    res.status(500).json({ error: 'Errore durante la sincronizzazione dell\'influenza.' });
   }
 };
 
@@ -257,11 +257,11 @@ const importDeck = async (req, res) => {
     const sourceDeck = await Deck.findById(req.params.id);
 
     if (!sourceDeck || !sourceDeck.isPublic) {
-      return res.status(404).json({ error: 'Public source deck not found.' });
+      return res.status(404).json({ error: 'Mazzo sorgente pubblico non trovato.' });
     }
 
     if (sourceDeck.creator === username) {
-      return res.status(403).json({ error: 'Recursion detected: Cannot import personal artifacts.' });
+      return res.status(403).json({ error: 'Rilevata ricorsione: Non puoi importare i tuoi stessi mazzi.' });
     }
 
     const importedName = `${sourceDeck.name} (Imported)`;
@@ -281,7 +281,7 @@ const importDeck = async (req, res) => {
     res.status(201).json(newDeck);
   } catch (error) {
     logger.error(`DECK_IMPORT_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Protocol failure during automated deck replication.' });
+    res.status(500).json({ error: 'Fallimento del protocollo durante la replica automatizzata del mazzo.' });
   }
 };
 
@@ -298,14 +298,14 @@ const deleteUserDecks = async (req, res) => {
     const targetUsername = username.toLowerCase();
 
     if (targetUsername !== requester) {
-        return res.status(403).json({ error: 'Authorization denied: Cannot purge external registries.' });
+        return res.status(403).json({ error: 'Autorizzazione negata: Non puoi epurare registri esterni.' });
     }
-    await Deck.deleteMany({ creator: requester });
-    logger.info(`VIGIL_SYSTEM: All deck artifacts for ${username} have been purged.`);
-    res.json({ message: 'All deck entities removed successfully.' });
+    const result = await Deck.deleteMany({ creator: requester });
+    logger.info(`VIGIL_SYSTEM: ${result.deletedCount} deck artifacts for ${username} have been purged.`);
+    res.json({ message: 'All deck entities removed successfully.', deletedCount: result.deletedCount });
   } catch (error) {
     logger.error(`USER_DECKS_PURGE_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Protocol failure during registry wipe sequence.' });
+    res.status(500).json({ error: 'Fallimento del protocollo durante la sequenza di tabula rasa del registro.' });
   }
 };
 
@@ -319,12 +319,12 @@ const getDeckById = async (req, res) => {
   try {
     const deck = await Deck.findById(req.params.id);
     if (!deck) {
-      return res.status(404).json({ error: 'Deck not found in the archive.' });
+      return res.status(404).json({ error: 'Mazzo non trovato nell\'archivio.' });
     }
     res.json(deck);
   } catch (error) {
     logger.error(`GET_DECK_BY_ID_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Error during specific deck discovery.' });
+    res.status(500).json({ error: 'Errore durante la scoperta del mazzo specifico.' });
   }
 };
 
@@ -340,12 +340,12 @@ const exportDeck = async (req, res) => {
     const { format } = req.query; // Valid formats: 'pdf' or 'tts'
 
     if (!format || !['pdf', 'tts'].includes(format)) {
-      return res.status(400).json({ error: 'Invalid export format designation (pdf/tts required).' });
+      return res.status(400).json({ error: 'Designazione formato export non valida (richiesto pdf/tts).' });
     }
 
     const deck = await Deck.findById(id);
     if (!deck) {
-      return res.status(404).json({ error: 'Deck not found for synthesis.' });
+      return res.status(404).json({ error: 'Mazzo non trovato per la sintesi.' });
     }
 
     // Lifecycle: Ensure ephemeral directories exist
@@ -392,14 +392,14 @@ const exportDeck = async (req, res) => {
 
       if (error) {
         logger.error(`PYTHON_SYNTHESIS_ERROR: ${error.message}`);
-        return res.status(500).json({ error: 'Synthesis engine failure during asset generation.' });
+        return res.status(500).json({ error: 'Fallimento del motore di sintesi durante la generazione degli asset.' });
       }
 
       const extension = format === 'pdf' ? 'pdf' : 'jpg';
       const filePath = path.join(exportsDir, `deck_export_${id}.${extension}`);
 
       if (!fs.existsSync(filePath)) {
-        return res.status(500).json({ error: 'Generated artifact not found in export registry.' });
+        return res.status(500).json({ error: 'Artifact generato non trovato nel registro di esportazione.' });
       }
 
       res.download(filePath, `Joule_${deck.name}_${format}.${extension}`, (err) => {
@@ -412,7 +412,7 @@ const exportDeck = async (req, res) => {
 
   } catch (error) {
     logger.error(`DECK_EXPORT_PROTOCOL_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Unexpected protocol failure during export sequence.' });
+    res.status(500).json({ error: 'Fallimento imprevisto del protocollo durante la sequenza di esportazione.' });
   }
 };
 
