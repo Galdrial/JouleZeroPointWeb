@@ -50,7 +50,10 @@ const parseCSV = (fileContent) => {
 
 const seed = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/cyber_point');
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI non definita nel file .env. Segnale Cloud assente.');
+        }
+        await mongoose.connect(process.env.MONGODB_URI);
         console.log('CONNESSO AL DATABASE PER SEEDING.');
 
         const response = await axios.get(SHEETS_URL);
