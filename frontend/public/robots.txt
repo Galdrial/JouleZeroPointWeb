@@ -1,0 +1,16 @@
+# Costruttori, Crawler e Spider: benvenuti nella matrice Joule.
+# Regolamento Globale per l'indicizzazione.
+
+User-agent: *
+Allow: /
+
+# Zone proibite (Terminali Riservati / Aree Amministrazione)
+Disallow: /admin
+Disallow: /admin-news
+Disallow: /login
+Disallow: /register
+Disallow: /profile
+Disallow: /*?user=
+
+# Sitemaps: placeholder (inserire l'URL vero del sito in produzione)
+# Sitemap: https://[DOMINIO_OG_PLACEHOLDER]/sitemap.xml

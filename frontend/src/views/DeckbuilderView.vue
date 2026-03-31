@@ -569,6 +569,7 @@ onMounted(async () => {
           <div class="deck-hero-container">
             <img
               :src="getCostruttoreImg(d.costruttoreId)"
+              :alt="getCostruttoreName(d.costruttoreId)"
               class="deck-hero-img"
               @error="handleImgError"
             />

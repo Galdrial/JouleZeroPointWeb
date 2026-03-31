@@ -344,6 +344,7 @@ onMounted(async () => {
         <div class="deck-hero-container">
           <img
             :src="getCostruttoreImg(d.costruttoreId)"
+            :alt="getCostruttoreName(d.costruttoreId)"
             class="deck-hero-img"
           />
         </div>
@@ -713,7 +714,8 @@ onMounted(async () => {
 
 .deck-footer-row {
   display: flex;
-  gap: 0.8rem;
+  justify-content: space-between;
+  align-items: center;
   margin-top: auto;
 }
 
@@ -747,8 +749,12 @@ onMounted(async () => {
 }
 
 .deck-actions .cyber-btn {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 80px;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-align: center;
 }
 
 .voted {

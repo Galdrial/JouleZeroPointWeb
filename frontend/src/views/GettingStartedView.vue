@@ -173,8 +173,7 @@ const tabletopModUrl =
 
 .step-btn {
   width: fit-content;
-  margin: 0.25rem auto;
-  
+  margin: 0.25rem 0;
 }
 
 .directive-list {
@@ -202,11 +201,12 @@ const tabletopModUrl =
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
-  text-align: center;
+  text-align: left;
   padding: clamp(1rem, 3vw, 2rem);
 }
 /* Stile identico a CardsView.vue per il titolo */
 .glitch-text {
+  text-align: center;
   margin-bottom: 3.5rem !important;
   font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-family: var(--font-display);
