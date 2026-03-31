@@ -244,6 +244,7 @@ onMounted(async () => {
 
 .archive-cover {
   width: 100%;
+  height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: 6px;
