@@ -267,14 +267,17 @@ onMounted(async () => {
 
 .news-detail-links {
   display: flex;
-  gap: 0.9rem;
+  align-items: center;
+  gap: 1.2rem;
   flex-wrap: wrap;
 }
 
 .detail-nav-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 .detail-nav-icon {
@@ -284,9 +287,20 @@ onMounted(async () => {
 }
 
 .news-archive-link {
+  display: inline-flex;
+  align-items: center;
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  padding-left: 1.2rem;
+}
+
+.news-archive-link:hover {
+  color: var(--accent-cyan);
+  padding-left: 1.4rem;
 }
 
 .news-source-link {

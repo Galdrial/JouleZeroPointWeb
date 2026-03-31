@@ -246,10 +246,13 @@ const importDeck = async (req, res) => {
 const deleteUserDecks = async (req, res) => {
   try {
     const { username } = req.params;
-    if (username !== req.user.username) {
+    const requester = req.user.username.toLowerCase();
+    const targetUsername = username.toLowerCase();
+
+    if (targetUsername !== requester) {
         return res.status(403).json({ error: 'Non puoi eliminare i mazzi di un altro utente.' });
     }
-    await Deck.deleteMany({ creator: username });
+    await Deck.deleteMany({ creator: requester });
     logger.info(`SISTEMA_VIGILE: Tutti i mazzi di ${username} sono stati raggruppati ed eliminati.`);
     res.json({ message: 'Tutti i mazzi sono stati rimossi con successo.' });
   } catch (error) {
@@ -307,20 +310,25 @@ const exportDeck = async (req, res) => {
     }, {});
 
     const enrichedDeck = deck.toObject();
-    enrichedDeck.costruttore_name = cardMap[deck.costruttoreId]?.name || 'Costruttore Ignoto';
-    enrichedDeck.costruttore_image_url = cardMap[deck.costruttoreId]?.image_url || '';
+    const cId = Number(deck.costruttoreId);
+    enrichedDeck.costruttore_name = cardMap[cId]?.name || 'Costruttore Ignoto';
+    enrichedDeck.costruttore_image_url = cardMap[cId]?.image_url || '';
     
-    enrichedDeck.cards = enrichedDeck.cards.map(c => ({
-      ...c,
-      name: cardMap[c.cardId]?.name || 'Carta Sconosciuta',
-      image_url: cardMap[c.cardId]?.image_url || ''
-    }));
+    enrichedDeck.cards = enrichedDeck.cards.map(c => {
+      const cardNumId = Number(c.cardId);
+      return {
+        ...c,
+        name: cardMap[cardNumId]?.name || 'Carta Sconosciuta',
+        image_url: cardMap[cardNumId]?.image_url || ''
+      };
+    });
 
     const tmpJsonPath = path.join(tmpDir, `deck_${id}.json`);
     fs.writeFileSync(tmpJsonPath, JSON.stringify(enrichedDeck, null, 2));
 
-    const pythonPath = path.join(__dirname, '../../venv/bin/python3');
-    const scriptPath = path.join(__dirname, '../deckbuilder.py');
+    const projectDir = '/home/simone/Documenti/start2impact/JouleZeroPointDev';
+    const pythonPath = path.join(projectDir, 'venv/bin/python3');
+    const scriptPath = path.join(projectDir, 'backend/deckbuilder.py');
 
     logger.info(`ESPORTAZIONE_AVVIATA: Mazzo ${id} in formato ${format}`);
 
