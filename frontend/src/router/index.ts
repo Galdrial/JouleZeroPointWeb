@@ -4,6 +4,9 @@ import { useAuthStore } from '../stores/auth';
 
 const router = createRouter( {
   history: createWebHistory( import.meta.env.BASE_URL ),
+  scrollBehavior() {
+    return { top: 0, behavior: 'smooth' };
+  },
   routes: [
     {
       path: '/',
@@ -77,6 +80,21 @@ const router = createRouter( {
       name: 'profile',
       component: () => import( '../views/ProfileView.vue' ),
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/terms',
+      name: 'terms',
+      component: () => import( '../views/TermsView.vue' )
+    },
+    {
+      path: '/code-of-conduct',
+      name: 'conduct',
+      component: () => import( '../views/ConductView.vue' )
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import( '../views/PrivacyView.vue' )
     }
   ]
 } )

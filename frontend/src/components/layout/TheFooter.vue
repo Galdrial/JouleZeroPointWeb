@@ -37,9 +37,9 @@ const hideUI = computed(() => route.meta.hideUI === true);
     </div>
     <div class="footer-divider"></div>
     <div class="footer-links">
-      <a href="https://example.com/terms" target="_blank" rel="noopener noreferrer">Termini di utilizzo</a>
-      <a href="https://example.com/code-of-conduct" target="_blank" rel="noopener noreferrer">Codice di condotta</a>
-      <a href="https://example.com/privacy" target="_blank" rel="noopener noreferrer">Informativa sulla privacy</a>
+      <RouterLink to="/terms">Termini di utilizzo</RouterLink>
+      <RouterLink to="/code-of-conduct">Codice di condotta</RouterLink>
+      <RouterLink to="/privacy">Informativa sulla privacy</RouterLink>
     </div>
     <div class="footer-divider footer-divider--secondary"></div>
     <div class="footer-copyright">
