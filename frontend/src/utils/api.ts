@@ -3,7 +3,8 @@ import { useAuthStore } from '../stores/auth';
 import { useNotificationStore } from '../stores/notificationStore';
 
 /**
- * Client API Joule: Zero Point (100% Pro Edition)
+ * Global Axios instance configured for Joule: Zero Point.
+ * Centralizes all API communication with appropriate headers and interceptors.
  */
 const api = axios.create({
   baseURL: '/api/v1',
@@ -12,18 +13,23 @@ const api = axios.create({
   },
 });
 
-// Intercettore di Richiesta: Iniezione Automatica di Sicurezza
+/**
+ * Request Interceptor: Automatic Auth & Security Injection.
+ * Injects JWT tokens, user identifiers, and administrative keys into outgoing requests.
+ */
 api.interceptors.request.use(
   (config) => {
     const authStore = useAuthStore();
+    // Inject Bearer token if session is active
     if (authStore.token) {
       config.headers.Authorization = `Bearer ${authStore.token}`;
     }
+    // Inject user identifier for contextual tracking
     if (authStore.username) {
       config.headers['x-user'] = authStore.username;
     }
     
-    // Iniezione Automatica della Chiave Amministrativa (se presente)
+    // Automatic injection of Admin Secret Key if stored in current session
     const adminKey = sessionStorage.getItem('adminKey');
     if (adminKey) {
       config.headers['X-Admin-Key'] = adminKey;
@@ -34,7 +40,11 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercettore di Risposta: Scudo Globale con Feedback Visivo
+/**
+ * Response Interceptor: Global Error Shield & UI Feedback.
+ * Detects common status codes (401, 422, 500) and triggers global notifications
+ * while handling session expiration automatically.
+ */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -44,23 +54,26 @@ api.interceptors.response.use(
     if (error.response) {
       const status = error.response.status;
       
+      // Professional Session Expiry Handling (Unauthorized)
       if (status === 401) {
-        // Sessione Scaduta (Professionale)
         authStore.logout();
-        notifications.error("Frequenza di sessione scaduta. Re-autenticazione richiesta.");
+        notifications.error("Session frequency expired. Re-authentication required.");
         if (window.location.pathname !== '/login') {
           window.location.href = '/login?session_expired=1';
         }
-      } else if (status === 422) {
-        // Errore di Validazione (Segnale Pro arrivato dal Backend)
-        notifications.warn(error.response.data.error || "Parametri non validi.");
-      } else if (status >= 500) {
-        // Collasso del Nucleo Atlas
-        notifications.error("Dissonanza nel Backend. Riprova più tardi.");
+      } 
+      // Backend-level Validation Errors
+      else if (status === 422) {
+        notifications.warn(error.response.data.error || "Invalid parameters detected.");
+      } 
+      // Internal Server Errors (Atlas Core failure)
+      else if (status >= 500) {
+        notifications.error("Backend dissonance detected. Please try again later.");
       }
-    } else if (error.request) {
-      // Nessuna risposta: Segnale smarrito
-      notifications.error("Nessun segnale dal Backend. Controlla la tua connessione.");
+    } 
+    // Connection/Request failures (No Network Signal)
+    else if (error.request) {
+      notifications.error("No signal from Atlas Backend. Check your connection.");
     }
     
     return Promise.reject(error);

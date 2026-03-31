@@ -2,36 +2,50 @@ const jwt = require('jsonwebtoken');
 const logger = require('../config/logger');
 const User = require('../models/User');
 
+/**
+ * Authentication Middleware: Mandatory Guard.
+ * Protects routes by verifying the JWT token provided in the Authorization header.
+ * If valid, attaches the authenticated user object to req.user.
+ */
 const protect = async (req, res, next) => {
     let token;
 
+    // Check for Bearer token string in incoming Authorization headers
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         try {
-            // Get token from header
+            // Extraction phase: Isolate the JWT from the Bearer prefix
             token = req.headers.authorization.split(' ')[1];
 
-            // Verify token
+            // Verification phase: Decrypt and validate the signature using the Secret Signal
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            // Get user from the token
+            // Retrieval phase: Fetch the identity from the database excluding sensitive fields
             req.user = await User.findById(decoded.id).select('-password');
             
+            // Integrity check: Ensure the user still exists in the system
             if (!req.user) {
-                return res.status(401).json({ error: 'Utente non trovato.' });
+                return res.status(401).json({ error: 'User identity not found in the database.' });
             }
 
             next();
         } catch (error) {
-            logger.error(`ERRORE_AUTH: Token non valido: ${error.message}`);
-            res.status(401).json({ error: 'Accesso negato. Token non valido o scaduto.' });
+            // Signal Dissonance: Token is malformed, tampered with, or expired
+            logger.error(`AUTH_ERROR: Invalid token signature: ${error.message}`);
+            res.status(401).json({ error: 'Access denied. Invalid or expired session token.' });
         }
     }
 
+    // Shield active: Block request if no token was attempted
     if (!token) {
-        return res.status(401).json({ error: 'Accesso negato. Nessun token fornito.' });
+        return res.status(401).json({ error: 'Access denied. No authentication token provided.' });
     }
 };
 
+/**
+ * Authentication Middleware: Optional Guard.
+ * Attempts to identify the user if a token is present, but allows the request to proceed
+ * as anonymous if the token is missing or invalid.
+ */
 const optionalProtect = async (req, res, next) => {
     let token;
 
@@ -41,8 +55,8 @@ const optionalProtect = async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             req.user = await User.findById(decoded.id).select('-password');
         } catch (error) {
-            // Token is invalid - we just continue as anonymous
-            logger.debug(`OPTIONAL_AUTH: Token non valido o scaduto: ${error.message}`);
+            // Silent Dissonance: Token is invalid, but anonymous traversal is permitted
+            logger.debug(`OPTIONAL_AUTH: Invalid or expired token: ${error.message}`);
         }
     }
     next();

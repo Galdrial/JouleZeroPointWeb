@@ -1,8 +1,13 @@
 const mongoose = require('mongoose');
 
+/**
+ * Mongoose Schema for the News entity.
+ * Orchestrates the dissemination of updates, lore, and community highlights.
+ * Includes slug-based routing, categorical filtering, and featured content prioritization.
+ */
 const newsSchema = new mongoose.Schema({
   slug: {
-    type: String,
+    type: String, // URL-friendly identifier
     required: true,
     unique: true,
     trim: true,
@@ -19,47 +24,51 @@ const newsSchema = new mongoose.Schema({
     required: true,
   },
   content: {
-    type: String,
-    required: [true, 'Il corpo della news è obbligatorio'],
+    type: String, // Rich text or markdown content of the publication
+    required: [true, 'News body is mandatory'],
   },
   category: {
     type: String,
-    enum: ['news', 'storia'],
+    enum: ['news', 'storia'], // 'storia' represents lore-based content
     default: 'news',
     index: true,
   },
   imageUrl: {
-    type: String,
+    type: String, // Visual hero asset for the publication
     default: '',
   },
   sourceUrl: {
-    type: String,
+    type: String, // External reference link if applicable
     default: '',
   },
   publishedAt: {
-    type: Date,
+    type: Date, // Scheduled or actual publication timestamp
     default: Date.now,
     index: true,
   },
   isPublished: {
-    type: Boolean,
+    type: Boolean, // Visibility toggle for the public feed
     default: true,
     index: true,
   },
   isFeatured: {
-    type: Boolean,
+    type: Boolean, // Highlighted status for carousel or top-pick placement
     default: false,
     index: true,
   },
   featuredOrder: {
-    type: Number,
+    type: Number, // Priority sequencing for featured items
     default: null,
   },
 }, {
+  // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true,
 });
 
-// Indexes for common queries
+/**
+ * Editorial indexing for discovery.
+ * Enables full-text search across titles and summaries for rapid content retrieval.
+ */
 newsSchema.index({ title: 'text', summary: 'text' });
 
 module.exports = mongoose.model('News', newsSchema);

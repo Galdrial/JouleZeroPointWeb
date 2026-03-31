@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
 
+/**
+ * Mongoose Schema for the Card entity.
+ * Defines the structure for the card catalog, including baseline stats, 
+ * identity metadata, and vector embeddings for AI similarity search.
+ */
 const cardSchema = new mongoose.Schema({
   cardId: {
     type: Number,
@@ -11,11 +16,11 @@ const cardSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  type: String,
+  type: String, // Operation, Effect, or Status
   status: String,
-  cost_et: Number,
-  pep: Number,
-  rp: Number,
+  cost_et: Number, // Energy/Transfer Cost
+  pep: Number, // Power/Execution Potential
+  rp: Number, // Response/Reaction Points
   rarity: String,
   effect: String,
   role: String,
@@ -25,10 +30,14 @@ const cardSchema = new mongoose.Schema({
     default: []
   }
 }, {
+  // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true
 });
 
-// Index for vector search if using Atlas, or simple search
+/**
+ * Tactical indexing for search discovery.
+ * Enables both text search on name/effect and core ID lookup.
+ */
 cardSchema.index({ name: 'text', effect: 'text' });
 
 module.exports = mongoose.model('Card', cardSchema);
