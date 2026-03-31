@@ -53,18 +53,26 @@ api.interceptors.response.use(
     
     if (error.response) {
       const status = error.response.status;
+      const backendError = error.response.data?.error;
       
       // Professional Session Expiry Handling (Unauthorized)
       if (status === 401) {
-        authStore.logout();
-        notifications.error("Session frequency expired. Re-authentication required.");
         if (window.location.pathname !== '/login') {
+          authStore.logout();
+          notifications.error(backendError || "Session frequency expired. Re-authentication required.");
           window.location.href = '/login?session_expired=1';
+        } else {
+          // Se siamo già in login, mostriamo l'errore specifico (es. credenziali errate)
+          notifications.error(backendError || "Credenziali non sincronizzate.");
         }
       } 
+      // Forbidden / Not Found / Conflict / Bad Request
+      else if ([400, 403, 404, 409].includes(status)) {
+        notifications.warn(backendError || "Errore nel protocollo di accesso.");
+      }
       // Backend-level Validation Errors
       else if (status === 422) {
-        notifications.warn(error.response.data.error || "Invalid parameters detected.");
+        notifications.warn(backendError || "Invalid parameters detected.");
       } 
       // Internal Server Errors (Atlas Core failure)
       else if (status >= 500) {

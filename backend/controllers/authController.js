@@ -32,12 +32,14 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ error: 'All fields are mandatory.' });
     }
 
-    // Check for collision in the identity registry (email or username)
-    const userExists = await User.findOne({ $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }] });
+    // Controlla email o username esistenti
+    const userExists = await User.findOne({
+      $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }],
+    });
 
     if (userExists) {
-      if (userExists.isVerified === false) {
-        // Soft-collision: Account registered but never activated. Resend auth email and update password.
+      // Account non verificato → reinvia email
+      if (!userExists.isVerified) {
         const verificationToken = crypto.randomBytes(32).toString('hex');
         const salt = await bcrypt.genSalt(10);
         userExists.password = await bcrypt.hash(password, salt);
@@ -45,13 +47,16 @@ const registerUser = async (req, res) => {
         await userExists.save();
 
         await emailService.sendVerificationEmail(userExists.email, verificationToken);
-        return res.status(200).json({ message: 'Segnale rigenerato. Controlla la casella di posta per attivare l\'account.' });
-      } else {
-        return res.status(409).json({ error: 'Frequenza (Email) o Identificativo già occupati e attivi.' });
+        return res
+          .status(200)
+          .json({ message: 'Email di verifica reinviata. Controlla la tua casella.' });
       }
+
+      // Email/username già in uso
+      return res.status(409).json({ error: 'Email già in uso.' });
     }
 
-    // Security Tier: Implement adaptive salt generation for the credential hash
+    // Creazione nuovo utente
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const verificationToken = crypto.randomBytes(32).toString('hex');
@@ -61,18 +66,21 @@ const registerUser = async (req, res) => {
       usernameDisplay: username,
       email: email.toLowerCase(),
       password: hashedPassword,
-      verificationToken: verificationToken,
+      verificationToken,
     });
 
     if (user) {
       logger.info(`VIGIL_SYSTEM: New constructor registered (pending config): ${username}`);
       await emailService.sendVerificationEmail(user.email, verificationToken);
-
-      res.status(201).json({
-        message: 'Credenziali accettate. Controlla la casella di posta per validare il profilo Joule.',
-      });
+      res
+        .status(201)
+        .json({ message: 'Credenziali accettate. Controlla la casella di posta per verificare il profilo.' });
     }
   } catch (error) {
+    // Gestione errore chiave duplicata (email unica)
+    if (error.code === 11000) {
+      return res.status(409).json({ error: 'Email già in uso.' });
+    }
     logger.error(`REGISTRATION_ERROR: ${error.message}`);
     res.status(500).json({ error: 'Error during genetic profile encoding.' });
   }
@@ -90,22 +98,31 @@ const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email: email.toLowerCase() });
 
-    // Compare provided credential with the stored hash
-    if (user && (await bcrypt.compare(password, user.password))) {
-      // Gatekeeper: Reject unverified users with targeted HTTP 403 Forbidden
-      if (user.isVerified === false) {
-        return res.status(403).json({ error: 'Accesso negato: devi prima attivare la frequenza tramite l\'email ricevuta.' });
-      }
-
-      res.json({
-        id: user._id,
-        username: user.usernameDisplay || user.username,
-        email: user.email,
-        token: generateToken(user._id),
-      });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials. Synchronization failed.' });
+    // Utente non trovato
+    if (!user) {
+      return res.status(404).json({ error: 'Utente non trovato.' });
     }
+
+    // Verifica password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Credenziali errate.' });
+    }
+
+    // Account non verificato
+    if (!user.isVerified) {
+      return res
+        .status(403)
+        .json({ error: "Account non verificato. Reinvia l'email di attivazione." });
+    }
+
+    // Successo
+    res.json({
+      id: user._id,
+      username: user.usernameDisplay || user.username,
+      email: user.email,
+      token: generateToken(user._id),
+    });
   } catch (error) {
     logger.error(`LOGIN_ERROR: ${error.message}`);
     res.status(500).json({ error: 'System error during access protocol.' });
@@ -223,6 +240,38 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const resendVerificationEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Frequenza (Email) mancante.' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Utente non trovato.' });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ error: 'Account già verificato.' });
+    }
+
+    // Rigenera il token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    user.verificationToken = verificationToken;
+    await user.save();
+
+    await emailService.sendVerificationEmail(user.email, verificationToken);
+
+    res.status(200).json({ message: 'Email di attivazione reinviata. Controlla la tua posta.' });
+  } catch (error) {
+    logger.error(`RESEND_VERIFICATION_ERROR: ${error.message}`);
+    res.status(500).json({ error: 'Errore durante la reinvio del segnale di attivazione.' });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
@@ -230,4 +279,5 @@ module.exports = {
   verifyEmail,
   forgotPassword,
   resetPassword,
+  resendVerificationEmail,
 };

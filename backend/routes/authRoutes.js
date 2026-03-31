@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const { validate } = require('../middleware/validatorMiddleware');
-const { registerUser, loginUser, deleteAccount, verifyEmail, forgotPassword, resetPassword } = require('../controllers/authController');
+const { registerUser, loginUser, deleteAccount, verifyEmail, forgotPassword, resetPassword, resendVerificationEmail } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 
 /**
@@ -60,6 +60,13 @@ router.post('/forgot-password', forgotPassword);
  * @access  Public
  */
 router.post('/reset-password/:token', resetPassword);
+
+/**
+ * @route   POST /api/v1/auth/resend-verification
+ * @desc    Resend the activation link
+ * @access  Public
+ */
+router.post('/resend-verification', resendVerificationEmail);
 
 /**
  * @route   DELETE /api/v1/auth/profile

@@ -17,7 +17,8 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendVerificationEmail = async (email, token) => {
-  const verifyUrl = `http://localhost:5173/verify-email/${token}`;
+  const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const verifyUrl = `${frontendBase}/verify-email/${token}`;
   
   try {
     await transporter.sendMail({
@@ -43,7 +44,8 @@ const sendVerificationEmail = async (email, token) => {
 };
 
 const sendPasswordResetEmail = async (email, token) => {
-  const resetUrl = `http://localhost:5173/reset-password/${token}`;
+  const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
+  const resetUrl = `${frontendBase}/reset-password/${token}`;
   
   try {
     await transporter.sendMail({
