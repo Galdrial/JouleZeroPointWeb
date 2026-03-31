@@ -10,6 +10,15 @@ const connectDB = async () => {
         });
 
         logger.info(`DATABASE_SYNC: Canale Quantico stabilito con MongoDB: ${conn.connection.host}`);
+
+        mongoose.connection.on('disconnected', () => {
+            logger.warn('DATABASE_WARNING: Sincronia Atlas persa. Tentativo di riconnessione...');
+        });
+
+        mongoose.connection.on('error', (err) => {
+            logger.error(`DATABASE_CRITICAL: Errore nel Canale Quantico: ${err.message}`);
+        });
+
     } catch (error) {
         logger.error(`ERRORE_DATABASE: Sincronizzazione fallita: ${error.message}`);
         process.exit(1);
