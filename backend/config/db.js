@@ -4,7 +4,9 @@ const logger = require('./logger');
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(process.env.MONGODB_URI, {
-            // Options are simplified in modern Mongoose (v6+)
+            maxPoolSize: 10,
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
         });
 
         logger.info(`DATABASE_SYNC: Canale Quantico stabilito con MongoDB: ${conn.connection.host}`);
