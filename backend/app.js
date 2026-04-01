@@ -12,6 +12,13 @@ const rateLimit = require('express-rate-limit');
 const app = express();
 
 /**
+ * --- INFRASTRUCTURE CONFIGURATION ---
+ * Trust Proxy is required for cloud deployments (Render, Heroku, Railway) 
+ * to correctly identify client IP addresses for Rate Limiting.
+ */
+app.set('trust proxy', 1);
+
+/**
  * --- CORE MIDDLEWARE CONFIGURATION ---
  * Configures Cross-Origin Resource Sharing (CORS) and standard JSON body parsing.
  */

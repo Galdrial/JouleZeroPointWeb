@@ -112,8 +112,12 @@ router.post('/chat', async (req, res) => {
                 res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`);
             },
             // onError: invia un errore strutturato al client
-            (errorMsg) => {
-                res.write(`data: ${JSON.stringify({ type: 'error', message: errorMsg })}\n\n`);
+            (errorObj) => {
+                res.write(`data: ${JSON.stringify({ 
+                    type: 'error', 
+                    category: errorObj.category,
+                    message: errorObj.message 
+                })}\n\n`);
             }
         );
 

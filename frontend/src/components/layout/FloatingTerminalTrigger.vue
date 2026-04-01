@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import logo2 from "../../assets/logo2.png";
+import logo2 from "../../assets/logo2.webp";
 
 /**
  * Component Props

@@ -60,14 +60,33 @@ export const useChatStore = defineStore("chat", () => {
         isLoading.value = false;
         isStreaming.value = false;
       },
-      (error) => {
+      (errorObj) => {
         // Error handling during stream or connection
         messages.value[assistantIndex].role = "error";
-        messages.value[assistantIndex].content = `ERRORE DI SINCRONIZZAZIONE: ${error}`;
+        messages.value[assistantIndex].category = errorObj.category;
+        messages.value[assistantIndex].content = `ERRORE DI SINCRONIZZAZIONE: ${errorObj.message}`;
+        messages.value[assistantIndex].originalInput = content; // Save input to allow retry
+        
         isLoading.value = false;
         isStreaming.value = false;
       }
     );
+  };
+
+  /**
+   * Quick Retry for failed messages
+   */
+  const retryMessage = (originalContent: string) => {
+    // Remove the error message before retrying
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].role === "error") {
+      messages.value.pop();
+    }
+    // Remove the user message that caused the error (to avoid duplicate display)
+    if (messages.value.length > 0 && messages.value[messages.value.length - 1].role === "user") {
+      messages.value.pop();
+    }
+    
+    sendMessage(originalContent);
   };
 
   return {
@@ -76,6 +95,7 @@ export const useChatStore = defineStore("chat", () => {
     isStreaming,
     threadId,
     sendMessage,
+    retryMessage,
     resetChat,
   };
 });

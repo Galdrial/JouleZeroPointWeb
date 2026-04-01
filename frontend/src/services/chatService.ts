@@ -3,12 +3,15 @@ import { useAuthStore } from "../stores/auth";
 export interface ChatMessage {
   role: "user" | "assistant" | "error";
   content: string;
+  category?: string; // Metadata from backend (e.g. "timeout", "safety")
+  originalInput?: string; // Input preserved for retry
 }
 
 export interface ChatDelta {
   type: "content" | "error" | "done";
   content?: string;
   message?: string;
+  category?: string;
 }
 
 export const chatService = {
@@ -21,10 +24,10 @@ export const chatService = {
     threadId: string | null,
     onDelta: (delta: string) => void,
     onDone: () => void,
-    onError: (error: string) => void
+    onError: (errorData: { message: string; category?: string }) => void
   ) {
     const authStore = useAuthStore();
-    const API_URL = "/api/v1";
+    const API_URL = import.meta.env.VITE_API_URL || "/api/v1";
 
     try {
       const response = await fetch(`${API_URL}/terminal/chat`, {
@@ -71,7 +74,10 @@ export const chatService = {
               } else if (data.type === "done") {
                 onDone();
               } else if (data.type === "error") {
-                onError(data.message || "Unknown error");
+                onError({ 
+                  message: data.message || "Unknown error", 
+                  category: data.category 
+                });
               }
             } catch (e) {
               console.error("JSON Parse Error in SSE:", e);
@@ -80,7 +86,10 @@ export const chatService = {
         }
       }
     } catch (err: any) {
-      onError(err.message || "Connection failure");
+      onError({ 
+        message: err.message || "Connection failure", 
+        category: "network" 
+      });
     }
   },
 };

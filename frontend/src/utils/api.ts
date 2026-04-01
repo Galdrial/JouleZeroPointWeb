@@ -7,10 +7,11 @@ import { useNotificationStore } from '../stores/notificationStore';
  * Centralizes all API communication with appropriate headers and interceptors.
  */
 const api = axios.create({
-  baseURL: '/api/v1',
+  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true // Importante se gestisci cookie/sessioni in the future
 });
 
 /**

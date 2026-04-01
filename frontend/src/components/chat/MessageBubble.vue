@@ -8,6 +8,12 @@ const props = defineProps<{
   role: "user" | "assistant" | "error";
   content: string;
   isGhost?: boolean; // For typing/ghost messages
+  category?: string; // Error category from backend
+  originalInput?: string; // The user input that caused the error
+}>();
+
+const emit = defineEmits<{
+  (e: 'retry', input: string): void
 }>();
 
 // UI Orchestration: Deterministic roles for display
@@ -63,6 +69,13 @@ const renderedContent = computed(() => {
       <div class="message-content">
         <div v-if="content" v-html="renderedContent" class="markdown-body"></div>
         <slot v-else></slot>
+
+        <!-- Retry mechanism for resilient UX -->
+        <div v-if="role === 'error' && originalInput" class="retry-actions">
+          <button @click="emit('retry', originalInput)" class="retry-btn">
+            [ ESEGUI NUOVO TENTATIVO ]
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -104,8 +117,35 @@ const renderedContent = computed(() => {
 /* Role: Error (System) */
 .role-error {
   background: rgba(255, 0, 0, 0.1);
-  border-left: 2px solid var(--accent-magenta);
+  border: 1px solid rgba(255, 85, 85, 0.4);
+  border-left: 3px solid #ff5555;
+  color: #ffaa99;
+}
+
+.retry-actions {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(255, 85, 85, 0.3);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.retry-btn {
+  background: transparent;
+  border: 1px solid #ff5555;
   color: #ff5555;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+
+.retry-btn:hover {
+  background: rgba(255, 85, 85, 0.2);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 85, 85, 0.4);
 }
 
 .author-tag {

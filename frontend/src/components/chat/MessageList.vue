@@ -8,7 +8,22 @@ const props = defineProps<{
   isLoading?: boolean;
 }>();
 
+const emit = defineEmits<{
+  (e: 'retry', input: string): void
+}>();
+
 const listContainer = ref<HTMLElement | null>(null);
+
+// --- Dynamic Loading Phrases (UX Enhancement) ---
+const loadingPhrases = [
+  "Inizializzazione protocolli tattici...",
+  "Recupero frequenze orbitali...",
+  "Allineamento del Punto Zero temporale...",
+  "Decrittazione dati della Matrice...",
+  "Sincronizzazione anomalie quantistiche..."
+];
+const currentLoadingPhrase = ref(loadingPhrases[0]);
+let loadingInterval: number | null = null;
 
 /**
  * UI Support: Viewport Synchronization Protocol
@@ -35,11 +50,31 @@ watch(
 watch(
   () => props.isLoading,
   (newVal) => {
-    if (newVal) scrollToBottom();
+    if (newVal) {
+      scrollToBottom();
+      // Start rotating phrases
+      let idx = 0;
+      currentLoadingPhrase.value = loadingPhrases[idx];
+      loadingInterval = window.setInterval(() => {
+        idx = (idx + 1) % loadingPhrases.length;
+        currentLoadingPhrase.value = loadingPhrases[idx];
+      }, 3500);
+    } else {
+      if (loadingInterval !== null) {
+        clearInterval(loadingInterval);
+        loadingInterval = null;
+      }
+    }
   }
 );
 
-onMounted(scrollToBottom);
+onMounted(() => {
+  scrollToBottom();
+});
+
+const handleRetry = (input: string) => {
+  emit('retry', input);
+};
 </script>
 
 <template>
@@ -50,6 +85,9 @@ onMounted(scrollToBottom);
         v-if="!(msg.role === 'assistant' && msg.content === '' && isLoading)"
         :role="msg.role"
         :content="msg.content"
+        :original-input="msg.originalInput"
+        :category="msg.category"
+        @retry="handleRetry"
       />
     </template>
 
@@ -60,8 +98,11 @@ onMounted(scrollToBottom);
       content=""
       is-ghost
     >
-      <div class="typing-dots">
-        <span></span><span></span><span></span>
+      <div class="typing-indicator">
+        <div class="typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="typing-text">{{ currentLoadingPhrase }}</div>
       </div>
     </MessageBubble>
   </div>
@@ -87,6 +128,12 @@ onMounted(scrollToBottom);
   border-radius: 10px;
 }
 
+.typing-indicator {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .typing-dots {
   display: flex;
   gap: 5px;
@@ -99,6 +146,19 @@ onMounted(scrollToBottom);
   background: var(--accent-gold);
   border-radius: 50%;
   animation: typing 1.4s infinite;
+}
+
+.typing-text {
+  font-size: 0.8rem;
+  color: var(--accent-gold);
+  opacity: 0.8;
+  font-style: italic;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 .typing-dots span:nth-child(2) {

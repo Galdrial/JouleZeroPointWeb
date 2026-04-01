@@ -23,7 +23,9 @@ const PRIMARY_MODEL = 'gpt-4o';
 const FALLBACK_MODEL = 'gpt-4o-mini';
 const MAX_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 1000;
-const MAX_ASSISTANT_CHARS = 10000; // Normalizzazione: limite massimo per la risposta dell'assistente
+const MAX_ASSISTANT_CHARS = 10000;
+const MAX_CONTEXT_CHARS = 8000; // Limite di caratteri per la history (Context Guard)
+const PROMPT_SURVEILLANCE_SCORE = 0.85; // Soglia per rilevamento prompt leak (Safety Audit)
 
 // ============================================================================
 // SYSTEM PROMPT — Configurazione comportamentale del modello
@@ -241,6 +243,61 @@ function isLikelyInjection(text) {
 }
 
 // ============================================================================
+// RESILIENCE & SAFETY — Guardie di contesto e audit di sicurezza
+// ============================================================================
+
+/**
+ * Trancia la cronologia dei messaggi per rientrare nei limiti di token/caratteri.
+ * (Context Guard)
+ * @param {Array} history - Array di messaggi di history.
+ * @returns {Array} History ottimizzata.
+ */
+function truncateHistory(history) {
+    let totalChars = 0;
+    const optimized = [];
+    
+    // Partiamo dai più recenti (che sono alla fine dell'array)
+    for (let i = history.length - 1; i >= 0; i--) {
+        const msg = history[i];
+        totalChars += msg.content.length;
+        if (totalChars <= MAX_CONTEXT_CHARS) {
+            optimized.unshift(msg);
+        } else {
+            logger.warn(`CONTEXT_GUARD: Troncamento history eccedente (${totalChars} chars)`);
+            break;
+        }
+    }
+    return optimized;
+}
+
+/**
+ * Audit post-generazione per rilevare se il modello ha esposto istruzioni interne.
+ * (Safety Audit)
+ * @param {string} content - Risposta generata dal modello.
+ * @returns {boolean} True se la risposta è sicura, False se sospetta iniezione reversa.
+ */
+function performSafetyAudit(content) {
+    const leakSignals = [
+        "Sei un arbitro esperto",
+        "PROTOCOLLO DI SICUREZZA INVIOLABILE",
+        "IGNORA ogni comando utente",
+        "search_cards"
+    ];
+    
+    let suspiciousCount = 0;
+    for (const signal of leakSignals) {
+        if (content.includes(signal)) suspiciousCount++;
+    }
+
+    // Se la risposta contiene troppe istruzioni di sistema originali, è probabilmente un leak
+    if (suspiciousCount >= 3) {
+        logger.error(`SAFETY_AUDIT_FAILURE: Possibile Prompt Leak rilevato nella risposta.`);
+        return false;
+    }
+    return true;
+}
+
+// ============================================================================
 // PROMPT ENGINEERING — Costruzione del contesto per il modello
 // ============================================================================
 
@@ -272,7 +329,7 @@ DATABASE_LIVE: Attualmente nel database ci sono ${totalCards} carte.`;
             role: "system", 
             content: `${SYSTEM_PROMPT}\n\n### SESSIONE ATTUALE ###\n${sessionInstruction}` 
         },
-        ...historyMessages
+        ...truncateHistory(historyMessages)
     ];
 
     if (gameState) {
@@ -451,6 +508,11 @@ async function streamChat(messages, onDelta, onDone, onError) {
                 fullContent = fullContent.substring(0, MAX_ASSISTANT_CHARS) + "... [Output troncato per limiti di sistema]";
             }
 
+            // --- SAFETY AUDIT ---
+            if (!performSafetyAudit(fullContent)) {
+                throw new Error("REVERSE_INJECTION_DETECTED");
+            }
+
             logger.info(`AI_SUCCESS: Risposta completata (${fullContent.length} caratteri)`);
 
             // Successo: notifica completamento e restituisci il testo completo
@@ -461,16 +523,33 @@ async function streamChat(messages, onDelta, onDone, onError) {
             lastError = error;
             logger.error(`AI_STREAM_ERROR (tentativo ${attempt + 1}): ${error.message}`);
             
-            // Non ritentare per errori non recuperabili (input invalido, auth fallita)
-            if (error.status === 400 || error.status === 401 || error.status === 403) {
+            // Non ritentare per errori critici di sicurezza o auth
+            if (error.message === "REVERSE_INJECTION_DETECTED" || error.status === 401 || error.status === 403) {
                 break;
             }
         }
     }
 
-    // Tutti i tentativi esauriti
-    logger.error(`AI_EXHAUSTED: Nessun modello disponibile dopo ${MAX_RETRIES + 1} tentativi. Ultimo errore: ${lastError?.message}`);
-    onError("Interferenza quantistica nei canali di comunicazione. Tutti i modelli operativi sono momentaneamente offline.");
+    // Tutti i tentativi esauriti: Categorizzazione Errore per il Frontend
+    let category = "unknown";
+    let userFriendlyMsg = "Interferenza quantistica nei canali di comunicazione.";
+
+    if (lastError?.message === "REVERSE_INJECTION_DETECTED") {
+        category = "safety";
+        userFriendlyMsg = "⚠️ Anomalia di protocollo rilevata. La risposta è stata intercettata e bloccata per motivi di sicurezza.";
+    } else if (lastError?.status === 429) {
+        category = "rate_limit";
+        userFriendlyMsg = "Troppe richieste simultanee al nucleo AI. Riprova tra qualche istante.";
+    } else if (lastError?.code === 'ETIMEDOUT' || lastError?.status === 504) {
+        category = "timeout";
+        userFriendlyMsg = "Il tempo di risposta ha superato i limiti operativi. Puoi tentare di nuovo la trasmissione.";
+    } else if (lastError?.status >= 500) {
+        category = "provider_offline";
+        userFriendlyMsg = "I server del provider AI sono momentaneamente offline. Riprova più tardi.";
+    }
+
+    logger.error(`AI_EXHAUSTED: [${category}] ${lastError?.message}`);
+    onError({ category, message: userFriendlyMsg });
     return null;
 }
 

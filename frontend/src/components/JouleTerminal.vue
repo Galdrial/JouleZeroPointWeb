@@ -77,6 +77,7 @@ const vClickOutside = {
       <MessageList 
         :messages="chatStore.messages" 
         :is-loading="chatStore.isLoading || chatStore.isStreaming" 
+        @retry="chatStore.retryMessage"
       />
 
       <!-- Directive Input -->
