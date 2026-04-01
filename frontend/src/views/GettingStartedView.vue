@@ -67,9 +67,17 @@ const tabletopModUrl =
         <h2>STEP 3: ASSIMILAZIONE DELLE REGOLE (I 4 CONCETTI CHIAVE)</h2>
         <p>
           Prima di scendere in campo, devi comprendere le leggi fondamentali che
-          governano questo nuovo universo. Puoi scaricare il Regolamento
-          Completo, ma per iniziare ti bastano queste 4 direttive:
+          governano questo nuovo universo. Consulta il Regolamento
+          Ufficiale del Punto Zero, oppure, per iniziare, ti bastano queste 4 direttive base:
         </p>
+
+        <router-link
+          to="/regolamento"
+          class="cyber-btn btn-primary step-btn"
+        >
+          LEGGI IL REGOLAMENTO COMPLETO
+        </router-link>
+
         <ul class="directive-list">
           <li>
             <strong>L'Obiettivo:</strong> Trionfa facendo collassare il tuo

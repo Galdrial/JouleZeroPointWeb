@@ -23,6 +23,7 @@ const openCookieSettings = () => {
     <div class="footer-social-section">
       <div class="footer-section-title">SOCIAL NETWORK</div>
       <div class="footer-socials">
+        <!-- 
         <a href="https://example.com/facebook" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="footer-social-link">
           <svg viewBox="0 0 24 24" class="footer-social-icon" aria-hidden="true">
             <path fill="currentColor" d="M13.5 8.5V6.9c0-.6.4-1 1-1h1.2V3h-2c-2.2 0-3.7 1.5-3.7 3.7v1.8H8v3h2v9h3.5v-9h2.3l.5-3z" />
@@ -32,7 +33,8 @@ const openCookieSettings = () => {
           <svg viewBox="0 0 24 24" class="footer-social-icon" aria-hidden="true">
             <path fill="currentColor" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3zm11 1.8a1.2 1.2 0 1 1 0 2.4a1.2 1.2 0 0 1 0-2.4M12 7a5 5 0 1 1 0 10a5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6a3 3 0 0 0 0-6" />
           </svg>
-        </a>
+        </a> 
+        -->
         <a href="https://example.com/discord" target="_blank" rel="noopener noreferrer" aria-label="Discord" class="footer-social-link">
           <svg viewBox="0 0 24 24" class="footer-social-icon" aria-hidden="true">
             <path fill="currentColor" d="M19.6 5.7a15 15 0 0 0-3.8-1.2l-.2.4c1.5.4 2.2 1 2.2 1a11 11 0 0 0-5.8-1.5A11 11 0 0 0 6.2 6s.7-.6 2.2-1l-.2-.4a15 15 0 0 0-3.8 1.2C2 9.2 1.4 12.5 1.6 15.8a15.6 15.6 0 0 0 4.6 2.3l1-1.6c-.6-.2-1.1-.5-1.6-.8l.4-.3c2 1 4.2 1.5 6.4 1.5s4.4-.5 6.4-1.5l.4.3c-.5.3-1 .6-1.6.8l1 1.6a15.6 15.6 0 0 0 4.6-2.3c.3-3.8-.6-7.1-3.6-10.1M8.9 14.1c-.8 0-1.4-.7-1.4-1.5c0-.9.6-1.5 1.4-1.5c.8 0 1.4.7 1.4 1.5c0 .9-.6 1.5-1.4 1.5m6.2 0c-.8 0-1.4-.7-1.4-1.5c0-.9.6-1.5 1.4-1.5c.8 0 1.4.7 1.4 1.5c0 .9-.6 1.5-1.4 1.5" />
