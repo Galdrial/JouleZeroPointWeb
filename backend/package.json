@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --detectOpenHandles",
+    "test:ai": "jest tests/ai_integrity.test.js --detectOpenHandles",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },

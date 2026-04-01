@@ -12,7 +12,17 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
         timeout: 120000,
-        proxyTimeout: 120000
+        proxyTimeout: 120000,
+        configure: (proxy) => {
+          // Disable response buffering for SSE streaming
+          proxy.on('proxyRes', (proxyRes) => {
+            // Force chunked encoding to prevent buffering
+            if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+              proxyRes.headers['cache-control'] = 'no-cache';
+              proxyRes.headers['x-accel-buffering'] = 'no';
+            }
+          });
+        }
       }
     }
   }
