@@ -1,11 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require( 'mongoose' );
 
 /**
  * Mongoose Schema for the User entity.
  * Defines the identity and security parameters for the Joule: Zero Point community.
  * Handles unique credentials, case-sensitive display names, and lifecycle timestamps.
  */
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema( {
   username: {
     type: String, // Normalized identifier for auth and linking
     required: [true, 'Username is mandatory'],
@@ -36,13 +36,13 @@ const userSchema = new mongoose.Schema({
   verificationToken: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-    isAdmin: {
-      type: Boolean,
-      default: false,
-    },
-  }, {
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
+}, {
   // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true,
-});
+} );
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model( 'User', userSchema );

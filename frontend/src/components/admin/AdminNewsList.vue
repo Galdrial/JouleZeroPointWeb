@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { resolveNewsImage } from "../../utils/imageResolver";
 import {
   getNewsCategoryLabel,
   isStoryCategory,
   type NewsCategory,
 } from "../../utils/newsCategory";
-import { resolveNewsImage } from "../../utils/imageResolver";
 
 type NewsItem = {
   id: number;
@@ -86,7 +86,8 @@ function formatDate(value: string) {
                 :href="resolveNewsImage(item.imageUrl)"
                 target="_blank"
                 rel="noopener noreferrer"
-              >link</a>
+                >link</a
+              >
             </span>
           </div>
           <div class="news-row-actions">
@@ -98,13 +99,17 @@ function formatDate(value: string) {
             </span>
             <span
               class="news-badge"
-              :class="isStoryCategory(item.category) ? 'badge-storia' : 'badge-news'"
+              :class="
+                isStoryCategory(item.category) ? 'badge-storia' : 'badge-news'
+              "
             >
               {{ getNewsCategoryLabel(item.category || "news") }}
             </span>
             <span v-if="item.isFeatured" class="news-badge badge-featured">
               Evidenza
-              <template v-if="item.featuredOrder">#{{ item.featuredOrder }}</template>
+              <template v-if="item.featuredOrder"
+                >#{{ item.featuredOrder }}</template
+              >
             </span>
             <button
               class="admin-btn btn-ghost btn-sm"

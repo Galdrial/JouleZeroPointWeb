@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/HomeView.vue';
 import { useAuthStore } from '../stores/auth';
+import HomeView from '../views/HomeView.vue';
 
 const router = createRouter( {
   history: createWebHistory( import.meta.env.BASE_URL ),
@@ -83,7 +83,7 @@ const router = createRouter( {
       path: '/admin/news',
       name: 'admin-news',
       component: () => import( '../views/AdminNewsView.vue' ),
-        meta: { hideUI: true, requiresAdmin: true }
+      meta: { hideUI: true, requiresAdmin: true }
     },
     {
       path: '/profile',
@@ -114,22 +114,22 @@ const router = createRouter( {
     {
       path: '/verify-email/:token',
       name: 'verifyEmail',
-      component: () => import('../views/VerifyEmailView.vue')
+      component: () => import( '../views/VerifyEmailView.vue' )
     },
     {
       path: '/forgot-password',
       name: 'forgotPassword',
-      component: () => import('../views/ForgotPasswordView.vue')
+      component: () => import( '../views/ForgotPasswordView.vue' )
     },
     {
       path: '/reset-password/:token',
       name: 'resetPassword',
-      component: () => import('../views/ResetPasswordView.vue')
+      component: () => import( '../views/ResetPasswordView.vue' )
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
-      component: () => import('../views/NotFoundView.vue')
+      component: () => import( '../views/NotFoundView.vue' )
     }
   ]
 } )

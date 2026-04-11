@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
 import { useNotificationStore } from "../stores/notificationStore";
+import api from "../utils/api";
 
 // Global Orchestration: Routing & Stores
 const router = useRouter();
@@ -47,11 +47,15 @@ const submitForm = async () => {
         email: email.value,
         password: password.value,
       });
-      
+
       // Persist session tokens to the central Auth Store
-      authStore.setAuth(res.data.token, res.data.username, res.data.isAdmin || false);
+      authStore.setAuth(
+        res.data.token,
+        res.data.username,
+        res.data.isAdmin || false,
+      );
       notifications.success("Sincronizzazione completata con successo!");
-      
+
       // Redirect handling with intentional delay for UI smoothing
       const redirectTo = (route.query.redirect as string) || "/";
       setTimeout(() => router.push(redirectTo), 800);
@@ -59,32 +63,40 @@ const submitForm = async () => {
       // Password Integrity Check (8+ characters)
       if (password.value.length < 8) {
         triggerShake();
-        notifications.error("Frequenza troppo corta: La Passphrase deve essere di almeno 8 caratteri.");
+        notifications.error(
+          "Frequenza troppo corta: La Passphrase deve essere di almeno 8 caratteri.",
+        );
         return;
       }
 
       // Identity Verification Constraint Check
       if (password.value !== confirmPassword.value) {
         triggerShake();
-        notifications.error("Errore crittografico: Le Passphrase non combaciano.");
+        notifications.error(
+          "Errore crittografico: Le Passphrase non combaciano.",
+        );
         return;
       }
 
       // Legal Compliance Check
       if (!acceptedTerms.value) {
         triggerShake();
-        notifications.error("Protocollo negato: È necessario accettare i Termini e confermare l'età.");
+        notifications.error(
+          "Protocollo negato: È necessario accettare i Termini e confermare l'età.",
+        );
         return;
       }
-      
+
       // New Identity Initialization Sequence
       const res = await api.post("/auth/register", {
         username: username.value,
         email: email.value,
         password: password.value,
       });
-      notifications.success(res.data.message || "Frequenza generata! Controlla la posta.");
-      
+      notifications.success(
+        res.data.message || "Frequenza generata! Controlla la posta.",
+      );
+
       // Automatic switch to Login perspective after successful registration (without token issuance)
       setTimeout(() => {
         isLogin.value = true;
@@ -106,7 +118,12 @@ const submitForm = async () => {
     <div class="glass-panel auth-panel">
       <h2>{{ isLogin ? "Accesso Costruttori" : "Nuova Sincronizzazione" }}</h2>
 
-      <div v-if="isLogin && route.query.session_expired" class="alert-box error">Frequenza di sessione scaduta. Re-autenticazione richiesta.</div>
+      <div
+        v-if="isLogin && route.query.session_expired"
+        class="alert-box error"
+      >
+        Frequenza di sessione scaduta. Re-autenticazione richiesta.
+      </div>
 
       <form @submit.prevent="submitForm">
         <input
@@ -133,8 +150,8 @@ const submitForm = async () => {
           required
         />
         <div v-if="!isLogin" class="password-requirements">
-          <span :class="{ 'met': password.length >= 8 }">
-            {{ password.length >= 8 ? '✓' : '○' }} Almeno 8 caratteri necessari
+          <span :class="{ met: password.length >= 8 }">
+            {{ password.length >= 8 ? "✓" : "○" }} Almeno 8 caratteri necessari
           </span>
         </div>
         <input
@@ -146,13 +163,24 @@ const submitForm = async () => {
           :class="{ 'shake-limit': shakeError && password !== confirmPassword }"
           required
         />
-        
-        <div v-if="!isLogin" class="legal-checkbox-wrapper" :class="{ 'shake-limit': shakeError && !acceptedTerms }">
+
+        <div
+          v-if="!isLogin"
+          class="legal-checkbox-wrapper"
+          :class="{ 'shake-limit': shakeError && !acceptedTerms }"
+        >
           <label class="cyber-checkbox-container">
             <input type="checkbox" v-model="acceptedTerms" />
             <span class="checkmark"></span>
             <span class="label-text">
-              Accetto i <RouterLink to="/terms" target="_blank">Termini di Utilizzo</RouterLink> e confermo di avere più di 14 anni. Ho letto l' <RouterLink to="/privacy" target="_blank">Informativa Privacy</RouterLink>.
+              Accetto i
+              <RouterLink to="/terms" target="_blank"
+                >Termini di Utilizzo</RouterLink
+              >
+              e confermo di avere più di 14 anni. Ho letto l'
+              <RouterLink to="/privacy" target="_blank"
+                >Informativa Privacy</RouterLink
+              >.
             </span>
           </label>
         </div>
@@ -173,7 +201,9 @@ const submitForm = async () => {
       </form>
 
       <p class="toggle-text forgot-wrapper" v-if="isLogin">
-        <RouterLink to="/forgot-password" class="forgot-link">Hai smarrito la Passphrase?</RouterLink>
+        <RouterLink to="/forgot-password" class="forgot-link"
+          >Hai smarrito la Passphrase?</RouterLink
+        >
       </p>
 
       <p class="toggle-text">
@@ -350,15 +380,28 @@ form {
 
 /* Error Feedback Animations */
 .shake-limit {
-  animation: shake-limit 0.4s cubic-bezier(.36,.07,.19,.97) both;
+  animation: shake-limit 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
   border-color: rgba(255, 0, 60, 0.5) !important;
   box-shadow: 0 0 15px rgba(255, 0, 60, 0.15) !important;
 }
 
 @keyframes shake-limit {
-  10%, 90% { transform: translate3d(-1px, 0, 0); }
-  20%, 80% { transform: translate3d(2px, 0, 0); }
-  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
-  40%, 60% { transform: translate3d(4px, 0, 0); }
+  10%,
+  90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%,
+  80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%,
+  60% {
+    transform: translate3d(4px, 0, 0);
+  }
 }
 </style>
