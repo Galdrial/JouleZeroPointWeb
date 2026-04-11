@@ -62,8 +62,14 @@ const emit = defineEmits<{
       </div>
 
       <div class="form-row">
-        <label>Sommario <span class="form-hint">(visibile in home)</span></label>
-        <textarea v-model="props.form.summary" class="admin-textarea" rows="2" />
+        <label
+          >Sommario <span class="form-hint">(visibile in home)</span></label
+        >
+        <textarea
+          v-model="props.form.summary"
+          class="admin-textarea"
+          rows="2"
+        />
       </div>
 
       <div class="form-row">
@@ -71,7 +77,11 @@ const emit = defineEmits<{
           Contenuto
           <span class="form-hint">(paragrafi separati da riga vuota)</span>
         </label>
-        <textarea v-model="props.form.content" class="admin-textarea" rows="8" />
+        <textarea
+          v-model="props.form.content"
+          class="admin-textarea"
+          rows="8"
+        />
       </div>
 
       <div class="form-row">
@@ -110,10 +120,15 @@ const emit = defineEmits<{
           v-if="props.form.imageUrl && !props.isImageUrlValid"
           class="form-error-inline"
         >
-          URL non valido. Inserisci `/news/...` oppure un link completo `http(s)://...`.
+          URL non valido. Inserisci `/news/...` oppure un link completo
+          `http(s)://...`.
         </span>
         <div
-          v-if="props.form.imageUrl && props.isImageUrlValid && !props.imagePreviewError"
+          v-if="
+            props.form.imageUrl &&
+            props.isImageUrlValid &&
+            !props.imagePreviewError
+          "
           class="image-preview-wrap"
         >
           <img
