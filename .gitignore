@@ -67,7 +67,6 @@ tmp/
 backend/tmp_find_eris.js
 backend/test_run.js
 backend/update_assistant.js
-backend/chatbot.js
 
 # --- Asset generati / cache ---
 backend/public/news/

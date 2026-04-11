@@ -163,14 +163,14 @@ const authRoutes = require( './routes/authRoutes' );
 const newsRoutes = require( './routes/newsRoutes' );
 const deckRoutes = require( './routes/deckRoutes' );
 const cardRoutes = require( './routes/cardRoutes' );
-const chatbotRoutes = require( './chatbot' );
+const terminalRoutes = require( './routes/terminalRoutes' );
 const rulesRoutes = require( './routes/rulesRoutes' );
 
 app.use( '/api/v1/auth', authRoutes );
 app.use( '/api/v1/news', newsRoutes );
 app.use( '/api/v1/decks', deckRoutes );
 app.use( '/api/v1/cards', cardRoutes );
-app.use( '/api/v1/terminal', chatbotRoutes );
+app.use( '/api/v1/terminal', terminalRoutes );
 app.use( '/api/v1/rules', rulesRoutes );
 
 /**
