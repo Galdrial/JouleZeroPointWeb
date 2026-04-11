@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/webp" href="/favicon.webp" />
+  <link rel="apple-touch-icon" href="/favicon.webp" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joule: Zero Point - Il Gioco di Carte Sci-Fi Strategico</title>
+  <meta name="description"
+    content="Entra nel Punto Zero. Manipola il tempo e la materia in un mondo Sci-Fi e sfida la realtà in questo gioco di carte strategico." />
+
+  <!-- Critical Path: Immediate Visual Core -->
+  <style>
+    :root {
+      --bg-dark: #04080e;
+      --text-light: #f7fbff;
+    }
+    html, body {
+      background-color: var(--bg-dark);
+      margin: 0;
+      padding: 0;
+      color: var(--text-light);
+      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+    }
+    .home-view { background-color: var(--bg-dark); min-height: 100vh; }
+    .hero-section { min-height: 400px; position: relative; background-color: var(--bg-dark); }
+    .hero-image-stage { background: #05070c; min-height: 400px; }
+  </style>
+
+  <!-- Critical Path: Font Discovery Optimization -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Non-blocking Font Loading for Mobile FCP -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" media="print" onload="this.media='all'">
+  <noscript>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap">
+  </noscript>
+
+  <!-- Critical Asset Preloading: Responsive Hero Selection -->
+  <link rel="preload" as="image" href="/images/hero-mobile.webp" media="(max-width: 768px)" fetchpriority="high">
+  <link rel="preload" as="image" href="/images/hero.webp" media="(min-width: 769px)" fetchpriority="high">
+
+  <!-- Open Graph (OG) / Facebook -->
+  <meta property="og:title" content="Joule: Zero Point - Card Game Strategico" />
+  <meta property="og:description"
+    content="Domina il Passato, Presente e Futuro. Un'esperienza di gioco Sci-Fi strategica unica." />
+  <meta property="og:image" content="https://www.joulezeropoint.com/social-preview.jpg?v=7" />
+  <meta property="og:url" content="https://www.joulezeropoint.com/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Joule: Zero Point" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Joule: Zero Point - Il Tempo è la tua Arma" />
+  <meta name="twitter:description"
+    content="Prova Joule Zero Point e domina il tabellone temporale. Disponibile ora." />
+  <meta name="twitter:image" content="https://www.joulezeropoint.com/social-preview.jpg?v=7" />
+
+  <!-- Theme Color per Mobile -->
+  <meta name="theme-color" content="#00f2ff" />
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

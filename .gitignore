@@ -1,0 +1,90 @@
+# ============================================================
+# JOULE: ZERO POINT — .gitignore
+# ============================================================
+
+# --- Dipendenze ---
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# --- Variabili d'ambiente (MAI committare credenziali) ---
+.env
+.env.*
+backend/.env
+backend/.env.*
+frontend/.env
+frontend/.env.*
+frontend/.env.*.local
+!backend/.env.example
+
+# --- Build output ---
+frontend/dist/
+dist/
+
+# --- Log applicativi ---
+backend/logs/
+backend/server.log
+frontend/server.log
+*.log
+mongodb.log*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- Database MongoDB (file binari locali) ---
+backend/mongodb_data/
+backend/surgical_recovery/
+WiredTiger*
+metrics/
+diagnostic.data/
+journal/
+storage.bson
+collection-*.wt
+index-*.wt
+sizeStorer.wt
+*.bak
+
+# --- Databases locali (SQLite) ---
+*.sqlite
+*.sqlite3
+*.db
+users.sqlite
+backend/users.sqlite
+
+# --- Python virtual environment ---
+venv/
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# --- Cartelle temporanee e di lavoro ---
+backend/tmp/
+backend/exports/
+tmp/
+
+# --- File di sviluppo/debug nella root backend ---
+backend/tmp_find_eris.js
+backend/test_run.js
+backend/update_assistant.js
+backend/chatbot.js
+
+# --- Asset generati / cache ---
+backend/public/news/
+backend/database_preview.json
+
+# --- OS e editor ---
+.DS_Store
+.DS_Store?
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- File di grandi dimensioni (limite GitHub 100MB) ---
+archivio.pdf
+flyer.pdf
+*.pdf
+info.txt
+set5.0.csv

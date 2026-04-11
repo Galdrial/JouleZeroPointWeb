@@ -1,0 +1,205 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 3vw, 2rem);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active .modal-content {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.fade-enter-from .modal-content {
+  transform: scale(0.9) translateY(20px);
+}
+
+.modal-content {
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: rgba(10, 15, 25, 0.95);
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border: 1px solid var(--accent-gold);
+  box-shadow: 0 0 50px rgba(var(--accent-gold-rgb), 0.22);
+  border-radius: 12px;
+}
+
+/* Custom Scrollbar for Pro Feel */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background: var(--accent-gold);
+  border-radius: 10px;
+}
+
+.close-btn {
+  position: sticky;
+  top: 0;
+  float: right;
+  z-index: 10;
+  margin-top: -0.5rem;
+  margin-right: -1rem;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  color: var(--text-main);
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  line-height: 1;
+}
+
+.close-btn:hover {
+  color: var(--accent-magenta);
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: clamp(1rem, 2.5vw, 2rem);
+  align-items: start;
+}
+
+.modal-image-container img {
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-info h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 4vw, 2.2rem);
+  margin-bottom: 1rem;
+  color: var(--text-main);
+  background: linear-gradient(to right, #fff, var(--accent-gold));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.badge-row {
+  display: flex;
+  gap: clamp(0.6rem, 2vw, 1rem);
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.rarity-badge {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+}
+
+.modal-effect {
+  font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+  line-height: 1.7;
+  color: #ccd6f6;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  font-style: italic;
+}
+
+.modal-stats {
+  display: flex;
+  gap: clamp(0.8rem, 2vw, 1.5rem);
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+  flex-wrap: wrap;
+}
+
+.stat-box {
+  background: rgba(var(--accent-gold-rgb), 0.08);
+  padding: clamp(0.75rem, 2vw, 0.8rem) clamp(0.9rem, 3vw, 1.2rem);
+  border-radius: 10px;
+  border: 1px solid rgba(var(--accent-gold-rgb), 0.14);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: clamp(72px, 18vw, 80px);
+}
+
+.stat-box strong {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.3rem;
+}
+
+.stat-box span {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--accent-gold);
+}
+
+.card-stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-stats p {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  color: var(--accent-gold);
+}
+
+.card-stats strong {
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1rem;
+    margin: 0.5rem;
+    max-height: 85vh;
+  }
+  
+  .close-btn {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: var(--accent-magenta);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 255, 0.4);
+  }
+  
+  .modal-body {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .stat-box {
+    flex: 1;
+    min-width: 70px;
+  }
+}
