@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { resolveNewsImage } from "../../utils/imageResolver";
-import type { NewsCategory } from "../../utils/newsCategory";
 
 type FormData = {
   slug: string;
