@@ -36,7 +36,11 @@ const userSchema = new mongoose.Schema({
   verificationToken: String,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
-}, {
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+  }, {
   // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true,
 });

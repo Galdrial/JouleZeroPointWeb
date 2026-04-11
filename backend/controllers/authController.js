@@ -127,6 +127,7 @@ const loginUser = async (req, res) => {
       username: user.usernameDisplay || user.username,
       email: user.email,
       token: generateToken(user._id),
+       isAdmin: user.isAdmin || false,
     });
   } catch (error) {
     logger.error(`LOGIN_ERROR: ${error.message}`);

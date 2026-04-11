@@ -49,7 +49,7 @@ const submitForm = async () => {
       });
       
       // Persist session tokens to the central Auth Store
-      authStore.setAuth(res.data.token, res.data.username);
+      authStore.setAuth(res.data.token, res.data.username, res.data.isAdmin || false);
       notifications.success("Sincronizzazione completata con successo!");
       
       // Redirect handling with intentional delay for UI smoothing

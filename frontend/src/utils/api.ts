@@ -29,13 +29,6 @@ api.interceptors.request.use(
     if (authStore.username) {
       config.headers['x-user'] = authStore.username;
     }
-    
-    // Automatic injection of Admin Secret Key if stored in current session
-    const adminKey = sessionStorage.getItem('adminKey');
-    if (adminKey) {
-      config.headers['X-Admin-Key'] = adminKey;
-    }
-    
     return config;
   },
   (error) => Promise.reject(error)

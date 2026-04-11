@@ -83,7 +83,7 @@ const router = createRouter( {
       path: '/admin/news',
       name: 'admin-news',
       component: () => import( '../views/AdminNewsView.vue' ),
-      meta: { hideUI: true }
+        meta: { hideUI: true, requiresAdmin: true }
     },
     {
       path: '/profile',
@@ -136,7 +136,15 @@ const router = createRouter( {
 
 router.beforeEach( ( to, _from, next ) => {
   const authStore = useAuthStore();
-  if ( to.meta.requiresAuth && !authStore.isLoggedIn ) {
+  if ( to.meta.requiresAdmin ) {
+    if ( !authStore.isLoggedIn ) {
+      next( { name: 'login', query: { redirect: to.fullPath } } );
+    } else if ( !authStore.isAdmin ) {
+      next( { name: 'home' } );
+    } else {
+      next();
+    }
+  } else if ( to.meta.requiresAuth && !authStore.isLoggedIn ) {
     next( { name: 'login', query: { redirect: to.fullPath } } );
   } else {
     next();

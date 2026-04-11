@@ -1,27 +1,37 @@
+const jwt = require('jsonwebtoken');
 const logger = require('../config/logger');
+const User = require('../models/User');
 
 /**
  * Administrative Protection Middleware.
- * Verifies the presence and validity of the X-Admin-Key in the request headers.
- * Access is only permitted if the provided key matches the core configuration.
+ * Verifies the JWT token and ensures the authenticated user has isAdmin privileges.
  */
-const adminProtect = (req, res, next) => {
-    // Environmental Check: Ensure the Atlas Admin Key is properly configured
-    const adminKey = process.env.ADMIN_KEY;
-    if (!adminKey) {
-        logger.error('CRITICAL_SYSTEM: ADMIN_KEY is not defined in the environment configuration.');
-        return res.status(503).json({ error: 'Administrative services are currently unavailable.' });
+const adminProtect = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer')) {
+        return res.status(401).json({ error: 'Accesso negato. Autenticazione richiesta.' });
     }
 
-    // Protocol Verification: Compare incoming header signal with the secure key
-    const provided = req.headers['x-admin-key'] || '';
-    if (provided !== adminKey) {
-        logger.warn(`ACCESS_DENIED: Unauthorized administrative attempt detected from IP ${req.ip}`);
-        return res.status(401).json({ error: 'Access denied. Missing or incorrect administrative key.' });
-    }
+    try {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = await User.findById(decoded.id).select('-password');
 
-    // Handshake Successful: Proceed to protected operational logic
-    next();
+        if (!req.user) {
+            return res.status(401).json({ error: 'Identità utente non trovata.' });
+        }
+
+        if (!req.user.isAdmin) {
+            logger.warn(`ACCESS_DENIED: Non-admin access attempt by "${req.user.username}" from IP ${req.ip}`);
+            return res.status(403).json({ error: 'Accesso negato. Privilegi amministrativi richiesti.' });
+        }
+
+        next();
+    } catch (error) {
+        logger.error(`ADMIN_AUTH_ERROR: ${error.message}`);
+        return res.status(401).json({ error: 'Sessione non valida o scaduta.' });
+    }
 };
 
 module.exports = { adminProtect };

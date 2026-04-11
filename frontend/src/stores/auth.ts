@@ -9,6 +9,7 @@ export const useAuthStore = defineStore('auth', () => {
   // State: Initialized from localStorage to maintain session across refreshes
   const token = ref(localStorage.getItem('token') || null)
   const username = ref(localStorage.getItem('username') || '')
+    const isAdmin = ref(localStorage.getItem('isAdmin') === 'true')
   
   /**
    * Computed property to check if a user is currently authenticated.
@@ -19,12 +20,15 @@ export const useAuthStore = defineStore('auth', () => {
    * Updates the authentication state and persists credentials to localStorage.
    * @param newToken - JWT token received from Atlas Backend.
    * @param newUsername - Username of the authenticated operator.
+     * @param newIsAdmin - Whether the user has administrative privileges.
    */
-  function setAuth(newToken: string, newUsername: string) {
+    function setAuth(newToken: string, newUsername: string, newIsAdmin: boolean = false) {
     token.value = newToken
     username.value = newUsername
+      isAdmin.value = newIsAdmin
     localStorage.setItem('token', newToken)
     localStorage.setItem('username', newUsername)
+      localStorage.setItem('isAdmin', String(newIsAdmin))
   }
   
   /**
@@ -33,8 +37,10 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     token.value = null
     username.value = ''
+      isAdmin.value = false
     localStorage.removeItem('token')
     localStorage.removeItem('username')
+      localStorage.removeItem('isAdmin')
   }
   
   /**
@@ -43,7 +49,8 @@ export const useAuthStore = defineStore('auth', () => {
   function initialize() {
     token.value = localStorage.getItem('token') || null
     username.value = localStorage.getItem('username') || ''
+      isAdmin.value = localStorage.getItem('isAdmin') === 'true'
   }
 
-  return { token, username, isLoggedIn, setAuth, logout, initialize }
+    return { token, username, isLoggedIn, isAdmin, setAuth, logout, initialize }
 })
