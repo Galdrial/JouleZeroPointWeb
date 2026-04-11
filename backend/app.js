@@ -92,12 +92,12 @@ app.use( hpp() );
 
 // Keep-Alive ping: fuori dal rate limiter (UptimeRobot → ogni 5 min)
 app.get( '/ping', ( req, res ) => {
-  logger.info('[MATRIX] Pulsazione Keep-Alive rilevata (Root).');
+  logger.info( '[MATRIX] Pulsazione Keep-Alive rilevata (Root).' );
   res.status( 200 ).send( 'pong' );
 } );
 
 app.get( '/api/v1/ping', ( req, res ) => {
-  logger.info('[MATRIX] Pulsazione Keep-Alive rilevata (API v1).');
+  logger.info( '[MATRIX] Pulsazione Keep-Alive rilevata (API v1).' );
   res.status( 200 ).send( 'pong' );
 } );
 
