@@ -33,6 +33,7 @@ yarn-error.log*
 
 # --- Database MongoDB (file binari locali) ---
 backend/mongodb_data/
+backend/mongodb_data_recovery_copy/
 backend/surgical_recovery/
 WiredTiger*
 metrics/
