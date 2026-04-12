@@ -581,6 +581,16 @@ function sleep( ms ) {
  * @param {Function} onError - Callback chiamata in caso di errore non recuperabile.
  */
 async function streamChat( messages, onDelta, onDone, onError ) {
+    const lastUserMessage = [...messages].reverse().find( message => message.role === 'user' )?.content || '';
+    const isCodeGenerationRequest = /(script|codice|python|javascript|node|sql|bash|regex|funzione|class\s+|def\s+|import\s+|print\s*\(|snippet|program(?:ma)?)/i.test( lastUserMessage );
+
+    if ( isCodeGenerationRequest ) {
+        const refusal = '### [PROTOCOLLO ARBITRALE]\n\nRichiesta negata: la generazione di codice eseguibile non rientra nel mio mandato operativo. Posso però spiegare la regola o la meccanica di gioco in forma tecnica.';
+        onDelta( refusal );
+        onDone();
+        return refusal;
+    }
+
     let lastError = null;
 
     for ( let attempt = 0; attempt <= MAX_RETRIES; attempt++ ) {
