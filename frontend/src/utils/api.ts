@@ -1,6 +1,69 @@
-import axios from 'axios';
+import axios, { type InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../stores/auth';
 import { useNotificationStore } from '../stores/notificationStore';
+
+type AuthStoreLike = {
+  token?: string | null;
+  username?: string;
+  logout: () => void;
+};
+
+type NotificationStoreLike = {
+  error: ( message: string ) => void;
+  warn: ( message: string ) => void;
+};
+
+type LocationLike = {
+  pathname: string;
+  href: string;
+};
+
+export function applyAuthHeaders(
+  config: InternalAxiosRequestConfig,
+  authStore: Pick<AuthStoreLike, 'token' | 'username'>,
+) {
+  if ( authStore.token ) {
+    config.headers.Authorization = `Bearer ${ authStore.token }`;
+  }
+
+  if ( authStore.username ) {
+    config.headers['x-user'] = authStore.username;
+  }
+
+  return config;
+}
+
+export function handleApiError(
+  error: any,
+  authStore: AuthStoreLike,
+  notifications: NotificationStoreLike,
+  locationLike: LocationLike = window.location,
+) {
+  if ( error.response ) {
+    const status = error.response.status;
+    const backendError = error.response.data?.error;
+
+    if ( status === 401 ) {
+      if ( locationLike.pathname !== '/login' ) {
+        authStore.logout();
+        notifications.error( backendError || 'Frequenza di sessione scaduta. Riconnessione richiesta.' );
+        locationLike.href = '/login?session_expired=1';
+      } else {
+        notifications.error( backendError || 'Credenziali non sincronizzate.' );
+      }
+    } else if ( [400, 403, 404, 409].includes( status ) ) {
+      notifications.warn( backendError || 'Errore nel protocollo di accesso.' );
+    } else if ( status === 422 ) {
+      notifications.warn( backendError || 'Parametri non validi rilevati.' );
+    } else if ( status >= 500 ) {
+      notifications.error( 'Rilevata dissonanza nel Backend. Prego riprovare più tardi.' );
+    }
+  } else if ( error.request ) {
+    notifications.error( 'Nessun segnale dal Backend Atlas. Controlla la tua connessione.' );
+  }
+
+  return Promise.reject( error );
+}
 
 /**
  * Global Axios instance configured for Joule: Zero Point.
@@ -21,15 +84,7 @@ const api = axios.create( {
 api.interceptors.request.use(
   ( config ) => {
     const authStore = useAuthStore();
-    // Inject Bearer token if session is active
-    if ( authStore.token ) {
-      config.headers.Authorization = `Bearer ${ authStore.token }`;
-    }
-    // Inject user identifier for contextual tracking
-    if ( authStore.username ) {
-      config.headers['x-user'] = authStore.username;
-    }
-    return config;
+    return applyAuthHeaders( config, authStore );
   },
   ( error ) => Promise.reject( error )
 );
@@ -44,41 +99,7 @@ api.interceptors.response.use(
   ( error ) => {
     const authStore = useAuthStore();
     const notifications = useNotificationStore();
-
-    if ( error.response ) {
-      const status = error.response.status;
-      const backendError = error.response.data?.error;
-
-      // Professional Session Expiry Handling (Unauthorized)
-      if ( status === 401 ) {
-        if ( window.location.pathname !== '/login' ) {
-          authStore.logout();
-          notifications.error( backendError || "Frequenza di sessione scaduta. Riconnessione richiesta." );
-          window.location.href = '/login?session_expired=1';
-        } else {
-          // Se siamo già in login, mostriamo l'errore specifico (es. credenziali errate)
-          notifications.error( backendError || "Credenziali non sincronizzate." );
-        }
-      }
-      // Forbidden / Not Found / Conflict / Bad Request
-      else if ( [400, 403, 404, 409].includes( status ) ) {
-        notifications.warn( backendError || "Errore nel protocollo di accesso." );
-      }
-      // Backend-level Validation Errors
-      else if ( status === 422 ) {
-        notifications.warn( backendError || "Parametri non validi rilevati." );
-      }
-      // Internal Server Errors (Atlas Core failure)
-      else if ( status >= 500 ) {
-        notifications.error( "Rilevata dissonanza nel Backend. Prego riprovare più tardi." );
-      }
-    }
-    // Connection/Request failures (No Network Signal)
-    else if ( error.request ) {
-      notifications.error( "Nessun segnale dal Backend Atlas. Controlla la tua connessione." );
-    }
-
-    return Promise.reject( error );
+    return handleApiError( error, authStore, notifications );
   }
 );
 

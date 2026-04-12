@@ -2,6 +2,37 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import HomeView from '../views/HomeView.vue';
 
+type AuthState = {
+  isLoggedIn: boolean;
+  isAdmin: boolean;
+};
+
+type RouteMetaLike = {
+  requiresAuth?: boolean;
+  requiresAdmin?: boolean;
+};
+
+type RouteLike = {
+  fullPath: string;
+  meta: RouteMetaLike;
+};
+
+export function resolveAuthRedirect( to: RouteLike, authState: AuthState ) {
+  if ( to.meta.requiresAdmin ) {
+    if ( !authState.isLoggedIn ) {
+      return { name: 'login', query: { redirect: to.fullPath } };
+    }
+
+    if ( !authState.isAdmin ) {
+      return { name: 'home' };
+    }
+  } else if ( to.meta.requiresAuth && !authState.isLoggedIn ) {
+    return { name: 'login', query: { redirect: to.fullPath } };
+  }
+
+  return null;
+}
+
 const router = createRouter( {
   history: createWebHistory( import.meta.env.BASE_URL ),
   scrollBehavior() {
@@ -136,16 +167,13 @@ const router = createRouter( {
 
 router.beforeEach( ( to, _from, next ) => {
   const authStore = useAuthStore();
-  if ( to.meta.requiresAdmin ) {
-    if ( !authStore.isLoggedIn ) {
-      next( { name: 'login', query: { redirect: to.fullPath } } );
-    } else if ( !authStore.isAdmin ) {
-      next( { name: 'home' } );
-    } else {
-      next();
-    }
-  } else if ( to.meta.requiresAuth && !authStore.isLoggedIn ) {
-    next( { name: 'login', query: { redirect: to.fullPath } } );
+  const redirect = resolveAuthRedirect( to, {
+    isLoggedIn: authStore.isLoggedIn,
+    isAdmin: authStore.isAdmin,
+  } );
+
+  if ( redirect ) {
+    next( redirect );
   } else {
     next();
   }

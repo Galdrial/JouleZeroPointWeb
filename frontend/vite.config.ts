@@ -1,9 +1,19 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import vue from '@vitejs/plugin-vue';
+import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig( {
   plugins: [vue()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.ts',
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+    },
+  },
   server: {
     host: true,
     port: 5174,
@@ -13,15 +23,15 @@ export default defineConfig({
         changeOrigin: true,
         timeout: 120000,
         proxyTimeout: 120000,
-        configure: (proxy) => {
+        configure: ( proxy ) => {
           // Disable response buffering for SSE streaming
-          proxy.on('proxyRes', (proxyRes) => {
+          proxy.on( 'proxyRes', ( proxyRes ) => {
             // Force chunked encoding to prevent buffering
-            if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+            if ( proxyRes.headers['content-type']?.includes( 'text/event-stream' ) ) {
               proxyRes.headers['cache-control'] = 'no-cache';
               proxyRes.headers['x-accel-buffering'] = 'no';
             }
-          });
+          } );
         }
       }
     }
@@ -31,15 +41,15 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('highlight.js') || id.includes('marked') || id.includes('dompurify')) {
+        manualChunks( id ) {
+          if ( id.includes( 'highlight.js' ) || id.includes( 'marked' ) || id.includes( 'dompurify' ) ) {
             return 'editor-bundle';
           }
-          if (id.includes('node_modules')) {
+          if ( id.includes( 'node_modules' ) ) {
             return 'vendor';
           }
         }
       }
     }
   }
-})
+} )
