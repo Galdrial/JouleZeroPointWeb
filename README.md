@@ -24,6 +24,7 @@ The beating heart of the project is the **Zero Point Terminal**, an AI-powered n
 The project follows a **Decoupled Modern Web App** architecture:
 
 ### Frontend
+
 - **Framework:** Vue 3 (Composition API)
 - **Build Engine:** Vite + TypeScript
 - **State Management:** Pinia
@@ -32,6 +33,7 @@ The project follows a **Decoupled Modern Web App** architecture:
 - **Utilities:** Marked (Markdown Rendering), DOMPurify (HTML Sanitization)
 
 ### Backend
+
 - **Runtime:** Node.js & Express
 - **Database:** MongoDB Atlas (Mongoose ODM)
 - **AI Engine:** OpenAI SDK (Gemini/GPT Integration)
@@ -55,12 +57,14 @@ The project follows a **Decoupled Modern Web App** architecture:
 To run Joule on your local machine:
 
 ### 1. Cloning
+
 ```bash
 git clone https://github.com/your-username/JouleZeroPointDev.git
 cd JouleZeroPointDev
 ```
 
 ### 2. Backend Configuration
+
 ```bash
 cd backend
 npm install
@@ -69,6 +73,7 @@ npm run dev
 ```
 
 ### 3. Frontend Configuration
+
 ```bash
 cd ../frontend
 npm install
@@ -81,6 +86,7 @@ npm run dev
 ## 🛡️ Resilience Architecture
 
 Joule is engineered to handle the unstable nature of AI integrations:
+
 - **Context Guard:** Automatic history truncation to prevent exceeding token limits.
 - **Safety Post-Audit:** Outbound analysis to prevent "Prompt Leaks".
 - **Recovery UX:** Integrated **Retry** mechanism that preserves user input upon communication error.
@@ -90,14 +96,24 @@ Joule is engineered to handle the unstable nature of AI integrations:
 ## 🚢 Deployment
 
 The project is configured for:
+
 - **Frontend:** Vercel / Netlify
 - **Backend:** Render / Railway
 - **Database:** MongoDB Atlas
 
 ---
 
+## 📚 Documentation & Contribution Standards
+
+- Contributor guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Language policy: English for code comments, docs, commits, and PRs.
+- Comment policy: explain **why**, avoid redundant line-by-line commentary.
+
+---
+
 ## 👤 Author
-- **Simone Camerano** - *Design, Mechanics, and Lead Development*
+
+- **Simone Camerano** - _Design, Mechanics, and Lead Development_
 - Registered on **Patamu Registry**, deposit number 284864.
 
 ---

@@ -1,37 +1,57 @@
 # Joule Zero Point - Frontend
 
-## Setup locale rapido
+Vue 3 + Vite + TypeScript client for Joule: Zero Point.
 
-1. Crea il file environment backend:
+## Quick Start (Local)
+
+1. Prepare backend environment:
 
 ```bash
 cp ../backend/.env.example ../backend/.env
 ```
 
-2. Apri `../backend/.env` e imposta almeno:
+2. In `../backend/.env`, configure at least:
 
+- `MONGODB_URI`
 - `OPENAI_API_KEY`
 - `ASSISTANT_ID`
 - `JWT_SECRET`
 
-3. Installa dipendenze:
+3. Install dependencies:
 
 ```bash
 cd ../backend && npm install
 cd ../frontend && npm install
 ```
 
-4. Avvia backend e frontend in due terminali separati:
+4. Start backend and frontend in separate terminals:
 
 ```bash
-cd ../backend && node server.js
+cd ../backend && npm start
 cd ../frontend && npm run dev --host
 ```
 
-## Variabili chat opzionali
+Default frontend URL: `http://localhost:5174`
 
-Nel file `../backend/.env` puoi regolare:
+## Build and Preview
 
-- `CHAT_MAX_MESSAGE_LENGTH` (default: `1200`)
-- `CHAT_RATE_WINDOW_MS` (default: `60000`)
-- `CHAT_RATE_MAX_REQUESTS` (default: `12`)
+```bash
+npm run build
+npm run preview
+```
+
+## Test Commands
+
+```bash
+npm run test
+npm run test:coverage
+npm run test:e2e
+```
+
+## Notes
+
+- API traffic is proxied through Vite (`/api` -> backend on port `3000`) during local development.
+- Chat-related backend tuning variables (optional):
+  - `CHAT_MAX_MESSAGE_LENGTH` (default: `1200`)
+  - `CHAT_RATE_WINDOW_MS` (default: `60000`)
+  - `CHAT_RATE_MAX_REQUESTS` (default: `12`)

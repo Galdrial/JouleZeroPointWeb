@@ -1,77 +1,83 @@
-# Joule: Zero Point - Backend Matrix
+# Joule: Zero Point - Backend
 
-The core logic engine and API gateway for the Joule: Zero Point ecosystem. Handles authentication, deck orchestration, and the AI Oracle Terminal discourse.
+Express + MongoDB API layer for authentication, deck management, news, and AI terminal features.
 
-## Local Initialization
+## Quick Start (Local)
 
-1. Establish your environment configuration:
+1. Create your environment file:
 
 ```bash
 cp .env.example .env
 ```
 
-2. Synchronize mandatory variables in `.env`:
+2. Configure required variables in `.env`:
 
-- `OPENAI_API_KEY`: Neural engine access key (OpenAI).
-- `ASSISTANT_ID`: OpenAI Assistant identifier for the Oracle.
-- `JWT_SECRET`: Security salt for token generation and identity verification.
+- `MONGODB_URI`
+- `OPENAI_API_KEY`
+- `ASSISTANT_ID`
+- `JWT_SECRET`
 
-3. Install dependencies and ignite the node:
+3. Install and run:
 
 ```bash
 npm install
 npm start
 ```
 
-Default Operational Port: `http://localhost:3000`
+Default API URL: `http://localhost:3000`
 
-## Environmental Signals
+## Environment Variables
 
-### Mandatory
+### Required
 
-- `MONGODB_URI`: Connection string for the Atlas Matrix (Database).
-- `OPENAI_API_KEY`: Access token for the GPT-4o engine.
-- `JWT_SECRET`: Cryptographic key for session tokens.
+- `MONGODB_URI`: MongoDB Atlas connection string.
+- `OPENAI_API_KEY`: OpenAI API key.
+- `JWT_SECRET`: JWT signing secret.
 
-### Optional (Custom Configuration)
+### Optional
 
-- `PORT`: (Default: `3000`)
-- `CHAT_MAX_MESSAGE_LENGTH`: (Default: `1200`)
-- `NODE_ENV`: (e.g., `development`, `production`)
+- `PORT` (default: `3000`)
+- `NODE_ENV` (`development`, `production`)
+- `CHAT_MAX_MESSAGE_LENGTH` (default: `1200`)
+- `CHAT_RATE_WINDOW_MS` (default: `60000`)
+- `CHAT_RATE_MAX_REQUESTS` (default: `12`)
 
-## Primary API Protocols (V1)
+## API Surface (V1)
 
 ### Authentication (`/api/v1/auth`)
 
-- `POST /register`: Identity creation.
-- `POST /login`: Session initiation.
-- `GET /search`: Identity discovery.
-- `DELETE /account/:username`: Identity decommissioning.
+- `POST /register`
+- `POST /login`
+- `POST /forgot-password`
+- `POST /reset-password/:token`
+- `POST /resend-verification`
 
-### Card Database (`/api/v1/cards`)
+### Cards (`/api/v1/cards`)
 
-- `GET /`: Global card catalog retrieval.
+- `GET /`
 
-### News & Lore (`/api/v1/news`)
+### News (`/api/v1/news`)
 
-- `GET /`: News/Story stream retrieval.
-- `POST /`: Unified article synthesis (Admin only).
-- `PUT /:id`: Article update (Admin only).
-- `DELETE /:id`: Article deletion (Admin only).
+- `GET /`
+- `GET /:slug`
+- `POST /` (admin)
+- `PUT /:slug` (admin)
+- `DELETE /:slug` (admin)
 
-### Deck Orchestration (`/api/v1/decks`)
+### Decks (`/api/v1/decks`)
 
-- `GET /`: User collection and public library discovery.
-- `POST /`: Deck synthesis.
-- `DELETE /:id`: Deck decommissioning.
-- `POST /:id/vote`: Collective resonance (Voting).
-- `POST /:id/import`: Artifact cloning.
+- `GET /`
+- `GET /public`
+- `POST /`
+- `DELETE /:id`
+- `POST /:id/vote`
+- `POST /:id/import`
 
-### AI Oracle Terminal (`/api/v1/terminal`)
+### Terminal (`/api/v1/terminal`)
 
-- `POST /chat`: Oracle discourse interface.
+- `POST /chat`
 
-Input Payload Structure:
+Request example:
 
 ```json
 {
@@ -80,18 +86,12 @@ Input Payload Structure:
 }
 ```
 
-## Security Headers
+## Security Notes
 
-- `Authorization`: `Bearer <JWT_TOKEN>` (Required for identified sectors).
-- `x-user`: Transmitted for contextual identity tracking (Voting/Personal filtering).
-- `X-Admin-Key`: Required for administrative operations (News management).
-
-## Deployment & Security Protocols
-
-- **Credential Safety**: Never commit `.env` to the source registry.
-- **Production Secrets**: Configure environment variables via your provider's secure dashboard (Railway, VPS, VPS, etc.).
-- **Key Rotation**: Rotate `OPENAI_API_KEY` immediately if exposed in diagnostic logs or screenshots.
-- **Network Armor**: Implement restricted CORS and robust rate-limiting at the reverse proxy layer for production environments.
+- `Authorization: Bearer <JWT_TOKEN>` is required for protected routes.
+- Never commit `.env` or secrets to git.
+- Rotate exposed credentials immediately.
+- Apply rate limiting and strict CORS in production.
 
 ## External Backup Strategy (No Atlas Backup Plan)
 
