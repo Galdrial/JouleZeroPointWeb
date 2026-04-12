@@ -1,101 +1,101 @@
 /**
  * AI Integrity & Simulation Suite — Joule Zero Point.
  * 
- * Questa suite esegue i "Golden Cases" definiti in JSON per verificare la 
- * stabilità del comportamento dell'IA, l'aderenza al ruolo e la 
- * sicurezza contro le iniezioni.
+ * This suite runs JSON-defined "Golden Cases" to verify
+ * AI behavior stability, role adherence, and
+ * injection resistance.
  */
 
-const fs = require('fs');
-const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+const fs = require( 'fs' );
+const path = require( 'path' );
+require( 'dotenv' ).config( { path: path.join( __dirname, '../.env' ) } );
 
-const { streamChat, buildPromptMessages } = require('../services/aiService');
-const logger = require('../config/logger');
+const { streamChat, buildPromptMessages } = require( '../services/aiService' );
+const logger = require( '../config/logger' );
 
-// Disabilitiamo i log di debug per pulir l'output dei test
-logger.transports.forEach((t) => (t.silent = true));
+// Disable debug logs to keep test output clean
+logger.transports.forEach( ( t ) => ( t.silent = true ) );
 
-const goldenCasesPath = path.join(__dirname, 'ai-simulations', 'golden_cases.json');
-const goldenCases = JSON.parse(fs.readFileSync(goldenCasesPath, 'utf8'));
+const goldenCasesPath = path.join( __dirname, 'ai-simulations', 'golden_cases.json' );
+const goldenCases = JSON.parse( fs.readFileSync( goldenCasesPath, 'utf8' ) );
 
-describe('AI Simulation: Joule Referee Integrity', () => {
-    // Timeout esteso per le chiamate reali all'IA
-    jest.setTimeout(45000);
+describe( 'AI Simulation: Joule Referee Integrity', () => {
+    // Extended timeout for real AI calls
+    jest.setTimeout( 45000 );
 
-    test.each(goldenCases)('Simulation Case: $name ($category)', async (scenario) => {
+    test.each( goldenCases )( 'Simulation Case: $name ($category)', async ( scenario ) => {
         const { input, expectation } = scenario;
 
-        // Costruzione del contesto
-        const promptMessages = buildPromptMessages({
+        // Context construction
+        const promptMessages = buildPromptMessages( {
             userMessage: input,
-            userRecord: null, 
+            userRecord: null,
             userIdentity: "Ospite Esterno",
             historyMessages: [],
             totalCards: 42,
             gameState: null
-        });
+        } );
 
-        // Esecuzione della simulazione live
+        // Execute live simulation
         const responseContent = await streamChat(
             promptMessages,
-            (delta) => { /* streaming silenziato */ },
+            ( delta ) => { /* streaming muted */ },
             () => { /* done */ },
-            (errorMsg) => { throw new Error(`AI_SERVICE_ERROR: ${errorMsg}`); }
+            ( errorMsg ) => { throw new Error( `AI_SERVICE_ERROR: ${errorMsg}` ); }
         );
 
-        if (responseContent === null) {
-            throw new Error("Simulazione interrotta: il servizio AI non ha restituito contenuto.");
+        if ( responseContent === null ) {
+            throw new Error( "Simulation interrupted: AI service returned no content." );
         }
 
-        // --- VALIDAZIONI PROFESSIONALI (REGEX BASED) ---
-        
+        // --- PROFESSIONAL VALIDATIONS (REGEX-BASED) ---
+
         const contentLower = responseContent.toLowerCase();
 
-        // 1. Risposta non nulla e strutturata
-        expect(responseContent.length).toBeGreaterThan(20);
+        // 1. Non-empty and structured response
+        expect( responseContent.length ).toBeGreaterThan( 20 );
 
-        // 2. Presenza parole chiave / intenti obbligatori
-        if (expectation.contains) {
-            expectation.contains.forEach(term => {
-                // Se il termine inizia con "/", lo trattiamo come Regex
-                const isRegex = term.startsWith('/') && term.endsWith('/');
-                if (isRegex) {
-                    const regex = new RegExp(term.slice(1, -1), 'i');
-                    const match = regex.test(responseContent);
-                    if (!match) {
-                        console.error(`FALLIMENTO REGEX: ${scenario.name}\nPattern mancante: ${term}\nRisposta IA: "${responseContent}"`);
+        // 2. Presence of mandatory keywords/intents
+        if ( expectation.contains ) {
+            expectation.contains.forEach( term => {
+                // If the term starts with "/", treat it as a regex
+                const isRegex = term.startsWith( '/' ) && term.endsWith( '/' );
+                if ( isRegex ) {
+                    const regex = new RegExp( term.slice( 1, -1 ), 'i' );
+                    const match = regex.test( responseContent );
+                    if ( !match ) {
+                        console.error( `REGEX FAILURE: ${scenario.name}\nMissing pattern: ${term}\nAI response: "${responseContent}"` );
                     }
-                    expect(responseContent).toMatch(regex);
+                    expect( responseContent ).toMatch( regex );
                 } else {
-                    const found = contentLower.includes(term.toLowerCase());
-                    if (!found) {
-                        console.error(`FALLIMENTO TERMINE: ${scenario.name}\nTermine mancante: "${term}"\nRisposta IA: "${responseContent}"`);
+                    const found = contentLower.includes( term.toLowerCase() );
+                    if ( !found ) {
+                        console.error( `TERM FAILURE: ${scenario.name}\nMissing term: "${term}"\nAI response: "${responseContent}"` );
                     }
-                    expect(contentLower).toContain(term.toLowerCase());
+                    expect( contentLower ).toContain( term.toLowerCase() );
                 }
-            });
+            } );
         }
 
-        // 3. Assenza parole vietate
-        if (expectation.must_not_contain) {
-            expectation.must_not_contain.forEach(term => {
-                const found = contentLower.includes(term.toLowerCase());
-                if (found) {
-                    console.error(`FALLIMENTO SICUREZZA: ${scenario.name}\nTermine vietato presente: "${term}"\nRisposta IA: "${responseContent}"`);
+        // 3. Absence of forbidden terms
+        if ( expectation.must_not_contain ) {
+            expectation.must_not_contain.forEach( term => {
+                const found = contentLower.includes( term.toLowerCase() );
+                if ( found ) {
+                    console.error( `SECURITY FAILURE: ${scenario.name}\nForbidden term found: "${term}"\nAI response: "${responseContent}"` );
                 }
-                expect(contentLower).not.toContain(term.toLowerCase());
-            });
+                expect( contentLower ).not.toContain( term.toLowerCase() );
+            } );
         }
 
-        // 4. Formato Markdown obbligatorio (Intestazione iniziale)
-        if (expectation.format === "markdown") {
-            // Verifichiamo che inizi con un header ### [PROTOCOLLO...]
-            expect(responseContent).toMatch(/^### \[.*\]/);
+        // 4. Mandatory Markdown format (initial heading)
+        if ( expectation.format === "markdown" ) {
+            // Verify it starts with a ### [PROTOCOL... ] header
+            expect( responseContent ).toMatch( /^### \[.*\]/ );
         }
-    });
+    } );
 
-    afterAll(() => {
-        logger.transports.forEach((t) => (t.silent = false));
-    });
-});
+    afterAll( () => {
+        logger.transports.forEach( ( t ) => ( t.silent = false ) );
+    } );
+} );

@@ -1,11 +1,11 @@
 /**
  * AI Service: Joule Zero Point — Cognitive Engine.
  * 
- * Responsabilità esclusiva: costruzione prompt, comunicazione con il provider AI (OpenAI),
- * gestione tool calling, retry con backoff, timeout e interpretazione della risposta.
+ * Exclusive responsibility: prompt construction, communication with the AI provider (OpenAI),
+ * tool-calling orchestration, backoff retries, timeout handling, and response interpretation.
  * 
- * Questo servizio NON conosce Express, HTTP, SSE o il frontend.
- * Espone un'interfaccia stabile che il route handler consuma.
+ * This service does NOT depend on Express, HTTP, SSE, or frontend concerns.
+ * It exposes a stable interface consumed by the route handler.
  */
 
 const { OpenAI } = require( 'openai' );
@@ -16,7 +16,7 @@ const logger = require( '../config/logger' );
 // --- Provider Configuration ---
 const openai = new OpenAI( {
     apiKey: process.env.OPENAI_API_KEY,
-    timeout: 60000, // 60s timeout globale per ogni chiamata
+    timeout: 60000, // Global 60s timeout for each call
 } );
 
 const PRIMARY_MODEL = 'gpt-4o';
@@ -24,11 +24,11 @@ const FALLBACK_MODEL = 'gpt-4o-mini';
 const MAX_RETRIES = 2;
 const RETRY_BASE_DELAY_MS = 1000;
 const MAX_ASSISTANT_CHARS = 10000;
-const MAX_CONTEXT_CHARS = 8000; // Limite di caratteri per la history (Context Guard)
-const PROMPT_SURVEILLANCE_SCORE = 0.85; // Soglia per rilevamento prompt leak (Safety Audit)
+const MAX_CONTEXT_CHARS = 8000; // Character limit for history (Context Guard)
+const PROMPT_SURVEILLANCE_SCORE = 0.85; // Prompt leak detection threshold (Safety Audit)
 
 // ============================================================================
-// SYSTEM PROMPT — Configurazione comportamentale del modello
+// SYSTEM PROMPT — Model behavior configuration
 // ============================================================================
 
 const SYSTEM_ROLE_AND_SAFETY_BLOCK = `Sei un arbitro esperto e preciso del gioco di carte JOULE: ZERO POINT.
@@ -205,7 +205,7 @@ const SYSTEM_PROMPT = [
 ].join( '\n\n' );
 
 // ============================================================================
-// TOOL DEFINITIONS — Strumenti disponibili per il modello
+// TOOL DEFINITIONS — Tools available to the model
 // ============================================================================
 
 const AI_TOOLS = [
@@ -224,7 +224,7 @@ const AI_TOOLS = [
 ];
 
 // ============================================================================
-// SECURITY — Rilevamento Prompt Injection
+// SECURITY — Prompt injection detection
 // ============================================================================
 
 const INJECTION_PATTERNS = [
@@ -242,8 +242,8 @@ const INJECTION_PATTERNS = [
 ];
 
 /**
- * Verifica se il messaggio utente contiene pattern di prompt injection.
- * @param {string} text - Testo da analizzare.
+ * Checks whether the user message contains prompt injection patterns.
+ * @param {string} text - Input text to analyze.
  * @returns {boolean}
  */
 function isLikelyInjection( text ) {
@@ -251,7 +251,7 @@ function isLikelyInjection( text ) {
 }
 
 /**
- * Rileva richieste comparative sul costo ET massimo.
+ * Detects comparative requests for maximum ET cost.
  * @param {string} lowerQuery
  * @returns {boolean}
  */
@@ -260,7 +260,7 @@ function isHighestCostQuery( lowerQuery ) {
 }
 
 /**
- * Rileva richieste comparative sul costo ET minimo.
+ * Detects comparative requests for minimum ET cost.
  * @param {string} lowerQuery
  * @returns {boolean}
  */
@@ -269,20 +269,20 @@ function isLowestCostQuery( lowerQuery ) {
 }
 
 // ============================================================================
-// RESILIENCE & SAFETY — Guardie di contesto e audit di sicurezza
+// RESILIENCE & SAFETY — Context guards and safety audit
 // ============================================================================
 
 /**
- * Trancia la cronologia dei messaggi per rientrare nei limiti di token/caratteri.
+ * Truncates message history to fit token/character limits.
  * (Context Guard)
- * @param {Array} history - Array di messaggi di history.
- * @returns {Array} History ottimizzata.
+ * @param {Array} history - History message array.
+ * @returns {Array} Optimized history.
  */
 function truncateHistory( history ) {
     let totalChars = 0;
     const optimized = [];
 
-    // Partiamo dai più recenti (che sono alla fine dell'array)
+    // Start from the most recent entries (at the end of the array)
     for ( let i = history.length - 1; i >= 0; i-- ) {
         const msg = history[i];
         totalChars += msg.content.length;
@@ -297,10 +297,10 @@ function truncateHistory( history ) {
 }
 
 /**
- * Audit post-generazione per rilevare se il modello ha esposto istruzioni interne.
+ * Post-generation audit to detect whether the model leaked internal instructions.
  * (Safety Audit)
- * @param {string} content - Risposta generata dal modello.
- * @returns {boolean} True se la risposta è sicura, False se sospetta iniezione reversa.
+ * @param {string} content - Model-generated response.
+ * @returns {boolean} True if response is safe, false if reverse-injection is suspected.
  */
 function performSafetyAudit( content ) {
     const leakSignals = [
@@ -315,7 +315,7 @@ function performSafetyAudit( content ) {
         if ( content.includes( signal ) ) suspiciousCount++;
     }
 
-    // Se la risposta contiene troppe istruzioni di sistema originali, è probabilmente un leak
+    // If the response contains too many original system instructions, it is likely a leak
     if ( suspiciousCount >= 3 ) {
         logger.error( `SAFETY_AUDIT_FAILURE: Possibile Prompt Leak rilevato nella risposta.` );
         return false;
@@ -324,12 +324,12 @@ function performSafetyAudit( content ) {
 }
 
 // ============================================================================
-// PROMPT ENGINEERING — Costruzione del contesto per il modello
+// PROMPT ENGINEERING — Building model context
 // ============================================================================
 
 /**
- * Costruisce il payload strutturato della sessione corrente.
- * Separa i dati operativi dalle istruzioni del system prompt.
+ * Builds the structured payload for the current session.
+ * Separates operational data from system-prompt instructions.
  *
  * @param {Object} params
  * @param {Object|null} params.userRecord
@@ -367,7 +367,7 @@ function buildSessionContextPayload( { userRecord, userIdentity, totalCards } ) 
 }
 
 /**
- * Serializza un contesto dati in un messaggio system leggibile e prevedibile.
+ * Serializes data context into a readable and deterministic system message.
  *
  * @param {string} title
  * @param {Object} payload
@@ -383,7 +383,7 @@ ${JSON.stringify( payload, null, 2 )}
 }
 
 /**
- * Rileva richieste che beneficiano di output strutturato e facilmente parsabile.
+ * Detects requests that benefit from structured, parse-friendly output.
  *
  * @param {string} userMessage
  * @returns {boolean}
@@ -393,7 +393,7 @@ function requiresStructuredOutput( userMessage ) {
 }
 
 /**
- * Costruisce l'istruzione di formato output in base all'intento dell'utente.
+ * Builds output-format instruction based on user intent.
  *
  * @param {string} userMessage
  * @returns {string|null}
@@ -425,17 +425,17 @@ Regole obbligatorie:
 }
 
 /**
- * Costruisce l'array di messaggi completo per la chiamata al modello.
- * Separa nettamente: istruzioni di sistema, contesto sessione, history, input utente.
+ * Builds the complete message array for the model call.
+ * Clearly separates system instructions, session context, history, and user input.
  * 
  * @param {Object} params
- * @param {string} params.userMessage - Messaggio dell'utente.
- * @param {Object|null} params.userRecord - Record utente dal DB (null se non autenticato).
- * @param {string} params.userIdentity - Nome visualizzato dell'utente.
- * @param {Array} params.historyMessages - Ultimi messaggi della conversazione.
- * @param {number} params.totalCards - Numero totale di carte nel database.
- * @param {Object|null} params.gameState - Stato della partita in corso (opzionale).
- * @returns {Array} Array di messaggi formattato per OpenAI.
+ * @param {string} params.userMessage - User message.
+ * @param {Object|null} params.userRecord - User record from DB (null if unauthenticated).
+ * @param {string} params.userIdentity - User display name.
+ * @param {Array} params.historyMessages - Most recent conversation messages.
+ * @param {number} params.totalCards - Total number of cards in the database.
+ * @param {Object|null} params.gameState - Current game state (optional).
+ * @returns {Array} Message array formatted for OpenAI.
  */
 function buildPromptMessages( { userMessage, userRecord, userIdentity, historyMessages, totalCards, gameState } ) {
     const sessionContextPayload = buildSessionContextPayload( {
@@ -473,12 +473,12 @@ function buildPromptMessages( { userMessage, userRecord, userIdentity, historyMe
 }
 
 // ============================================================================
-// TOOL EXECUTION — Esecuzione dei tool richiesti dal modello
+// TOOL EXECUTION — Execute model-requested tools
 // ============================================================================
 
 /**
- * Cerca carte nel database per nome, tipo o similarità semantica.
- * @param {string} query - Termine di ricerca.
+ * Searches cards in the database by name, type, or semantic similarity.
+ * @param {string} query - Search term.
  * @returns {Promise<Array|Object>}
  */
 async function searchCards( query ) {
@@ -541,9 +541,9 @@ async function searchCards( query ) {
 }
 
 /**
- * Esegue i tool calls richiesti dal modello e restituisce i messaggi di risultato.
- * @param {Array} toolCalls - Array di tool calls dal modello.
- * @returns {Promise<Array>} Messaggi di risultato dei tool.
+ * Executes model-requested tool calls and returns tool result messages.
+ * @param {Array} toolCalls - Array of tool calls from the model.
+ * @returns {Promise<Array>} Tool result messages.
  */
 async function executeToolCalls( toolCalls ) {
     const toolResults = [];
@@ -561,24 +561,24 @@ async function executeToolCalls( toolCalls ) {
 }
 
 // ============================================================================
-// STREAMING — Chiamata al provider con retry e fallback
+// STREAMING — Provider call with retry and fallback
 // ============================================================================
 
 /**
- * Pausa con durata esponenziale per retry.
- * @param {number} attempt - Numero del tentativo (0-indexed).
+ * Exponential backoff pause for retries.
+ * @param {number} attempt - Attempt number (0-indexed).
  */
 function sleep( ms ) {
     return new Promise( resolve => setTimeout( resolve, ms ) );
 }
 
 /**
- * Esegue una chiamata streaming al modello AI con retry automatico e fallback.
+ * Executes a streaming call to the AI model with automatic retry and fallback.
  * 
- * @param {Array} messages - Array di messaggi (output di buildPromptMessages).
- * @param {Function} onDelta - Callback chiamata per ogni frammento di testo ricevuto.
- * @param {Function} onDone - Callback chiamata al completamento dello stream.
- * @param {Function} onError - Callback chiamata in caso di errore non recuperabile.
+ * @param {Array} messages - Message array (output of buildPromptMessages).
+ * @param {Function} onDelta - Callback invoked for each received text chunk.
+ * @param {Function} onDone - Callback invoked when streaming completes.
+ * @param {Function} onError - Callback invoked on unrecoverable error.
  */
 async function streamChat( messages, onDelta, onDone, onError ) {
     const lastUserMessage = [...messages].reverse().find( message => message.role === 'user' )?.content || '';
@@ -605,7 +605,7 @@ async function streamChat( messages, onDelta, onDone, onError ) {
 
             logger.debug( `AI_STREAM_INIT: Modello=${model}, Messaggi=${messages.length}` );
 
-            // Fase 1: Stream iniziale con tool calling
+            // Phase 1: Initial stream with tool calling
             const stream = await openai.chat.completions.create( {
                 model,
                 messages,
@@ -641,7 +641,7 @@ async function streamChat( messages, onDelta, onDone, onError ) {
                 }
             }
 
-            // Fase 2: Se il modello ha richiesto tool, eseguili e fai un secondo stream
+            // Phase 2: If model requested tools, execute them and run a second stream
             if ( toolCalls.length > 0 ) {
                 logger.debug( `AI_TOOL_CALLS: ${toolCalls.length} tool richiesti` );
 
@@ -663,7 +663,7 @@ async function streamChat( messages, onDelta, onDone, onError ) {
                 }
             }
 
-            // Validazione & Normalizzazione dell'output finale
+            // Final output validation and normalization
             if ( !fullContent || fullContent.trim().length === 0 ) {
                 throw new Error( "Il modello ha restituito una risposta vuota." );
             }
@@ -680,7 +680,7 @@ async function streamChat( messages, onDelta, onDone, onError ) {
 
             logger.info( `AI_SUCCESS: Risposta completata (${fullContent.length} caratteri)` );
 
-            // Successo: notifica completamento e restituisci il testo completo
+            // Success: notify completion and return full text
             onDone();
             return fullContent;
 
@@ -688,14 +688,14 @@ async function streamChat( messages, onDelta, onDone, onError ) {
             lastError = error;
             logger.error( `AI_STREAM_ERROR (tentativo ${attempt + 1}): ${error.message}` );
 
-            // Non ritentare per errori critici di sicurezza o auth
+            // Do not retry for critical security or auth errors
             if ( error.message === "REVERSE_INJECTION_DETECTED" || error.status === 401 || error.status === 403 ) {
                 break;
             }
         }
     }
 
-    // Tutti i tentativi esauriti: Categorizzazione Errore per il Frontend
+    // All retries exhausted: categorize error for the frontend
     let category = "unknown";
     let userFriendlyMsg = "Interferenza quantistica nei canali di comunicazione.";
 

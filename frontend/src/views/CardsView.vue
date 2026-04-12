@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, watch } from "vue";
 import {
   CARDS_VIEW_TYPE_OPTIONS,
@@ -6,7 +7,6 @@ import {
 } from "../constants/cardTypes";
 import { useCardStore, type Card } from "../stores/cardStore";
 import { useNotificationStore } from "../stores/notificationStore";
-import { storeToRefs } from "pinia";
 
 // State Orchestration: Stores & Core Refs
 const cardStore = useCardStore();
@@ -96,7 +96,7 @@ const filteredCards = computed(() => {
       const nameMatch = card.name
         .toLowerCase()
         .includes(searchQuery.value.toLowerCase());
-      
+
       // Categorical Match
       const typeMatch = !selectedType.value || card.type === selectedType.value;
 
@@ -117,7 +117,7 @@ const filteredCards = computed(() => {
     .sort((a: Card, b: Card) => {
       if (sortBy.value === "id") return 0; // Maintain original sequence
       if (sortBy.value === "name") return a.name.localeCompare(b.name);
-      
+
       // Capability Ranking (Descending)
       if (sortBy.value === "pep" || sortBy.value === "rp") {
         const valA = a[sortBy.value] ?? -1;
@@ -204,7 +204,7 @@ const vClickOutside = {
   <div class="cards-view fade-in">
     <h1 class="glitch-text" data-text="DATABASE">DATABASE</h1>
 
-    <!-- Barra di Ricerca Centrale -->
+    <!-- Central search bar -->
     <div class="search-container">
       <div class="search-box">
         <input
@@ -223,7 +223,7 @@ const vClickOutside = {
       </button>
     </div>
 
-    <!-- Pannello Filtri Avanzati (Toggle) -->
+    <!-- Advanced filters panel (toggle) -->
     <Transition name="fade-slide">
       <div v-if="showFilters" class="glass-panel filter-panel">
         <div class="filter-group">
@@ -386,7 +386,7 @@ const vClickOutside = {
       </div>
     </div>
 
-    <!-- Controlli Paginazione -->
+    <!-- Pagination controls -->
     <div v-if="totalPages > 1" class="pagination-controls fade-in">
       <button
         class="cyber-btn btn-primary pag-btn"
@@ -437,7 +437,7 @@ const vClickOutside = {
       </button>
     </div>
 
-    <!-- Modal Ingrandimento via Teleport per evitare problemi di posizionamento -->
+    <!-- Zoom modal via Teleport to avoid positioning issues -->
     <Teleport to="body">
       <Transition name="fade">
         <div

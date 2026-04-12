@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../../stores/auth";
 
@@ -62,7 +62,9 @@ onUnmounted(() => {
  * Enhances focus on navigation artifacts.
  */
 watch(isMenuOpen, (val) => {
-  const content = document.querySelector(".content-wrapper") as HTMLElement | null;
+  const content = document.querySelector(
+    ".content-wrapper",
+  ) as HTMLElement | null;
   if (content) {
     content.style.transition = "filter 0.3s";
     content.style.filter = val ? "blur(3px)" : "";
@@ -73,7 +75,7 @@ watch(isMenuOpen, (val) => {
 // Precision Navigation Logic: Manually determine active state to prevent overlap in the Hub.
 const isNewsActive = computed(() => {
   // Always active when in the News Hub or any of its children/tabs
-  return route.path.startsWith('/news');
+  return route.path.startsWith("/news");
 });
 </script>
 
@@ -95,22 +97,46 @@ const isNewsActive = computed(() => {
       <span></span><span></span><span></span>
     </button>
 
-    <!-- Navigazione Desktop -->
+    <!-- Desktop navigation -->
     <nav class="desktop-nav">
-      <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item">Database</RouterLink>
-      <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item">Come iniziare</RouterLink>
-      <RouterLink to="/news" class="cyber-btn btn-secondary nav-item" active-class="_none" :class="{ 'router-link-active': isNewsActive }">News</RouterLink>
-      <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item">Mazzi pubblici</RouterLink>
-      <RouterLink to="/contact" class="cyber-btn btn-secondary nav-item">Contatti</RouterLink>
+      <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
+        >Database</RouterLink
+      >
+      <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item"
+        >Come iniziare</RouterLink
+      >
+      <RouterLink
+        to="/news"
+        class="cyber-btn btn-secondary nav-item"
+        active-class="_none"
+        :class="{ 'router-link-active': isNewsActive }"
+        >News</RouterLink
+      >
+      <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
+        >Mazzi pubblici</RouterLink
+      >
+      <RouterLink to="/contact" class="cyber-btn btn-secondary nav-item"
+        >Contatti</RouterLink
+      >
 
       <template v-if="authStore.username">
-        <RouterLink to="/profile" class="cyber-btn btn-secondary nav-item user-btn">
+        <RouterLink
+          to="/profile"
+          class="cyber-btn btn-secondary nav-item user-btn"
+        >
           {{ authStore.username }}
         </RouterLink>
-        <button @click="logout" class="cyber-btn btn-danger nav-item logout-btn">Logout</button>
+        <button
+          @click="logout"
+          class="cyber-btn btn-danger nav-item logout-btn"
+        >
+          Logout
+        </button>
       </template>
       <template v-else>
-        <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn">Accedi</RouterLink>
+        <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn"
+          >Accedi</RouterLink
+        >
       </template>
     </nav>
   </header>
@@ -118,34 +144,80 @@ const isNewsActive = computed(() => {
   <!-- Modal Mobile -->
   <Teleport to="body">
     <Transition name="fade-overlay">
-      <div v-if="isMenuOpen" class="nav-overlay" @click="isMenuOpen = false"></div>
+      <div
+        v-if="isMenuOpen"
+        class="nav-overlay"
+        @click="isMenuOpen = false"
+      ></div>
     </Transition>
     <Transition name="fade-overlay">
-      <div v-if="isMenuOpen" class="blur-overlay-clickable" @click="isMenuOpen = false"></div>
+      <div
+        v-if="isMenuOpen"
+        class="blur-overlay-clickable"
+        @click="isMenuOpen = false"
+      ></div>
     </Transition>
 
     <nav class="mobile-nav" :class="{ 'nav--open': isMenuOpen }">
-      <RouterLink to="/cards" class="mobile-nav-link" @click="isMenuOpen = false">Database</RouterLink>
-      <RouterLink to="/come-iniziare" class="mobile-nav-link" @click="isMenuOpen = false">Come iniziare</RouterLink>
-      <RouterLink to="/news" class="mobile-nav-link" @click="isMenuOpen = false" active-class="_none" :class="{ 'router-link-active': isNewsActive }">News</RouterLink>
-      <RouterLink to="/public-decks" class="mobile-nav-link" @click="isMenuOpen = false">Mazzi pubblici</RouterLink>
-      <RouterLink to="/contact" class="mobile-nav-link" @click="isMenuOpen = false">Contatti</RouterLink>
-      
+      <RouterLink
+        to="/cards"
+        class="mobile-nav-link"
+        @click="isMenuOpen = false"
+        >Database</RouterLink
+      >
+      <RouterLink
+        to="/come-iniziare"
+        class="mobile-nav-link"
+        @click="isMenuOpen = false"
+        >Come iniziare</RouterLink
+      >
+      <RouterLink
+        to="/news"
+        class="mobile-nav-link"
+        @click="isMenuOpen = false"
+        active-class="_none"
+        :class="{ 'router-link-active': isNewsActive }"
+        >News</RouterLink
+      >
+      <RouterLink
+        to="/public-decks"
+        class="mobile-nav-link"
+        @click="isMenuOpen = false"
+        >Mazzi pubblici</RouterLink
+      >
+      <RouterLink
+        to="/contact"
+        class="mobile-nav-link"
+        @click="isMenuOpen = false"
+        >Contatti</RouterLink
+      >
+
       <template v-if="authStore.username">
-        <RouterLink to="/profile" class="mobile-nav-link user-link" @click="isMenuOpen = false">
+        <RouterLink
+          to="/profile"
+          class="mobile-nav-link user-link"
+          @click="isMenuOpen = false"
+        >
           {{ authStore.username }}
         </RouterLink>
-        <button @click="logout" class="mobile-nav-link logout-link">Logout</button>
+        <button @click="logout" class="mobile-nav-link logout-link">
+          Logout
+        </button>
       </template>
       <template v-else>
-        <RouterLink to="/login" class="mobile-nav-link auth-link" @click="isMenuOpen = false">Accedi</RouterLink>
+        <RouterLink
+          to="/login"
+          class="mobile-nav-link auth-link"
+          @click="isMenuOpen = false"
+          >Accedi</RouterLink
+        >
       </template>
     </nav>
   </Teleport>
 </template>
 
 <style scoped>
-/* Stili specifici estratti da App.vue */
+/* Specific styles extracted from App.vue */
 .desktop-nav {
   display: flex;
   gap: 1rem;
@@ -158,7 +230,9 @@ const isNewsActive = computed(() => {
   height: fit-content;
 }
 
-.auth-btn, .auth-btn:hover, .auth-btn.router-link-active {
+.auth-btn,
+.auth-btn:hover,
+.auth-btn.router-link-active {
   color: #0a0e1a !important;
   text-shadow: none !important;
 }
@@ -177,14 +251,18 @@ const isNewsActive = computed(() => {
   transition: opacity 0.3s;
 }
 
-.logo-link:hover { opacity: 0.8; }
+.logo-link:hover {
+  opacity: 0.8;
+}
 
 .logo .joule {
   color: var(--accent-gold);
   text-shadow: 0 0 10px rgba(var(--accent-gold-rgb), 0.35);
 }
 
-.logo .zp { color: #ffffff; }
+.logo .zp {
+  color: #ffffff;
+}
 
 .hamburger {
   display: none;
@@ -204,20 +282,32 @@ const isNewsActive = computed(() => {
   height: 2px;
   background: var(--text-main);
   border-radius: 2px;
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
-.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-.hamburger.open span:nth-child(2) { opacity: 0; }
-.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+.hamburger.open span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger.open span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
 
 .mobile-nav {
   display: none;
 }
 
 @media (max-width: 1690px) {
-  .hamburger { display: flex; }
-  .desktop-nav { display: none !important; }
+  .hamburger {
+    display: flex;
+  }
+  .desktop-nav {
+    display: none !important;
+  }
 
   .nav-overlay {
     display: block;
@@ -306,12 +396,19 @@ const isNewsActive = computed(() => {
     opacity: 0.8;
   }
 
-  .mobile-nav-link.auth-link, .mobile-nav-link.user-link {
+  .mobile-nav-link.auth-link,
+  .mobile-nav-link.user-link {
     color: var(--accent-gold) !important;
     margin-top: 1rem;
   }
 }
 
-.fade-overlay-enter-active, .fade-overlay-leave-active { transition: opacity 0.25s ease; }
-.fade-overlay-enter-from, .fade-overlay-leave-to { opacity: 0; }
+.fade-overlay-enter-active,
+.fade-overlay-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-overlay-enter-from,
+.fade-overlay-leave-to {
+  opacity: 0;
+}
 </style>

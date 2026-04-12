@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, watch } from "vue";
-import api from "../utils/api";
 import { useAuthStore } from "../stores/auth";
-import { useNotificationStore } from "../stores/notificationStore";
 import { useCardStore, type Card } from "../stores/cardStore";
 import { useDeckStore, type PublicDeck } from "../stores/deckStore";
-import { storeToRefs } from "pinia";
+import { useNotificationStore } from "../stores/notificationStore";
+import api from "../utils/api";
 
 /**
  * CardRef Interface
@@ -99,7 +99,10 @@ const vClickOutside = {
  */
 const getCostruttoreName = (id: number | string | null) => {
   if (!id) return "Unknown";
-  return costruttori.value.find((c) => String(c.id) === String(id))?.name || "Unknown";
+  return (
+    costruttori.value.find((c) => String(c.id) === String(id))?.name ||
+    "Unknown"
+  );
 };
 
 /**
@@ -107,7 +110,9 @@ const getCostruttoreName = (id: number | string | null) => {
  */
 const getCostruttoreImg = (id: number | string | null) => {
   if (!id) return "";
-  return costruttori.value.find((c) => String(c.id) === String(id))?.image_url || "";
+  return (
+    costruttori.value.find((c) => String(c.id) === String(id))?.image_url || ""
+  );
 };
 
 /**
@@ -117,7 +122,9 @@ const previewCards = computed(() => {
   if (!selectedDeck.value) return [];
   return selectedDeck.value.cards
     .map((item: CardRef) => {
-      const card = (allCards.value as Card[]).find((c: Card) => String(c.id) === String(item.cardId));
+      const card = (allCards.value as Card[]).find(
+        (c: Card) => String(c.id) === String(item.cardId),
+      );
       return {
         cardId: item.cardId,
         count: item.count,
@@ -160,7 +167,9 @@ const voteDeck = async (deck: PublicDeck) => {
     const response = await api.post(`/decks/${deck.id}/vote`);
     deck.votesCount = response.data.votesCount;
     deck.userVoted = response.data.userVoted;
-    notifications.success(deck.userVoted ? "Voto registrato nella Matrice!" : "Voto rimosso.");
+    notifications.success(
+      deck.userVoted ? "Voto registrato nella Matrice!" : "Voto rimosso.",
+    );
   } catch (e: any) {
     // Managed via global notification infrastructure
   }
@@ -181,14 +190,17 @@ const importDeck = async (deck: PublicDeck) => {
     (deck.creator || "").trim().toLowerCase() ===
     username.value.trim().toLowerCase()
   ) {
-    notifications.info("Rilevata ricorsione: Non puoi importare i tuoi stessi mazzi.");
+    notifications.info(
+      "Rilevata ricorsione: Non puoi importare i tuoi stessi mazzi.",
+    );
     return;
   }
 
   try {
     const response = await api.post(`/decks/${deck.id}/import`);
     deck.importsCount += 1;
-    const importedDeckName = response?.data?.importedDeck?.name || "Imported Deck";
+    const importedDeckName =
+      response?.data?.importedDeck?.name || "Imported Deck";
     notifications.success(`Importazione riuscita: ${importedDeckName}`);
   } catch (e: any) {
     // Managed via global notification infrastructure
@@ -203,8 +215,10 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
   if (exportingId.value) return;
   exportingId.value = deckId;
   exportingFormat.value = format;
-  notifications.info(`Acquisizione protocollo ${format.toUpperCase()} in corso...`);
-  
+  notifications.info(
+    `Acquisizione protocollo ${format.toUpperCase()} in corso...`,
+  );
+
   try {
     const response = await api({
       url: `/decks/${deckId}/export`,
@@ -217,12 +231,17 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
     const link = document.createElement("a");
     link.href = blobUrl;
     const extension = format === "pdf" ? "pdf" : "zip";
-    link.setAttribute("download", `Joule_${format.toUpperCase()}_Kit_${deckId}.${extension}`);
+    link.setAttribute(
+      "download",
+      `Joule_${format.toUpperCase()}_Kit_${deckId}.${extension}`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
-    notifications.success(`Protocollo di esportazione ${format.toUpperCase()} completato.`);
+    notifications.success(
+      `Protocollo di esportazione ${format.toUpperCase()} completato.`,
+    );
   } catch (e) {
     notifications.error("IMPOSSIBILE SINCRONIZZARE I DATI DI ESPORTAZIONE.");
   } finally {
@@ -336,7 +355,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <!-- Notifiche gestite globalmente -->
+    <!-- Notifications are managed globally -->
 
     <div v-if="loading" class="dashboard-loading">
       <div class="loader"></div>
@@ -377,22 +396,30 @@ onMounted(async () => {
         </div>
 
         <div class="deck-export-actions">
-           <button 
-             @click.stop="handleExport(d.id!, 'pdf')" 
-             class="cyber-export-btn pdf" 
-             :disabled="!!exportingId"
-             title="Scarica PDF Decklist"
-           >
-             {{ exportingId === d.id && exportingFormat === 'pdf' ? 'GENERAZIONE...' : 'PDF' }}
-           </button>
-           <button 
-             @click.stop="handleExport(d.id!, 'tts')" 
-             class="cyber-export-btn tts" 
-             :disabled="!!exportingId"
-             title="Esporta per Tabletop Simulator"
-           >
-             {{ exportingId === d.id && exportingFormat === 'tts' ? 'GENERAZIONE...' : 'TTS' }}
-           </button>
+          <button
+            @click.stop="handleExport(d.id!, 'pdf')"
+            class="cyber-export-btn pdf"
+            :disabled="!!exportingId"
+            title="Scarica PDF Decklist"
+          >
+            {{
+              exportingId === d.id && exportingFormat === "pdf"
+                ? "GENERAZIONE..."
+                : "PDF"
+            }}
+          </button>
+          <button
+            @click.stop="handleExport(d.id!, 'tts')"
+            class="cyber-export-btn tts"
+            :disabled="!!exportingId"
+            title="Esporta per Tabletop Simulator"
+          >
+            {{
+              exportingId === d.id && exportingFormat === "tts"
+                ? "GENERAZIONE..."
+                : "TTS"
+            }}
+          </button>
         </div>
 
         <div class="deck-actions">
@@ -463,20 +490,28 @@ onMounted(async () => {
             </div>
 
             <div class="modal-export-group">
-               <button 
-                 @click="handleExport(selectedDeck.id!, 'pdf')" 
-                 class="cyber-export-btn pdf"
-                 :disabled="!!exportingId"
-               >
-                 {{ exportingId === selectedDeck.id && exportingFormat === 'pdf' ? 'GENERAZIONE...' : 'PDF DECKLIST' }}
-               </button>
-               <button 
-                 @click="handleExport(selectedDeck.id!, 'tts')" 
-                 class="cyber-export-btn tts"
-                 :disabled="!!exportingId"
-               >
-                 {{ exportingId === selectedDeck.id && exportingFormat === 'tts' ? 'GENERAZIONE...' : 'TTS EXPORT' }}
-               </button>
+              <button
+                @click="handleExport(selectedDeck.id!, 'pdf')"
+                class="cyber-export-btn pdf"
+                :disabled="!!exportingId"
+              >
+                {{
+                  exportingId === selectedDeck.id && exportingFormat === "pdf"
+                    ? "GENERAZIONE..."
+                    : "PDF DECKLIST"
+                }}
+              </button>
+              <button
+                @click="handleExport(selectedDeck.id!, 'tts')"
+                class="cyber-export-btn tts"
+                :disabled="!!exportingId"
+              >
+                {{
+                  exportingId === selectedDeck.id && exportingFormat === "tts"
+                    ? "GENERAZIONE..."
+                    : "TTS EXPORT"
+                }}
+              </button>
             </div>
           </div>
         </div>
@@ -502,7 +537,7 @@ onMounted(async () => {
     </div>
   </div>
 
-  <!-- Notifiche gestite globalmente -->
+  <!-- Notifications are managed globally -->
 </template>
 
 <style scoped>
@@ -764,8 +799,13 @@ onMounted(async () => {
   font-size: 0.7rem;
 }
 
-.stat-key { color: var(--text-muted); }
-.stat-val { color: var(--accent-gold); font-weight: bold; }
+.stat-key {
+  color: var(--text-muted);
+}
+.stat-val {
+  color: var(--accent-gold);
+  font-weight: bold;
+}
 
 .deck-export-actions {
   display: flex;
@@ -798,7 +838,7 @@ onMounted(async () => {
   color: #000 !important;
 }
 
-/* Modale */
+/* Modal */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -850,9 +890,17 @@ onMounted(async () => {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.preview-count { color: var(--accent-gold); font-weight: bold; }
-.preview-name { flex: 1; }
-.preview-type { font-size: 0.8rem; color: var(--text-muted); }
+.preview-count {
+  color: var(--accent-gold);
+  font-weight: bold;
+}
+.preview-name {
+  flex: 1;
+}
+.preview-type {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
 
 .modal-export-group {
   display: flex;

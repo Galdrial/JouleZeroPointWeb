@@ -90,7 +90,7 @@ app.use( ( req, res, next ) => {
 // HTTP Parameter Pollution (HPP) protection
 app.use( hpp() );
 
-// Keep-Alive ping: fuori dal rate limiter (UptimeRobot → ogni 5 min)
+// Keep-Alive ping: excluded from rate limiter (UptimeRobot → every 5 min)
 app.get( '/ping', ( req, res ) => {
   logger.info( '[MATRIX] Pulsazione Keep-Alive rilevata (Root).' );
   res.status( 200 ).send( 'pong' );

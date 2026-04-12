@@ -20,20 +20,24 @@ const isSubmitting = ref(false);
 
 const handleSubmit = async () => {
   if (!form.value.name || !form.value.email || !form.value.message) {
-    notificationStore.error("Protocollo incompleto. Inserire tutti i dati richiesti.");
+    notificationStore.error(
+      "Protocollo incompleto. Inserire tutti i dati richiesti.",
+    );
     return;
   }
 
   isSubmitting.value = true;
-  
-  // Simulazione invio (in attesa di integrazione backend/servizio esterno)
+
+  // Send simulation (pending backend/external-service integration)
   setTimeout(() => {
-    // Fallback professionale: Apertura client email con i dati pre-compilati
-    const mailtoLink = `mailto:info@joulezeropoint.com?subject=${encodeURIComponent(form.value.subject || 'Contatto da Joule ZP')}&body=${encodeURIComponent(`Nome: ${form.value.name}\nEmail: ${form.value.email}\n\nMessaggio:\n${form.value.message}`)}`;
+    // Professional fallback: open email client with pre-filled data
+    const mailtoLink = `mailto:info@joulezeropoint.com?subject=${encodeURIComponent(form.value.subject || "Contatto da Joule ZP")}&body=${encodeURIComponent(`Nome: ${form.value.name}\nEmail: ${form.value.email}\n\nMessaggio:\n${form.value.message}`)}`;
     window.location.href = mailtoLink;
-    
-    notificationStore.success("Canale di comunicazione aperto. Reindirizzamento al client email...");
-    
+
+    notificationStore.success(
+      "Canale di comunicazione aperto. Reindirizzamento al client email...",
+    );
+
     // Reset form
     form.value = { name: "", email: "", subject: "", message: "" };
     isSubmitting.value = false;
@@ -48,40 +52,54 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
     <h1 class="glitch-text" data-text="CONTATTACI">CONTATTACI</h1>
 
     <div class="contact-grid">
-      <!-- Sezione Info Canali -->
+      <!-- Channel info section -->
       <section class="info-section">
         <div class="glass-panel info-card">
           <div class="card-icon">📡</div>
           <h3>FREQUENZA DIRETTA</h3>
-          <p>Hai domande sul gioco, proposte di partnership o hai trovato un'anomalia nel sistema? Il nostro nucleo operativo è pronto ad ascoltarti.</p>
-          <a href="mailto:info@joulezeropoint.com" class="email-link">info@joulezeropoint.com</a>
+          <p>
+            Hai domande sul gioco, proposte di partnership o hai trovato
+            un'anomalia nel sistema? Il nostro nucleo operativo è pronto ad
+            ascoltarti.
+          </p>
+          <a href="mailto:info@joulezeropoint.com" class="email-link"
+            >info@joulezeropoint.com</a
+          >
         </div>
 
         <div class="glass-panel info-card">
           <div class="card-icon">⚡</div>
           <h3>HUB DI COMUNICAZIONE</h3>
-          <p>Per supporto tecnico rapido, feedback sulle carte o per trovare altri Costruttori, il nostro server Discord è la via più veloce.</p>
-          <a :href="discordInviteUrl" target="_blank" rel="noopener noreferrer" class="cyber-btn btn-secondary full-width">
+          <p>
+            Per supporto tecnico rapido, feedback sulle carte o per trovare
+            altri Costruttori, il nostro server Discord è la via più veloce.
+          </p>
+          <a
+            :href="discordInviteUrl"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="cyber-btn btn-secondary full-width"
+          >
             ENTRA NEL DISCORD
           </a>
         </div>
       </section>
 
-      <!-- Form di Contatto (Encrypted Signal) -->
+      <!-- Contact form (Encrypted Signal) -->
       <section class="form-section">
         <div class="glass-panel contact-panel">
           <div class="panel-header">
             <span class="status-dot"></span>
             <h2>INVIA SEGNALE CRIPTATO</h2>
           </div>
-          
+
           <form @submit.prevent="handleSubmit" class="cyber-form">
             <div class="form-group">
               <label for="name">IDENTIFICATIVO (NOME)</label>
-              <input 
-                type="text" 
-                id="name" 
-                v-model="form.name" 
+              <input
+                type="text"
+                id="name"
+                v-model="form.name"
                 placeholder="Inserisci il tuo nome..."
                 required
               />
@@ -89,10 +107,10 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 
             <div class="form-group">
               <label for="email">COORDINATE (EMAIL)</label>
-              <input 
-                type="email" 
-                id="email" 
-                v-model="form.email" 
+              <input
+                type="email"
+                id="email"
+                v-model="form.email"
                 placeholder="latua@email.com"
                 required
               />
@@ -100,27 +118,31 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 
             <div class="form-group">
               <label for="subject">OGGETTO DEL MESSAGGIO</label>
-              <input 
-                type="text" 
-                id="subject" 
-                v-model="form.subject" 
+              <input
+                type="text"
+                id="subject"
+                v-model="form.subject"
                 placeholder="Supporto, Feedback, Altro..."
               />
             </div>
 
             <div class="form-group">
               <label for="message">TRASMISSIONE (MESSAGGIO)</label>
-              <textarea 
-                id="message" 
-                v-model="form.message" 
-                rows="5" 
+              <textarea
+                id="message"
+                v-model="form.message"
+                rows="5"
                 placeholder="Scrivi qui il tuo messaggio..."
                 required
               ></textarea>
             </div>
 
-            <button type="submit" class="cyber-btn btn-primary submit-btn" :disabled="isSubmitting">
-              {{ isSubmitting ? 'TRASMISSIONE IN CORSO...' : 'INVIA SEGNALE' }}
+            <button
+              type="submit"
+              class="cyber-btn btn-primary submit-btn"
+              :disabled="isSubmitting"
+            >
+              {{ isSubmitting ? "TRASMISSIONE IN CORSO..." : "INVIA SEGNALE" }}
             </button>
           </form>
         </div>
@@ -242,7 +264,7 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
   color: var(--text-muted);
 }
 
-.form-group input, 
+.form-group input,
 .form-group textarea {
   background: rgba(0, 0, 0, 0.3);
   border: 1px solid var(--glass-border);
@@ -253,7 +275,7 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
   transition: all 0.3s ease;
 }
 
-.form-group input:focus, 
+.form-group input:focus,
 .form-group textarea:focus {
   outline: none;
   border-color: var(--accent-gold);
@@ -269,9 +291,15 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 }
 
 @keyframes pulse {
-  0% { opacity: 0.4; }
-  50% { opacity: 1; }
-  100% { opacity: 0.4; }
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
 }
 
 .centered {

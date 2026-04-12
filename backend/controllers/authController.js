@@ -37,13 +37,13 @@ const registerUser = async ( req, res ) => {
       return res.status( 400 ).json( { error: 'La passphrase deve essere di almeno 8 caratteri.' } );
     }
 
-    // Controlla email o username esistenti
+    // Check for existing email or username
     const userExists = await User.findOne( {
       $or: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }],
     } );
 
     if ( userExists ) {
-      // Account non verificato → reinvia email
+      // Unverified account → resend verification email
       if ( !userExists.isVerified ) {
         const verificationToken = crypto.randomBytes( 32 ).toString( 'hex' );
         const salt = await bcrypt.genSalt( 10 );
@@ -57,11 +57,11 @@ const registerUser = async ( req, res ) => {
           .json( { message: 'Email di verifica reinviata. Controlla la tua casella.' } );
       }
 
-      // Email/username già in uso
+      // Email/username already in use
       return res.status( 409 ).json( { error: 'Email già in uso.' } );
     }
 
-    // Creazione nuovo utente
+    // Create new user
     const salt = await bcrypt.genSalt( 10 );
     const hashedPassword = await bcrypt.hash( password, salt );
     const verificationToken = crypto.randomBytes( 32 ).toString( 'hex' );
@@ -82,7 +82,7 @@ const registerUser = async ( req, res ) => {
         .json( { message: 'Credenziali accettate. Controlla la casella di posta per verificare il profilo.' } );
     }
   } catch ( error ) {
-    // Gestione errore chiave duplicata (email unica)
+    // Handle duplicate key error (unique email)
     if ( error.code === 11000 ) {
       return res.status( 409 ).json( { error: 'Email già in uso.' } );
     }
@@ -103,25 +103,25 @@ const loginUser = async ( req, res ) => {
 
     const user = await User.findOne( { email: email.toLowerCase() } );
 
-    // Utente non trovato
+    // User not found
     if ( !user ) {
       return res.status( 404 ).json( { error: 'Utente non trovato.' } );
     }
 
-    // Verifica password
+    // Verify password
     const passwordMatch = await bcrypt.compare( password, user.password );
     if ( !passwordMatch ) {
       return res.status( 401 ).json( { error: 'Credenziali errate.' } );
     }
 
-    // Account non verificato
+    // Unverified account
     if ( !user.isVerified ) {
       return res
         .status( 403 )
         .json( { error: "Account non verificato. Reinvia l'email di attivazione." } );
     }
 
-    // Successo
+    // Success
     res.json( {
       id: user._id,
       username: user.usernameDisplay || user.username,

@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import { useAuthStore } from "../stores/auth";
 import api from "../utils/api";
+import { resolveNewsImage } from "../utils/imageResolver";
 import {
   getNewsCategoryLabel,
   isStoryCategory,
   type NewsCategory,
 } from "../utils/newsCategory";
-import { useAuthStore } from "../stores/auth";
-import { computed } from "vue";
-import { resolveNewsImage } from "../utils/imageResolver";
 
 /**
  * NewsPreview Data Structure
@@ -34,7 +33,8 @@ const isAuthenticated = computed(() => authStore.isLoggedIn);
 const latestNews = ref<NewsPreview[]>([]);
 
 // External Link Constants
-const tabletopGuideUrl = "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
+const tabletopGuideUrl =
+  "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 
 /**
@@ -52,7 +52,8 @@ const formatNewsDate = (value: string) =>
  * Visual Engine: Ambient Particle System
  * Generates randomized styles for background micro-animations.
  */
-const particleCount = typeof window !== "undefined" && window.innerWidth < 768 ? 40 : 150;
+const particleCount =
+  typeof window !== "undefined" && window.innerWidth < 768 ? 40 : 150;
 const particleStyles = Array.from({ length: particleCount }, () => ({
   left: `${Math.random() * 100}%`,
   top: `${Math.random() * 100}%`,
@@ -68,17 +69,21 @@ const particleStyles = Array.from({ length: particleCount }, () => ({
   "--dy-end": `${(-34 + Math.random() * 68).toFixed(1)}px`,
 }));
 
-import { STARTER_DECKS } from '../constants/starterDecks';
+import { STARTER_DECKS } from "../constants/starterDecks";
 
 const starterDecks = STARTER_DECKS;
 const activeDeckIndex = ref(0);
 
 const scrollToDeck = (index: number) => {
-  const grid = document.querySelector('.starter-grid');
+  const grid = document.querySelector(".starter-grid");
   if (grid) {
-    const cards = grid.querySelectorAll('.starter-card');
+    const cards = grid.querySelectorAll(".starter-card");
     if (cards[index]) {
-      cards[index].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      cards[index].scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
     }
   }
 };
@@ -97,19 +102,26 @@ onMounted(async () => {
   } catch (err) {}
 
   // Mobile Carousel Observer
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const index = parseInt((entry.target as HTMLElement).dataset.index || '0');
-        activeDeckIndex.value = index;
-      }
-    });
-  }, {
-    root: document.querySelector('.starter-grid'),
-    threshold: 0.6
-  });
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const index = parseInt(
+            (entry.target as HTMLElement).dataset.index || "0",
+          );
+          activeDeckIndex.value = index;
+        }
+      });
+    },
+    {
+      root: document.querySelector(".starter-grid"),
+      threshold: 0.6,
+    },
+  );
 
-  document.querySelectorAll('.starter-card').forEach(card => observer.observe(card));
+  document
+    .querySelectorAll(".starter-card")
+    .forEach((card) => observer.observe(card));
 });
 </script>
 
@@ -117,14 +129,14 @@ onMounted(async () => {
   <div class="home-view">
     <section class="hero-section">
       <div class="hero-image-stage">
-        <img 
+        <img
           src="/images/hero.webp"
           srcset="/images/hero-mobile.webp 800w, /images/hero.webp 1920w"
           sizes="(max-width: 768px) 100vw, 1920px"
-          alt="Joule Zero Point Hero Image" 
-          width="1920" 
-          height="1080" 
-          class="hero-bg-image" 
+          alt="Joule Zero Point Hero Image"
+          width="1920"
+          height="1080"
+          class="hero-bg-image"
           fetchpriority="high"
           loading="eager"
           decoding="sync"
@@ -330,27 +342,32 @@ onMounted(async () => {
       <div class="starter-decks-inner">
         <div class="starter-header">
           <h2>SCEGLI IL TUO PILASTRO</h2>
-          <p>Quattro mazzi competitivi pre-assemblati, senza carte in comune, per iniziare subito la tua scalata nel Punto Zero.</p>
+          <p>
+            Quattro mazzi competitivi pre-assemblati, senza carte in comune, per
+            iniziare subito la tua scalata nel Punto Zero.
+          </p>
         </div>
 
         <div class="starter-grid">
-          <div 
-            v-for="(deck, index) in starterDecks" 
-            :key="deck.id" 
+          <div
+            v-for="(deck, index) in starterDecks"
+            :key="deck.id"
             class="starter-card glass-panel"
             :class="{ 'is-active': activeDeckIndex === index }"
             :style="{ '--deck-color': deck.color, '--deck-glow': deck.glow }"
             :data-index="index"
           >
             <div class="card-accent"></div>
-            
+
             <div class="deck-visual">
-              <img 
-                :src="deck.imageUrl" 
-                :alt="deck.name" 
-                class="builder-img" 
+              <img
+                :src="deck.imageUrl"
+                :alt="deck.name"
+                class="builder-img"
                 loading="lazy"
-                :style="{ objectPosition: deck.objectPosition || 'center bottom' }"
+                :style="{
+                  objectPosition: deck.objectPosition || 'center bottom',
+                }"
               />
               <div class="visual-overlay"></div>
             </div>
@@ -359,20 +376,23 @@ onMounted(async () => {
               <span class="deck-style">{{ deck.style }}</span>
               <h4>{{ deck.name }}</h4>
               <p>{{ deck.desc }}</p>
-              
+
               <div class="deck-difficulty">
                 <span>Difficoltà: {{ deck.difficultyLabel }}</span>
                 <div class="difficulty-bars">
-                  <div 
-                    v-for="i in 5" 
+                  <div
+                    v-for="i in 5"
                     :key="i"
                     class="diff-bar"
-                    :class="{ 'active': i <= deck.difficulty }"
+                    :class="{ active: i <= deck.difficulty }"
                   ></div>
                 </div>
               </div>
 
-              <RouterLink :to="`/starter-decks/${deck.id}`" class="cyber-btn btn-outline-deck">
+              <RouterLink
+                :to="`/starter-decks/${deck.id}`"
+                class="cyber-btn btn-outline-deck"
+              >
                 ESPLORA MAZZO
               </RouterLink>
             </div>
@@ -381,11 +401,11 @@ onMounted(async () => {
 
         <!-- Navigation Dots (Mobile) -->
         <div class="starter-nav-dots" v-if="starterDecks.length > 1">
-          <button 
-            v-for="(_, index) in starterDecks" 
+          <button
+            v-for="(_, index) in starterDecks"
             :key="index"
             class="nav-dot"
-            :class="{ 'active': activeDeckIndex === index }"
+            :class="{ active: activeDeckIndex === index }"
             @click="scrollToDeck(index)"
             :aria-label="`Vai al mazzo ${index + 1}`"
           ></button>
@@ -403,7 +423,7 @@ onMounted(async () => {
 }
 
 /* ... existing styles ... */
-/* Aggiungo solo i nuovi stili per i deck visual al fondo o dopo starter-card */
+/* Add only new styles for deck visuals below or after starter-card */
 
 .starter-card {
   position: relative;
@@ -574,9 +594,10 @@ onMounted(async () => {
     0 0 calc(var(--size) * 8) rgba(255, 169, 66, 0.26);
   opacity: 0;
   transform: translate3d(var(--dx-start), var(--dy-start), 0) scale(0.2);
-  animation: 
+  animation:
     particle-phase var(--duration) ease-in-out var(--delay) infinite,
-    particle-flicker var(--flicker-duration) steps(3, end) var(--flicker-delay) infinite;
+    particle-flicker var(--flicker-duration) steps(3, end) var(--flicker-delay)
+      infinite;
 }
 
 @media (max-width: 767px) {
@@ -818,13 +839,14 @@ onMounted(async () => {
   margin-right: calc(50% - 50vw);
   position: relative;
   padding: clamp(3rem, 6vw, 5rem) 0 6rem 0;
-  background: radial-gradient(circle at 50% 50%, 
-    rgba(15, 23, 42, 0.95) 0%, 
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(15, 23, 42, 0.95) 0%,
     rgba(4, 8, 14, 1) 100%
   );
   border-top: 1px solid rgba(0, 242, 255, 0.1);
   border-bottom: 1px solid rgba(0, 242, 255, 0.1);
-  box-shadow: 
+  box-shadow:
     inset 0 20px 40px rgba(0, 0, 0, 0.4),
     inset 0 -20px 40px rgba(0, 0, 0, 0.4);
   overflow: hidden;
@@ -838,7 +860,11 @@ onMounted(async () => {
   transform: translate(-50%, -50%);
   width: 80%;
   height: 60%;
-  background: radial-gradient(circle, rgba(0, 242, 255, 0.05) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(0, 242, 255, 0.05) 0%,
+    transparent 70%
+  );
   filter: blur(80px);
   z-index: 0;
   pointer-events: none;
@@ -898,7 +924,7 @@ onMounted(async () => {
     width: 100%;
     padding: 0;
   }
-  
+
   .starter-header {
     padding: 0 1.5rem;
   }
@@ -932,7 +958,9 @@ onMounted(async () => {
     opacity: 1 !important;
     transform: scale(1) !important;
     border-color: var(--deck-color) !important;
-    box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.6), 0 0 20px var(--deck-glow) !important;
+    box-shadow:
+      0 10px 30px -5px rgba(0, 0, 0, 0.6),
+      0 0 20px var(--deck-glow) !important;
     z-index: 2;
   }
 
@@ -942,7 +970,7 @@ onMounted(async () => {
     box-shadow: 0 0 15px var(--deck-glow) !important;
   }
 
-  /* Disabilita il translateY generico su mobile per evitare conflitti con lo zoom */
+  /* Disable generic translateY on mobile to avoid conflicts with zoom */
   .starter-card:hover {
     transform: scale(0.92);
   }
@@ -1009,7 +1037,9 @@ onMounted(async () => {
 .starter-card:hover {
   transform: translateY(-8px);
   border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 0 0 20px var(--deck-glow);
+  box-shadow:
+    0 15px 35px -5px rgba(0, 0, 0, 0.5),
+    0 0 20px var(--deck-glow);
 }
 
 .starter-card:hover .card-accent {
@@ -1085,7 +1115,7 @@ onMounted(async () => {
 }
 
 @media (max-width: 768px) {
-  /* Alti stili mobile già gestiti sopra per starter-grid */
+  /* Other mobile styles already handled above for starter-grid */
 }
 
 .news-actions {

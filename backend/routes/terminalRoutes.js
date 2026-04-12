@@ -1,11 +1,11 @@
 /**
- * Terminal Routes: HTTP Handler per il Terminale Punto Zero.
+ * Terminal Routes: HTTP handler for the Punto Zero Terminal.
  * 
- * Responsabilità esclusiva: gestione richieste/risposte HTTP, autenticazione,
- * recupero dati dal database, formattazione SSE e persistenza dei messaggi.
+ * Exclusive responsibility: HTTP request/response handling, authentication,
+ * data retrieval from the database, SSE formatting, and message persistence.
  * 
- * La logica AI (prompt, chiamate OpenAI, tool calling) è delegata interamente
- * al servizio aiService, rispettando la separazione delle responsabilità.
+ * AI logic (prompting, OpenAI calls, tool calling) is fully delegated
+ * to the aiService module, preserving separation of concerns.
  */
 
 const express = require( 'express' );
@@ -16,24 +16,24 @@ const User = require( '../models/User' );
 const logger = require( '../config/logger' );
 const { isLikelyInjection, buildPromptMessages, streamChat } = require( '../services/aiService' );
 
-// Limiti operativi per le trasmissioni in ingresso
+// Operational limits for incoming transmissions
 const MAX_MESSAGE_LENGTH = Number( process.env.CHAT_MAX_MESSAGE_LENGTH || 1200 );
 
 /**
- * POST /chat — Endpoint di dialogo con l'IA.
+ * POST /chat — AI dialogue endpoint.
  * 
- * Ciclo di vita della richiesta:
- * 1. Validazione input e sanificazione
- * 2. Autenticazione utente (opzionale) e recupero history
- * 3. Delega al servizio AI per costruzione prompt e streaming
- * 4. Formattazione risposta come Server-Sent Events (SSE)
- * 5. Persistenza della conversazione per utenti autenticati
+ * Request lifecycle:
+ * 1. Input validation and sanitization
+ * 2. Optional user authentication and history retrieval
+ * 3. Delegation to AI service for prompt building and streaming
+ * 4. Response formatting as Server-Sent Events (SSE)
+ * 5. Conversation persistence for authenticated users
  */
 router.post( '/chat', async ( req, res ) => {
   const { message, gameState } = req.body;
   const usernameHeader = req.headers['x-user'];
 
-  // --- 1. Validazione Input ---
+  // --- 1. Input validation ---
   if ( !message ) {
     return res.status( 400 ).json( { error: 'Direttiva di input mancante.' } );
   }
@@ -42,12 +42,12 @@ router.post( '/chat', async ( req, res ) => {
     return res.status( 400 ).json( { error: `Direttiva troppo lunga (max ${MAX_MESSAGE_LENGTH} caratteri).` } );
   }
 
-  // --- 2. Inizializzazione protocollo SSE ---
+  // --- 2. SSE protocol initialization ---
   res.setHeader( 'Content-Type', 'text/event-stream' );
   res.setHeader( 'Cache-Control', 'no-cache' );
   res.setHeader( 'Connection', 'keep-alive' );
 
-  // --- 3. Sicurezza: Rilevamento Prompt Injection ---
+  // --- 3. Security: Prompt injection detection ---
   if ( isLikelyInjection( message ) ) {
     logger.warn( `INJECTION_BLOCKED: IP=${req.ip} | Input="${message.substring( 0, 80 )}..."` );
     res.write( `data: ${JSON.stringify( { type: 'content', content: "⚠️ Anomalia rilevata nel flusso temporale. Accesso alle funzioni di sistema negato. Sono l'Assistente Joule e sono qui per spiegare le regole del gioco." } )}\n\n` );
@@ -56,7 +56,7 @@ router.post( '/chat', async ( req, res ) => {
   }
 
   try {
-    // --- 4. Autenticazione e Contesto Utente ---
+    // --- 4. Authentication and user context ---
     let userRecord = null;
     let userIdentity = "Costruttore Ignoto";
     let historyMessages = [];
@@ -70,7 +70,7 @@ router.post( '/chat', async ( req, res ) => {
       if ( userRecord ) {
         userIdentity = userRecord.usernameDisplay || userRecord.username;
 
-        // Recupero history con sanitizzazione
+        // Retrieve and sanitize history
         const history = await Message.find( { userId: userRecord._id } )
           .sort( { timestamp: -1 } )
           .limit( 15 );
@@ -88,8 +88,8 @@ router.post( '/chat', async ( req, res ) => {
       }
     }
 
-    // --- 5. Delega al Servizio AI ---
-    // Il route handler costruisce il contesto, il servizio AI gestisce il prompt e il provider
+    // --- 5. Delegate to AI service ---
+    // The route handler builds context; the AI service manages prompting and provider calls
     const promptMessages = buildPromptMessages( {
       userMessage: message,
       userRecord,
@@ -99,19 +99,19 @@ router.post( '/chat', async ( req, res ) => {
       gameState
     } );
 
-    // --- 6. Streaming SSE ---
-    // Il route handler traduce i callback del servizio AI in eventi SSE per il frontend
+    // --- 6. SSE streaming ---
+    // The route handler maps AI service callbacks to SSE events for the frontend
     const fullContent = await streamChat(
       promptMessages,
-      // onDelta: ogni frammento di testo viene inviato come evento SSE
+      // onDelta: each text chunk is sent as an SSE event
       ( delta ) => {
         res.write( `data: ${JSON.stringify( { type: 'content', content: delta } )}\n\n` );
       },
-      // onDone: segnala al client che lo stream è completato
+      // onDone: notify the client that streaming is complete
       () => {
         res.write( `data: ${JSON.stringify( { type: 'done' } )}\n\n` );
       },
-      // onError: invia un errore strutturato al client
+      // onError: send a structured error to the client
       ( errorObj ) => {
         res.write( `data: ${JSON.stringify( {
           type: 'error',
@@ -121,7 +121,7 @@ router.post( '/chat', async ( req, res ) => {
       }
     );
 
-    // --- 7. Persistenza Conversazione ---
+    // --- 7. Conversation persistence ---
     if ( userRecord && fullContent ) {
       await Message.create( [
         { userId: userRecord._id, role: 'user', content: message },

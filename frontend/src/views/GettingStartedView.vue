@@ -67,14 +67,11 @@ const tabletopModUrl =
         <h2>STEP 3: ASSIMILAZIONE DELLE REGOLE (I 4 CONCETTI CHIAVE)</h2>
         <p>
           Prima di scendere in campo, devi comprendere le leggi fondamentali che
-          governano questo nuovo universo. Consulta il Regolamento
-          Ufficiale del Punto Zero, oppure, per iniziare, ti bastano queste 4 direttive base:
+          governano questo nuovo universo. Consulta il Regolamento Ufficiale del
+          Punto Zero, oppure, per iniziare, ti bastano queste 4 direttive base:
         </p>
 
-        <router-link
-          to="/regolamento"
-          class="cyber-btn btn-primary step-btn"
-        >
+        <router-link to="/regolamento" class="cyber-btn btn-primary step-btn">
           LEGGI IL REGOLAMENTO
         </router-link>
 
@@ -212,7 +209,7 @@ const tabletopModUrl =
   text-align: left;
   padding: clamp(1rem, 3vw, 2rem);
 }
-/* Stile identico a CardsView.vue per il titolo */
+/* Same title style as CardsView.vue */
 .glitch-text {
   text-align: center;
   margin-bottom: 3.5rem !important;

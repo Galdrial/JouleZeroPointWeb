@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, watch } from "vue";
-import api from "../utils/api";
 import {
   DECKBUILDER_TYPE_OPTIONS,
   EVENT_TYPES,
@@ -9,10 +9,10 @@ import {
   TYPE_GLOWS,
 } from "../constants/cardTypes";
 import { useAuthStore } from "../stores/auth";
-import { useNotificationStore } from "../stores/notificationStore";
 import { useCardStore, type Card } from "../stores/cardStore";
 import { useDeckStore, type SavedDeck } from "../stores/deckStore";
-import { storeToRefs } from "pinia";
+import { useNotificationStore } from "../stores/notificationStore";
+import api from "../utils/api";
 
 // State Orchestration: Stores & Core Refs
 const authStore = useAuthStore();
@@ -21,7 +21,12 @@ const deckStore = useDeckStore();
 const notifications = useNotificationStore();
 
 const { cards: allCards } = storeToRefs(cardStore);
-const { userDecks: decks, totalUserDecks: totalDecks, loading: decksLoading, error: decksError } = storeToRefs(deckStore);
+const {
+  userDecks: decks,
+  totalUserDecks: totalDecks,
+  loading: decksLoading,
+  error: decksError,
+} = storeToRefs(deckStore);
 
 const username = computed(() => authStore.username);
 
@@ -273,7 +278,9 @@ const executeSave = async (overwrite: boolean) => {
       isPublic: isPublic.value,
     };
     await api.post("/decks", payload);
-    notifications.success("Mazzo sincronizzato correttamente con la Matrice Joule!");
+    notifications.success(
+      "Mazzo sincronizzato correttamente con la Matrice Joule!",
+    );
     viewMode.value = "dashboard";
     loadDecks();
   } catch (e: any) {
@@ -295,29 +302,38 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
   isExporting.value = true;
   exportingId.value = deckId;
   exportingFormat.value = format;
-  
-  notifications.info(`Inizializzazione protocollo ${format.toUpperCase()}... attendere.`);
-  
+
+  notifications.info(
+    `Inizializzazione protocollo ${format.toUpperCase()}... attendere.`,
+  );
+
   try {
     const response = await api({
       url: `/decks/${deckId}/export`,
       params: { format },
-      method: 'GET',
-      responseType: 'blob',
+      method: "GET",
+      responseType: "blob",
     });
 
     const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = blobUrl;
-    const extension = format === 'pdf' ? 'pdf' : 'zip';
-    link.setAttribute('download', `Joule_${format.toUpperCase()}_Kit_${deckId}.${extension}`);
+    const extension = format === "pdf" ? "pdf" : "zip";
+    link.setAttribute(
+      "download",
+      `Joule_${format.toUpperCase()}_Kit_${deckId}.${extension}`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(blobUrl);
-    notifications.success(`Esportazione ${format.toUpperCase()} completata con successo!`);
+    notifications.success(
+      `Esportazione ${format.toUpperCase()} completata con successo!`,
+    );
   } catch (e) {
-    showTerminalAlert("ERRORE NEL RECUPERO DEI DATI DI ESPORTAZIONE DALLA MATRICE.");
+    showTerminalAlert(
+      "ERRORE NEL RECUPERO DEI DATI DI ESPORTAZIONE DALLA MATRICE.",
+    );
   } finally {
     isExporting.value = false;
     exportingId.value = null;
@@ -392,10 +408,13 @@ const editDeck = (deck: SavedDeck) => {
   editingDeckId.value = deck.id || null;
   isPublic.value = deck.isPublic || false;
   selectedCostruttore.value =
-    allCards.value.find((c) => String(c.id) === String(deck.costruttoreId)) || null;
+    allCards.value.find((c) => String(c.id) === String(deck.costruttoreId)) ||
+    null;
   currentDeck.value = deck.cards
     .map((dc) => {
-      const card = allCards.value.find((c) => String(c.id) === String(dc.cardId));
+      const card = allCards.value.find(
+        (c) => String(c.id) === String(dc.cardId),
+      );
       return card ? { card, count: dc.count } : null;
     })
     .filter(Boolean) as DeckCard[];
@@ -424,11 +443,15 @@ const handleImgError = (e: Event) => {
 };
 
 const getCostruttoreName = (id: number | string | null) => {
-  return allCards.value.find((c) => String(c.id) === String(id))?.name || "Unknown";
+  return (
+    allCards.value.find((c) => String(c.id) === String(id))?.name || "Unknown"
+  );
 };
 
 const getCostruttoreImg = (id: number | string | null) => {
-  return allCards.value.find((c) => String(c.id) === String(id))?.image_url || "";
+  return (
+    allCards.value.find((c) => String(c.id) === String(id))?.image_url || ""
+  );
 };
 
 // Synchronization Observers
@@ -445,7 +468,7 @@ watch(decksError, (newError) => {
 
 onMounted(async () => {
   loading.value = true;
-  
+
   // Matrix Sync: Load global card repository (cached via store)
   await cardStore.fetchCards();
 
@@ -573,21 +596,29 @@ onMounted(async () => {
 
           <!-- ACTIONS ROW: PDF and TTS above image -->
           <div class="deck-actions-row">
-            <button 
-              @click.stop="handleExport(d.id!, 'pdf')" 
-              class="cyber-export-btn pdf" 
+            <button
+              @click.stop="handleExport(d.id!, 'pdf')"
+              class="cyber-export-btn pdf"
               :disabled="isExporting"
               title="Scarica PDF Decklist"
             >
-              {{ exportingId === d.id && exportingFormat === 'pdf' ? 'GENERAZIONE...' : 'PDF' }}
+              {{
+                exportingId === d.id && exportingFormat === "pdf"
+                  ? "GENERAZIONE..."
+                  : "PDF"
+              }}
             </button>
-            <button 
-              @click.stop="handleExport(d.id!, 'tts')" 
-              class="cyber-export-btn tts" 
+            <button
+              @click.stop="handleExport(d.id!, 'tts')"
+              class="cyber-export-btn tts"
               :disabled="isExporting"
               title="Esporta per Tabletop Simulator"
             >
-              {{ exportingId === d.id && exportingFormat === 'tts' ? 'GENERAZIONE...' : 'TTS' }}
+              {{
+                exportingId === d.id && exportingFormat === "tts"
+                  ? "GENERAZIONE..."
+                  : "TTS"
+              }}
             </button>
           </div>
 
@@ -607,7 +638,7 @@ onMounted(async () => {
               getCostruttoreName(d.costruttoreId)
             }}</span>
           </div>
-          <!-- FOOTER ROW: Privacy and Sincronizza -->
+          <!-- FOOTER ROW: Privacy and Sync -->
           <div class="deck-footer-row">
             <span
               class="deck-privacy"
@@ -951,7 +982,7 @@ onMounted(async () => {
               <h2>ANALISI STATISTICA MAZZO</h2>
             </div>
             <div class="stats-modal-body">
-              <!-- CURVA DI COSTO -->
+              <!-- COST CURVE -->
               <div class="stats-section">
                 <h3>CURVA DI COSTO (ET)</h3>
                 <div class="cost-chart">
@@ -973,7 +1004,7 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <!-- STATISTICHE MEDIE -->
+              <!-- AVERAGE STATS -->
               <div class="stats-section">
                 <h3>STATISTICHE MEDIE</h3>
                 <div class="avg-stats-grid">
@@ -988,7 +1019,7 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <!-- DISTRIBUZIONE PER TIPO -->
+              <!-- DISTRIBUTION BY TYPE -->
               <div class="stats-section">
                 <h3>DISTRIBUZIONE PER TIPO</h3>
                 <div class="type-distribution">
@@ -1018,14 +1049,16 @@ onMounted(async () => {
         </div>
       </Transition>
     </Teleport>
-    <!-- Notifiche gestite globalmente da JouleNotification in App.vue -->
-    
+    <!-- Notifications are managed globally by JouleNotification in App.vue -->
+
     <!-- EXPORT LOADER OVERLAY (CYBER EXTRACTION) -->
     <Transition name="matrix-fade">
       <div v-if="isExporting" class="export-overlay">
         <div class="matrix-background"></div>
         <div class="extraction-container">
-          <div class="glitch-title" data-text="ESTRAZIONE DATI">ESTRAZIONE DATI</div>
+          <div class="glitch-title" data-text="ESTRAZIONE DATI">
+            ESTRAZIONE DATI
+          </div>
           <div class="processing-core">
             <div class="core-ring"></div>
             <div class="core-ring"></div>
@@ -1035,10 +1068,15 @@ onMounted(async () => {
           </div>
           <div class="extraction-status">
             <span class="status-indicator">●</span>
-            <span class="status-text">Sincronizzazione Frammenti: {{ exportFormat.toUpperCase() }}...</span>
+            <span class="status-text"
+              >Sincronizzazione Frammenti:
+              {{ exportFormat.toUpperCase() }}...</span
+            >
           </div>
           <div class="matrix-code">
-            01010110 01001111 01001001 01000100 00100000 01011010 01000101 01010010 01001111 00100000 01010000 01001111 01001001 01001110 01010100
+            01010110 01001111 01001001 01000100 00100000 01011010 01000101
+            01010010 01001111 00100000 01010000 01001111 01001001 01001110
+            01010100
           </div>
         </div>
       </div>
@@ -2588,7 +2626,11 @@ onMounted(async () => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(0, 243, 255, 0.05) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 243, 255, 0.05) 0%,
+    transparent 70%
+  );
   opacity: 0.5;
 }
 
@@ -2663,7 +2705,12 @@ onMounted(async () => {
   position: absolute;
   width: 250px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--accent-gold),
+    transparent
+  );
   box-shadow: 0 0 15px var(--accent-gold);
   animation: scan 4s ease-in-out infinite;
 }
@@ -2696,30 +2743,55 @@ onMounted(async () => {
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse {
-  from { transform: scale(0.8); opacity: 0.5; }
-  to { transform: scale(1.2); opacity: 1; }
+  from {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1.2);
+    opacity: 1;
+  }
 }
 
 @keyframes scan {
-  0% { transform: translateY(-150px); opacity: 0; }
-  50% { opacity: 1; }
-  100% { transform: translateY(150px); opacity: 0; }
+  0% {
+    transform: translateY(-150px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(150px);
+    opacity: 0;
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
 }
 
-.matrix-fade-enter-active, .matrix-fade-leave-active {
+.matrix-fade-enter-active,
+.matrix-fade-leave-active {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.matrix-fade-enter-from, .matrix-fade-leave-to {
+.matrix-fade-enter-from,
+.matrix-fade-leave-to {
   opacity: 0;
   backdrop-filter: blur(0);
 }

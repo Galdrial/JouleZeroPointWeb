@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNotificationStore } from '../../stores/notificationStore';
+import { useNotificationStore } from "../../stores/notificationStore";
 
 /**
  * Global Notification Component
@@ -29,7 +29,10 @@ const notificationStore = useNotificationStore();
           <p class="toast-message">{{ notification.message }}</p>
         </div>
         <button class="toast-close">&times;</button>
-        <div class="toast-progress" :style="{ animationDuration: (notification.duration || 5000) + 'ms' }"></div>
+        <div
+          class="toast-progress"
+          :style="{ animationDuration: (notification.duration || 5000) + 'ms' }"
+        ></div>
       </div>
     </TransitionGroup>
   </div>
@@ -114,7 +117,7 @@ const notificationStore = useNotificationStore();
   opacity: 1;
 }
 
-/* Barra di Progresso */
+/* Progress bar */
 .toast-progress {
   position: absolute;
   bottom: 0;
@@ -126,12 +129,20 @@ const notificationStore = useNotificationStore();
   animation: shrink-progress linear forwards;
 }
 
-.success .toast-progress { background: var(--accent-gold); }
-.error .toast-progress { background: var(--accent-magenta); }
+.success .toast-progress {
+  background: var(--accent-gold);
+}
+.error .toast-progress {
+  background: var(--accent-magenta);
+}
 
 @keyframes shrink-progress {
-  from { transform: scaleX(1); }
-  to { transform: scaleX(0); }
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
 }
 
 /* Animazioni Vue */

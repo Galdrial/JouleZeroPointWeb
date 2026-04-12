@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, defineAsyncComponent } from "vue";
+import { defineAsyncComponent, onMounted, ref, watch } from "vue";
 import { RouterView, useRoute } from "vue-router";
-import { useAuthStore } from "./stores/auth";
-
-// Componenti Layout (100% Pro Edition)
-const JouleTerminal = defineAsyncComponent(() => import("./components/JouleTerminal.vue"));
 import FloatingTerminalTrigger from "./components/layout/FloatingTerminalTrigger.vue";
 import TheFooter from "./components/layout/TheFooter.vue";
 import TheNavbar from "./components/layout/TheNavbar.vue";
 import CookieBanner from "./components/ui/CookieBanner.vue";
 import JouleNotification from "./components/ui/JouleNotification.vue";
+import { useAuthStore } from "./stores/auth";
+
+// Layout components (100% Pro Edition)
+const JouleTerminal = defineAsyncComponent(
+  () => import("./components/JouleTerminal.vue"),
+);
 
 const route = useRoute();
 const authStore = useAuthStore();
@@ -23,7 +25,7 @@ onMounted(() => {
   }
 });
 
-// Watcher per cambiamenti rotta tramite query (es: link terminale)
+// Watch route changes driven by query params (e.g., terminal deep link)
 watch(
   () => route.query.terminal,
   (newVal) => {
@@ -36,10 +38,10 @@ watch(
 
 <template>
   <div class="app-layout">
-    <!-- Feedback Visivo Globale (100% Pro) -->
+    <!-- Global visual feedback (100% Pro) -->
     <JouleNotification />
 
-    <!-- Direttore d'Orchestra Layout -->
+    <!-- Layout orchestration -->
     <TheNavbar />
 
     <main
@@ -51,7 +53,7 @@ watch(
 
     <TheFooter />
 
-    <!-- Accessori Galattici -->
+    <!-- Galactic accessories -->
     <FloatingTerminalTrigger
       :is-open="isTerminalOpen"
       @toggle="isTerminalOpen = !isTerminalOpen"
@@ -66,15 +68,15 @@ watch(
       />
     </Teleport>
 
-    <!-- Atmosfera Joule -->
+    <!-- Joule atmosphere -->
     <div class="ambient-glow"></div>
   </div>
 </template>
 
 <style>
 /* 
-  STILI GLOBALI JOULE: ZERO POINT 
-  Questi stili definiscono l'atmosfera core dell'applicazione.
+  JOULE: ZERO POINT GLOBAL STYLES
+  These styles define the core atmosphere of the application.
 */
 .app-layout {
   min-height: 100vh;
@@ -85,7 +87,7 @@ watch(
 
 .content-wrapper {
   flex: 1;
-  padding-top: 5rem; /* Compensazione altezza Navbar (Fix Dinamico) */
+  padding-top: 5rem; /* Navbar height compensation (dynamic fix) */
   transition: filter 0.3s ease;
   position: relative;
   z-index: 1;
@@ -95,7 +97,7 @@ watch(
   padding-top: 0;
 }
 
-/* Atmosfera di Background (Matrice Joule ZP) */
+/* Background atmosphere (Joule ZP Matrix) */
 .ambient-glow {
   position: fixed;
   top: 0;
@@ -117,7 +119,7 @@ watch(
     );
 }
 
-/* Blur globale per menu mobile (gestito via componente Navbar) */
+/* Global blur for mobile menu (handled by Navbar component) */
 .content-wrapper.blurred {
   filter: blur(4px);
   pointer-events: none;

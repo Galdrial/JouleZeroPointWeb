@@ -1,14 +1,14 @@
-const nodemailer = require('nodemailer');
-const logger = require('../config/logger');
+const nodemailer = require( 'nodemailer' );
+const logger = require( '../config/logger' );
 
 /**
  * Service orchestrating the delivery of transactional emails (Auth flows).
  * Configured with active Nodemailer transporter for live HTML dispatches.
  */
 
-const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport( {
   host: process.env.SMTP_HOST || 'smtp.ionos.it',
-  port: parseInt(process.env.SMTP_PORT || '587'),
+  port: parseInt( process.env.SMTP_PORT || '587' ),
   secure: process.env.SMTP_PORT == '465', // True only for 465
   auth: {
     user: process.env.SMTP_USER,
@@ -19,27 +19,27 @@ const transporter = nodemailer.createTransport({
     rejectUnauthorized: false
   },
   connectionTimeout: 15000, // Slightly more tolerance for slow cloud routes
-});
+} );
 
 // SMTP CONNECTION VERIFICATION
 // Executed on startup to provide immediate feedback in production logs
-transporter.verify((error, success) => {
-  if (error) {
-    logger.error(`VIGIL_SYSTEM: SMTP Connection failed for ${transporter.options.host}: ${error.message}`);
+transporter.verify( ( error, success ) => {
+  if ( error ) {
+    logger.error( `VIGIL_SYSTEM: SMTP Connection failed for ${transporter.options.host}: ${error.message}` );
   } else {
-    logger.info(`VIGIL_SYSTEM: SMTP Connection established with ${transporter.options.host}. Ready for secure transmissions.`);
+    logger.info( `VIGIL_SYSTEM: SMTP Connection established with ${transporter.options.host}. Ready for secure transmissions.` );
   }
-});
+} );
 
-const sendVerificationEmail = async (email, token) => {
+const sendVerificationEmail = async ( email, token ) => {
   const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
   const verifyUrl = `${frontendBase}/verify-email/${token}`;
-  
-  // LOG DI EMERGENZA: Permette di recuperare il link dai log del server se l'email fallisce
-  logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] Per l'utente ${email}, link di attivazione: ${verifyUrl}`);
 
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    logger.warn("SMTP_WARNING: Credenziali mancanti. L'email non verrà inviata. Usa il link di override sopra.");
+  // EMERGENCY LOG: Allows recovering the link from server logs if email delivery fails
+  logger.info( `VIGIL_SYSTEM: [MANUAL_OVERRIDE] Per l'utente ${email}, link di attivazione: ${verifyUrl}` );
+
+  if ( !process.env.SMTP_USER || !process.env.SMTP_PASS ) {
+    logger.warn( "SMTP_WARNING: Credenziali mancanti. L'email non verrà inviata. Usa il link di override sopra." );
     return;
   }
 
@@ -47,7 +47,7 @@ const sendVerificationEmail = async (email, token) => {
     const fromAddress = process.env.EMAIL_FROM || process.env.SMTP_USER;
     const fromName = process.env.EMAIL_FROM_NAME || "Joule System";
 
-    await transporter.sendMail({
+    await transporter.sendMail( {
       from: `"${fromName}" <${fromAddress}>`,
       to: email,
       subject: "Attivazione Profilo Joule: Zero Point",
@@ -62,28 +62,28 @@ const sendVerificationEmail = async (email, token) => {
           <p style="color: #666; font-size: 11px; word-break: break-all;">In caso di interferenze crittografiche, copia questo URL: ${verifyUrl}</p>
         </div>
       `,
-    });
-    logger.info(`VIGIL_SYSTEM: Real Verification Email Successfully dispatched to ${email} (via ${fromAddress})`);
-  } catch (error) {
-    logger.error(`EMAIL_DISPATCH_ERROR: ${error.message} - Accertati che le variabili SMTP siano configurate e che il provider accetti connessioni esterne.`);
+    } );
+    logger.info( `VIGIL_SYSTEM: Real Verification Email Successfully dispatched to ${email} (via ${fromAddress})` );
+  } catch ( error ) {
+    logger.error( `EMAIL_DISPATCH_ERROR: ${error.message} - Accertati che le variabili SMTP siano configurate e che il provider accetti connessioni esterne.` );
   }
 };
 
-const sendPasswordResetEmail = async (email, token) => {
+const sendPasswordResetEmail = async ( email, token ) => {
   const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
   const resetUrl = `${frontendBase}/reset-password/${token}`;
-  
-  logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] Per l'utente ${email}, link di reset: ${resetUrl}`);
 
-  if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-    logger.warn("SMTP_WARNING: Credenziali mancanti per il reset password.");
+  logger.info( `VIGIL_SYSTEM: [MANUAL_OVERRIDE] Per l'utente ${email}, link di reset: ${resetUrl}` );
+
+  if ( !process.env.SMTP_USER || !process.env.SMTP_PASS ) {
+    logger.warn( "SMTP_WARNING: Credenziali mancanti per il reset password." );
     return;
   }
   try {
     const fromAddress = process.env.EMAIL_FROM || process.env.SMTP_USER;
     const fromName = process.env.EMAIL_FROM_NAME || "Joule System";
 
-    await transporter.sendMail({
+    await transporter.sendMail( {
       from: `"${fromName}" <${fromAddress}>`,
       to: email,
       subject: "Ripristino Passphrase Joule: Zero Point",
@@ -98,10 +98,10 @@ const sendPasswordResetEmail = async (email, token) => {
           <p style="color: #666; font-size: 11px;">Se non sei stato tu a effettuare la richiesta, ignora questa trasmissione. Nessun danno al tuo profilo è in corso.</p>
         </div>
       `,
-    });
-    logger.info(`VIGIL_SYSTEM: Real Reset Email Successfully dispatched to ${email} (via ${fromAddress})`);
-  } catch (error) {
-    logger.error(`EMAIL_DISPATCH_ERROR: ${error.message}`);
+    } );
+    logger.info( `VIGIL_SYSTEM: Real Reset Email Successfully dispatched to ${email} (via ${fromAddress})` );
+  } catch ( error ) {
+    logger.error( `EMAIL_DISPATCH_ERROR: ${error.message}` );
   }
 };
 
