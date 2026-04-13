@@ -2,6 +2,7 @@ const path = require( 'path' );
 require( 'dotenv' ).config( { path: path.join( __dirname, '.env' ) } );
 const express = require( 'express' );
 const cors = require( 'cors' );
+const mongoose = require( 'mongoose' );
 const logger = require( './config/logger' );
 
 const helmet = require( 'helmet' );
@@ -90,14 +91,9 @@ app.use( ( req, res, next ) => {
 // HTTP Parameter Pollution (HPP) protection
 app.use( hpp() );
 
-// Keep-Alive ping: excluded from rate limiter (UptimeRobot → every 5 min)
+// Uptime liveness ping: excluded from rate limiter (lightweight monitor endpoint)
 app.get( '/ping', ( req, res ) => {
-  logger.info( '[MATRIX] Pulsazione Keep-Alive rilevata (Root).' );
-  res.status( 200 ).send( 'pong' );
-} );
-
-app.get( '/api/v1/ping', ( req, res ) => {
-  logger.info( '[MATRIX] Pulsazione Keep-Alive rilevata (API v1).' );
+  logger.info( '[MATRIX] Pulsazione rilevata (Root).' );
   res.status( 200 ).send( 'pong' );
 } );
 
@@ -132,15 +128,30 @@ app.use( '/api/v1/auth/register', authLimiter );
 app.use( '/api/v1/auth/forgot-password', authLimiter );
 app.use( '/api/v1/auth/resend-verification', authLimiter );
 
+const DB_READY_STATE_LABELS = {
+  0: 'disconnected',
+  1: 'connected',
+  2: 'connecting',
+  3: 'disconnecting',
+};
+
 /**
- * Healthy Check Sensor (Operational Synchronia).
- * Exposes a heartbeat endpoint to monitor service availability.
+ * Readiness healthcheck.
+ * Returns 200 only when API process and MongoDB connection are healthy.
  */
 app.get( '/api/v1/health', ( req, res ) => {
-  res.status( 200 ).json( {
-    status: 'OPERATIVO',
+  const dbReadyState = mongoose.connection.readyState;
+  const dbStatus = DB_READY_STATE_LABELS[dbReadyState] || 'unknown';
+  const isHealthy = dbReadyState === 1;
+
+  res.status( isHealthy ? 200 : 503 ).json( {
+    status: isHealthy ? 'OPERATIVO' : 'DEGRADATO',
     timestamp: new Date().toISOString(),
-    service: 'nucleo-punto-zero'
+    service: 'nucleo-punto-zero',
+    uptimeSeconds: Math.floor( process.uptime() ),
+    checks: {
+      database: dbStatus,
+    },
   } );
 } );
 

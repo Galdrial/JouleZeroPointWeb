@@ -7,44 +7,113 @@
     <h1 class="glitch-text" data-text="PRIVACY POLICY">INFORMATIVA PRIVACY</h1>
     <div class="glass-panel legal-content">
       <p class="last-updated">Ultimo aggiornamento: 31 Marzo 2026</p>
-      
+
       <div class="controller-info">
-        <strong>Titolare del Trattamento:</strong> Simone Camerano, Gradara (PU), Italia. <br>
+        <strong>Titolare del Trattamento:</strong> Simone Camerano, Gradara
+        (PU), Italia. <br />
         <strong>Email di Contatto:</strong> info@joulezeropoint.com
       </div>
 
       <h2>1. Origine e Natura dei Dati Raccolti</h2>
-      <p>Ai fini dell'erogazione dei servizi primari e secondari riguardanti Joule: Zero Point, il Sistema raccoglie solo l'essenziale per il mantenimento dell'identità del Costruttore: indirizzo e-mail, pseudonimo utente (username), password (inequivocabilmente cifrata) e la metrica di gioco (mazzi creati, cronologia esportazione in TTS o PDF). <strong>Il servizio non è destinato a minori di 14 anni e non raccogliamo consapevolmente dati da tali soggetti.</strong></p>
+      <p>
+        Ai fini dell'erogazione dei servizi primari e secondari riguardanti
+        Joule: Zero Point, il Sistema raccoglie solo l'essenziale per il
+        mantenimento dell'identità del Costruttore: indirizzo e-mail, pseudonimo
+        utente (username), password (inequivocabilmente cifrata) e la metrica di
+        gioco (mazzi creati, cronologia esportazione in TTS o PDF).
+        <strong
+          >Il servizio non è destinato a minori di 14 anni e non raccogliamo
+          consapevolmente dati da tali soggetti.</strong
+        >
+      </p>
 
       <h2>2. Finalità di Computazione e Trattamento</h2>
-      <p>I dati anagrafici forniti vengono utilizzati unicamente per l'autenticazione biometrica-digitale al database dell'applicazione. Nessun dato è raccolto forzatamente al di fuori di quelli consenzientemente inseriti. Registriamo log di errore limitati solo al fine di evitare i crash della Matrice e tutelare l'integrità temporale del software.</p>
+      <p>
+        I dati anagrafici forniti vengono utilizzati unicamente per
+        l'autenticazione biometrica-digitale al database dell'applicazione.
+        Nessun dato è raccolto forzatamente al di fuori di quelli
+        consenzientemente inseriti. Registriamo log di errore limitati solo al
+        fine di evitare i crash della Matrice e tutelare l'integrità temporale
+        del software.
+      </p>
 
       <h2>3. Sicurezza, Cifratura e Archiviazione</h2>
-      <p>Implementiamo protocolli di sicurezza standard per proteggere le comunicazioni verso i nostri nodi cloud. Le credenziali non sono visibili in chiaro e tutte le connessioni da e per Joule: Zero Point viaggiano crittografate sotto standard HTTPS.</p>
+      <p>
+        Implementiamo protocolli di sicurezza standard per proteggere le
+        comunicazioni verso i nostri nodi cloud. Le credenziali non sono
+        visibili in chiaro e tutte le connessioni da e per Joule: Zero Point
+        viaggiano crittografate sotto standard HTTPS.
+      </p>
 
       <h2>4. Conservazione Temporale (Retention)</h2>
-      <p>L'identità del Costruttore e i dati associati rimarranno innestati nella Matrice finché esisterà l'account. Su richiesta di eliminazione (Diritto all'Oblio), i dati dell'account verranno fisicamente distrutti. Alcune creazioni originariamente impostate su "Pubbliche", qualora clonate da altri giocatori, potrebbero perdere l'ancoraggio al nome utente originale ma restare sotto forma algoritmica anonimizzata in base alla persistenza del network.</p>
+      <p>
+        L'identità del Costruttore e i dati associati rimarranno innestati nella
+        Matrice finché esisterà l'account. Su richiesta di eliminazione (Diritto
+        all'Oblio), i dati dell'account verranno fisicamente distrutti. Alcune
+        creazioni originariamente impostate su "Pubbliche", qualora clonate da
+        altri giocatori, potrebbero perdere l'ancoraggio al nome utente
+        originale ma restare sotto forma algoritmica anonimizzata in base alla
+        persistenza del network.
+      </p>
 
       <h2>5. Condivisione e Divieti con Terzi Soggetti</h2>
-      <p>Il Team di Sviluppo non commercializzerà, scambierà, tantomeno cederà segretamente a terze corporazioni i frammenti della tua identità. Condivisioni tecniche avvengono unicamente con l'infrastruttura di hosting e database sottostante strettamente necessaria a erogare l'app in server protetti.</p>
-      
+      <p>
+        Il Team di Sviluppo non commercializzerà, scambierà, tantomeno cederà
+        segretamente a terze corporazioni i frammenti della tua identità.
+        Condivisioni tecniche avvengono unicamente con l'infrastruttura di
+        hosting e database sottostante strettamente necessaria a erogare l'app
+        in server protetti.
+      </p>
+
       <h2>6. I tuoi Diritti da Costruttore (Protocollo GDPR)</h2>
-      <p>Nel pieno rispetto del GDPR, hai totale accesso ai sensori di controllo. Puoi rettificare, richiedere l'estrazione e far disintegrare definitivamente i tuoi dati attivi dai nostri sistemi scrivendo al reparto Amministrazione tramite il nostro server Discord ufficiale o i recapiti social.</p>
+      <p>
+        Nel pieno rispetto del GDPR, hai totale accesso ai sensori di controllo.
+        Puoi rettificare, richiedere l'estrazione e far disintegrare
+        definitivamente i tuoi dati attivi dai nostri sistemi scrivendo al
+        reparto Amministrazione tramite il nostro server Discord ufficiale o i
+        recapiti social.
+      </p>
 
       <h2>7. Nodi di Esecuzione Terzi (Data Processors)</h2>
-      <p>Per mantenere stabile la Matrice di Joule: Zero Point, ci avvaliamo di infrastrutture tecnologiche esterne certificate, le quali trattano i frammenti necessari sotto i più alti standard di sicurezza:</p>
+      <p>
+        Per mantenere stabile la Matrice di Joule: Zero Point, ci avvaliamo di
+        infrastrutture tecnologiche esterne certificate, le quali trattano i
+        frammenti necessari sotto i più alti standard di sicurezza:
+      </p>
       <ul class="data-nodes-list">
-        <li><strong>Render.com</strong>: Hosting del Nucleo Backend e Database PostgreSQL.</li>
-        <li><strong>Cloudinary</strong>: Deposito persistente per gli artefatti visivi delle news.</li>
-        <li><strong>Brevo (Sendinblue)</strong>: Gateway per le trasmissioni email di attivazione.</li>
-        <li><strong>Google Cloud Platform</strong>: Orchestrazione delle API per la sincronizzazione delle Lore (Data Matrix).</li>
+        <li>
+          <strong>DigitalOcean</strong>: Hosting del Nucleo Backend su server
+          dedicato.
+        </li>
+        <li>
+          <strong>Cloudinary</strong>: Deposito persistente per gli artefatti
+          visivi delle news.
+        </li>
+        <li>
+          <strong>Brevo (Sendinblue)</strong>: Gateway per le trasmissioni email
+          di attivazione.
+        </li>
+        <li>
+          <strong>Google Cloud Platform</strong>: Orchestrazione delle API per
+          la sincronizzazione delle Lore (Data Matrix).
+        </li>
       </ul>
 
       <h2>8. Cookie e Marcatura Temporale (Session Management)</h2>
-      <p>Joule: Zero Point non utilizza cookie di profilazione o tracciamento pubblicitario. Utilizziamo esclusivamente:</p>
+      <p>
+        Joule: Zero Point non utilizza cookie di profilazione o tracciamento
+        pubblicitario. Utilizziamo esclusivamente:
+      </p>
       <ul>
-        <li><strong>Cookie Tecnici</strong>: Necessari per mantenere la connessione sicura al tuo profilo.</li>
-        <li><strong>LocalStorage</strong>: Per memorizzare il tuo Token di Sincronizzazione (JWT) ed evitare la disconnessione forzata durante la costruzione dei mazzi.</li>
+        <li>
+          <strong>Cookie Tecnici</strong>: Necessari per mantenere la
+          connessione sicura al tuo profilo.
+        </li>
+        <li>
+          <strong>LocalStorage</strong>: Per memorizzare il tuo Token di
+          Sincronizzazione (JWT) ed evitare la disconnessione forzata durante la
+          costruzione dei mazzi.
+        </li>
       </ul>
     </div>
   </div>

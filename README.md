@@ -102,7 +102,7 @@ Joule is engineered to handle the unstable nature of AI integrations:
 The project is configured for:
 
 - **Frontend:** Vercel / Netlify
-- **Backend:** Render / Railway
+- **Backend:** DigitalOcean (self-managed server)
 - **Database:** MongoDB Atlas
 
 ---
