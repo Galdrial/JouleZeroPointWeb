@@ -8,8 +8,12 @@ const mongoose = require('mongoose');
  * --- 1. ENVIRONMENT VALIDATION ---
  * Verifies the presence of critical operational variables required for the system to function.
  */
-const REQUIRED_ENV = ['MONGODB_URI', 'JWT_SECRET', 'NODE_ENV'];
+const REQUIRED_ENV = ['MONGODB_URI', 'JWT_SECRET'];
 const missingEnv = REQUIRED_ENV.filter(env => !process.env[env]);
+
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'production';
+}
 
 if (missingEnv.length > 0) {
   logger.error(`CRITICAL_FAILURE: Missing core environment signals: ${missingEnv.join(', ')}`);

@@ -6,11 +6,11 @@ WORKDIR /app
 # qui siamo già "dentro" la cartella backend.
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci --omit=dev
 
 COPY . .
 
-# Cambia 3000 con la porta reale del tuo backend se diversa
-EXPOSE 3002
+# The app listens on PORT env var (fallback 3000)
+EXPOSE 3000
 
 CMD ["npm", "start"]
