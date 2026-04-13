@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import api from '../utils/api'
 
 /**
  * Authentication Store for Joule: Zero Point.
@@ -9,6 +10,7 @@ export const useAuthStore = defineStore( 'auth', () => {
   // State: Initialized from localStorage to maintain session across refreshes
   const token = ref( localStorage.getItem( 'token' ) || null )
   const username = ref( localStorage.getItem( 'username' ) || '' )
+  const email = ref( localStorage.getItem( 'email' ) || '' )
   const isAdmin = ref( localStorage.getItem( 'isAdmin' ) === 'true' )
 
   /**
@@ -18,29 +20,61 @@ export const useAuthStore = defineStore( 'auth', () => {
 
   /**
    * Updates the authentication state and persists credentials to localStorage.
-   * @param newToken - JWT token received from Atlas Backend.
-   * @param newUsername - Username of the authenticated operator.
-     * @param newIsAdmin - Whether the user has administrative privileges.
    */
-  function setAuth( newToken: string, newUsername: string, newIsAdmin: boolean = false ) {
+  function setAuth( newToken: string, newUsername: string, newIsAdmin: boolean = false, newEmail: string = '' ) {
     token.value = newToken
     username.value = newUsername
+    email.value = newEmail
     isAdmin.value = newIsAdmin
     localStorage.setItem( 'token', newToken )
     localStorage.setItem( 'username', newUsername )
+    localStorage.setItem( 'email', newEmail )
     localStorage.setItem( 'isAdmin', String( newIsAdmin ) )
   }
 
   /**
    * Clears the current session and removes credentials from persistence layers.
    */
-  function logout() {
-    token.value = null
-    username.value = ''
-    isAdmin.value = false
-    localStorage.removeItem( 'token' )
-    localStorage.removeItem( 'username' )
-    localStorage.removeItem( 'isAdmin' )
+  async function logout() {
+    try {
+      if ( token.value ) {
+        await api.post( '/auth/logout' )
+      }
+    } catch ( error ) {
+      console.warn( 'Logout protocol dissonance (Backend already cleared or unreachable):', error )
+    } finally {
+      token.value = null
+      username.value = ''
+      email.value = ''
+      isAdmin.value = false
+      localStorage.removeItem( 'token' )
+      localStorage.removeItem( 'username' )
+      localStorage.removeItem( 'email' )
+      localStorage.removeItem( 'isAdmin' )
+    }
+  }
+
+  /**
+   * Synchronizes profile updates with the backend and local state.
+   */
+  async function updateProfile( data: { username?: string, password?: string } ) {
+    try {
+      const response = await api.put( '/auth/profile', data )
+      const { token: newToken, username: newUsername, isAdmin: newIsAdmin, email: newEmail } = response.data
+      setAuth( newToken, newUsername, !!newIsAdmin, newEmail )
+      return response.data
+    } catch ( error ) {
+      throw error
+    }
+  }
+
+  /**
+   * Protocol: Trigger Passphrase Recovery
+   * Requests a reset link via email using the established security pathway.
+   */
+  async function requestPasswordReset( emailValue: string ) {
+    await api.post( '/auth/forgot-password', { email: emailValue } )
+    return true
   }
 
   /**
@@ -49,8 +83,9 @@ export const useAuthStore = defineStore( 'auth', () => {
   function initialize() {
     token.value = localStorage.getItem( 'token' ) || null
     username.value = localStorage.getItem( 'username' ) || ''
+    email.value = localStorage.getItem( 'email' ) || ''
     isAdmin.value = localStorage.getItem( 'isAdmin' ) === 'true'
   }
 
-  return { token, username, isLoggedIn, isAdmin, setAuth, logout, initialize }
+  return { token, username, email, isLoggedIn, isAdmin, setAuth, logout, updateProfile, requestPasswordReset, initialize }
 } )

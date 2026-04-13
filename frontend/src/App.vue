@@ -34,6 +34,23 @@ watch(
     }
   },
 );
+
+// Protocol: Synchronize Browser Meta Intelligence (Title)
+watch(
+  () => route.path,
+  () => {
+    const baseTitle = "Joule: Zero Point";
+    const subTitle = (route.name as string) || (route.path.split('/')[1]) || "";
+    
+    if (subTitle && subTitle !== "home") {
+      const formattedSub = subTitle.charAt(0).toUpperCase() + subTitle.slice(1).replace(/-/g, ' ');
+      document.title = `${formattedSub} | ${baseTitle}`;
+    } else {
+      document.title = `${baseTitle} - Il Gioco di Carte Sci-Fi`;
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

@@ -53,6 +53,7 @@ const submitForm = async () => {
         res.data.token,
         res.data.username,
         res.data.isAdmin || false,
+        res.data.email
       );
       notifications.success("Sincronizzazione completata con successo!");
 

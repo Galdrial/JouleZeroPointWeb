@@ -261,6 +261,56 @@ const resetPassword = async ( req, res ) => {
   }
 };
 
+/**
+ * @desc    Logout user / clear session
+ * @route   POST /api/v1/auth/logout
+ * @access  Public
+ */
+const logoutUser = async ( req, res ) => {
+  res.status( 200 ).json( { message: 'Sessione terminata con successo.' } );
+};
+
+/**
+ * @desc    Update user profile
+ * @route   PUT /api/v1/auth/profile
+ * @access  Private/Protected
+ */
+const updateProfile = async ( req, res ) => {
+  try {
+    const user = await User.findById( req.user._id );
+
+    if ( user ) {
+      // Update display name if provided
+      if ( req.body.username ) {
+        user.usernameDisplay = req.body.username;
+      }
+
+      // Hash and update password if provided
+      if ( req.body.password ) {
+        if ( req.body.password.length < 8 ) {
+          return res.status( 400 ).json( { error: 'La nuova passphrase deve essere di almeno 8 caratteri.' } );
+        }
+        const salt = await bcrypt.genSalt( 10 );
+        user.password = await bcrypt.hash( req.body.password, salt );
+      }
+
+      const updatedUser = await user.save();
+
+      res.json( {
+        id: updatedUser._id,
+        username: updatedUser.usernameDisplay || updatedUser.username,
+        email: updatedUser.email,
+        token: generateToken( updatedUser._id ),
+      } );
+    } else {
+      res.status( 404 ).json( { error: 'Costruttore non trovato.' } );
+    }
+  } catch ( error ) {
+    logger.error( `UPDATE_PROFILE_ERROR: ${error.message}` );
+    res.status( 500 ).json( { error: 'Errore durante l\'aggiornamento della configurazione profilo.' } );
+  }
+};
+
 const resendVerificationEmail = async ( req, res ) => {
   try {
     const { email } = req.body;
@@ -301,4 +351,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   resendVerificationEmail,
+  logoutUser,
+  updateProfile,
 };

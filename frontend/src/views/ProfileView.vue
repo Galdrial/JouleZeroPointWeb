@@ -42,6 +42,12 @@ const isOwnProfile = computed(
   () => !route.query.user || route.query.user === authStore.username,
 );
 
+// Identity Management State
+const newName = ref(authStore.username);
+const isUpdating = ref(false);
+const isSendingReset = ref(false);
+const showAliasConfirm = ref(false);
+
 // Resource Loading State
 const loading = ref(true);
 const userDecks = ref<SavedDeck[]>([]);
@@ -94,6 +100,60 @@ const deleteAccount = async () => {
     router.push("/login");
   } catch (error) {
     // Managed via global error handlers
+  }
+};
+
+/**
+ * Protocol: Initiate Identity Update
+ * Triggers confirmation if alias signature is being modified.
+ */
+const updateIdentity = () => {
+  if (newName.value === authStore.username) {
+    notifications.warn("Identità invariata. Inserire un nuovo Alias.");
+    return;
+  }
+  showAliasConfirm.value = true;
+};
+
+/**
+ * Protocol: Confirm and Update Identity Profile
+ * Synchronizes new alias with the central Matrix.
+ */
+const confirmUpdateIdentity = async () => {
+  try {
+    isUpdating.value = true;
+    await authStore.updateProfile({
+      username: newName.value || undefined
+    });
+    notifications.success("Protocollo di identità aggiornato con successo.");
+    username.value = authStore.username; // Synchronize header display
+    showAliasConfirm.value = false;
+  } catch (error) {
+    // Managed via notification infrastructure
+  } finally {
+    isUpdating.value = false;
+  }
+};
+
+/**
+ * Security Protocol: Trigger Passphrase Reset
+ * Dispatches a high-frequency reset link to the user's registered email.
+ */
+const triggerPassphraseReset = async () => {
+  if (!authStore.email) {
+    notifications.error("Segnale email non trovato. Contattare l'amministrazione.");
+    return;
+  }
+  
+  try {
+    isSendingReset.value = true;
+    notifications.info("Inizializzazione reset passphrase...");
+    await authStore.requestPasswordReset(authStore.email);
+    notifications.success(`Link di sincronizzazione inviato a: ${authStore.email}`);
+  } catch (error) {
+    notifications.error("Errore nel dispacciamento del link di reset.");
+  } finally {
+    isSendingReset.value = false;
   }
 };
 
@@ -221,6 +281,54 @@ const goToDeck = () => {
       </div>
     </section>
 
+    <!-- Profile Configuration -->
+    <section v-if="isOwnProfile" class="profile-config-section">
+      <div class="section-header">
+        <h2 class="cyber-subtitle">CONFIGURAZIONE PROFILO</h2>
+        <div class="header-line"></div>
+      </div>
+      
+      <div class="config-panel glass-panel">
+        <div class="form-grid">
+          <!-- Alias Section -->
+          <div class="input-group">
+            <label for="display-name" class="cyber-label">NOME VISIBILE (ALIAS)</label>
+            <div class="alias-update-row">
+              <input 
+                id="display-name" 
+                v-model="newName" 
+                type="text" 
+                placeholder="Inserisci nuovo alias..." 
+                class="glass-input no-margin"
+                autocomplete="username"
+              />
+              <button @click="updateIdentity" class="cyber-btn btn-primary" :disabled="isUpdating || newName === authStore.username">
+                {{ isUpdating ? "SYNC..." : "MODIFICA" }}
+              </button>
+            </div>
+            <small class="input-hint">L'Alias è la tua firma pubblica nel Punto Zero.</small>
+          </div>
+          
+          <!-- Security Section -->
+          <div class="input-group">
+            <label class="cyber-label">SICUREZZA PASSPHRASE</label>
+            <div class="security-action-panel">
+              <p class="security-note">
+                Per garantire l'integrità neurale, il cambio password avviene tramite link di sincronizzazione inviato alla tua email registrata.
+              </p>
+              <button 
+                @click="triggerPassphraseReset" 
+                class="cyber-btn btn-secondary full-width"
+                :disabled="isSendingReset"
+              >
+                {{ isSendingReset ? "DISPACCIAMENTO LINK..." : "INVIA LINK DI RESET" }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Danger Zone -->
     <section v-if="isOwnProfile" class="danger-zone">
       <div class="section-header">
@@ -261,6 +369,35 @@ const goToDeck = () => {
           </button>
           <button class="cyber-btn btn-danger" @click="deleteAccount">
             CONFERMA ELIMINAZIONE
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alias Confirmation Modal -->
+    <div v-if="showAliasConfirm" class="modal-overlay">
+      <div class="confirm-modal glass-panel">
+        <div class="modal-header">
+          <div class="header-icon-wrapper">
+            <svg viewBox="0 0 24 24" class="cyber-icon gold" aria-hidden="true">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z" fill="currentColor"/>
+            </svg>
+          </div>
+          <h2>SINCRONIZZAZIONE ALIAS</h2>
+        </div>
+        <p>
+          Vuoi sincronizzare il tuo nuovo Alias: <strong>{{ newName }}</strong>? 
+          Questa sarà la tua nuova identificazione pubblica nel Matrix.
+        </p>
+        <div class="modal-actions">
+          <button
+            class="cyber-btn btn-secondary"
+            @click="showAliasConfirm = false"
+          >
+            ANNULLA
+          </button>
+          <button class="cyber-btn btn-primary" @click="confirmUpdateIdentity" :disabled="isUpdating">
+            {{ isUpdating ? "IN CORSO..." : "CONFERMA SINCRONIZZAZIONE" }}
           </button>
         </div>
       </div>
@@ -528,8 +665,101 @@ const goToDeck = () => {
   flex: 0 0 auto;
 }
 
-.danger-zone {
-  margin-top: clamp(2rem, 5vw, 4rem);
+/* Profile Configuration Styles */
+.profile-config-section {
+  margin-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.config-panel {
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.cyber-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin-bottom: 0.75rem;
+  letter-spacing: 1px;
+}
+
+.no-margin {
+  margin-bottom: 0 !important;
+}
+
+.input-hint {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.alias-update-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.alias-update-row .glass-input {
+  flex-grow: 1;
+}
+
+.alias-update-row .cyber-btn {
+  white-space: nowrap;
+  padding: 0.8rem 1.5rem;
+}
+
+.header-icon-wrapper {
+  background: rgba(212, 175, 55, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.cyber-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.cyber-icon.gold {
+  color: var(--accent-gold);
+}
+
+.security-action-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(212, 175, 55, 0.2);
+}
+
+.security-note {
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.full-width {
+  width: 100%;
 }
 
 .danger-panel {

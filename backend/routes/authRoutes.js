@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { check } = require('express-validator');
 const { validate } = require('../middleware/validatorMiddleware');
-const { registerUser, loginUser, deleteAccount, verifyEmail, forgotPassword, resetPassword, resendVerificationEmail } = require('../controllers/authController');
+const { registerUser, loginUser, deleteAccount, verifyEmail, forgotPassword, resetPassword, resendVerificationEmail, logoutUser, updateProfile } = require('../controllers/authController');
 const { protect } = require('../middleware/authMiddleware');
 
 /**
@@ -67,6 +67,20 @@ router.post('/reset-password/:token', resetPassword);
  * @access  Public
  */
 router.post('/resend-verification', resendVerificationEmail);
+
+/**
+ * @route   POST /api/v1/auth/logout
+ * @desc    Terminate session protocol
+ * @access  Public
+ */
+router.post('/logout', logoutUser);
+
+/**
+ * @route   PUT /api/v1/auth/profile
+ * @desc    Update user configuration (username/password)
+ * @access  Private/Protected
+ */
+router.put('/profile', protect, updateProfile);
 
 /**
  * @route   DELETE /api/v1/auth/profile
