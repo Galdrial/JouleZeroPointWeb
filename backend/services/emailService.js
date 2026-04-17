@@ -22,14 +22,17 @@ const transporter = nodemailer.createTransport( {
 } );
 
 // SMTP CONNECTION VERIFICATION
-// Executed on startup to provide immediate feedback in production logs
-transporter.verify( ( error, success ) => {
-  if ( error ) {
-    logger.error( `VIGIL_SYSTEM: SMTP Connection failed for ${transporter.options.host}: ${error.message}` );
-  } else {
-    logger.info( `VIGIL_SYSTEM: SMTP Connection established with ${transporter.options.host}. Ready for secure transmissions.` );
-  }
-} );
+// Executed on startup to provide immediate feedback in production logs.
+// Skipped in test environments to avoid open TCP handles in Jest.
+if ( process.env.NODE_ENV !== 'test' ) {
+  transporter.verify( ( error, success ) => {
+    if ( error ) {
+      logger.error( `VIGIL_SYSTEM: SMTP Connection failed for ${transporter.options.host}: ${error.message}` );
+    } else {
+      logger.info( `VIGIL_SYSTEM: SMTP Connection established with ${transporter.options.host}. Ready for secure transmissions.` );
+    }
+  } );
+}
 
 const sendVerificationEmail = async ( email, token ) => {
   const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';

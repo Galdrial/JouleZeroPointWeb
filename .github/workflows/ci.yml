@@ -73,8 +73,7 @@ jobs:
         run: node --check index.js
 
       - name: 🧪 Run backend unit tests (excluding live AI tests)
-        run: npx jest --testPathIgnorePatterns="tests/ai_integrity" --detectOpenHandles --forceExit
+        run: npm test
         env:
           NODE_ENV: test
-          JWT_SECRET: test-secret-ci
           MONGODB_URI: ${{ secrets.MONGODB_URI_TEST }}
