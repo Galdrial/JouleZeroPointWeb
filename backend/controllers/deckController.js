@@ -1,8 +1,6 @@
 const Deck = require('../models/Deck');
 const Card = require('../models/Card');
 const logger = require('../config/logger');
-const { exec } = require('child_process');
-const fs = require('fs');
 const path = require('path');
 
 /**
@@ -328,106 +326,7 @@ const getDeckById = async (req, res) => {
   }
 };
 
-/**
- * @desc    Export a deck configuration to PDF or Tabletop Simulator format
- * @route   GET /api/v1/decks/:id/export
- * @access  Public
- * @protocol Orchestrates data enrichment and invokes the external Python synthesis engine.
- */
-const exportDeck = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { format } = req.query; // Valid formats: 'pdf' or 'tts'
 
-    if (!format || !['pdf', 'tts'].includes(format)) {
-      return res.status(400).json({ error: 'Designazione formato export non valida (richiesto pdf/tts).' });
-    }
-
-    const deck = await Deck.findById(id);
-    if (!deck) {
-      return res.status(404).json({ error: 'Mazzo non trovato per la sintesi.' });
-    }
-
-    // Lifecycle: Ensure ephemeral directories exist (relative to current directory)
-    const backendDir = path.resolve(__dirname, '..');
-    const exportsDir = path.join(backendDir, 'exports');
-    const tmpDir = path.join(backendDir, 'tmp');
-    
-    if (!fs.existsSync(exportsDir)) fs.mkdirSync(exportsDir, { recursive: true });
-    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
-
-    logger.info(`VIGIL_SYSTEM: Export protocol initiated: Deck ${id} -> ${format}`);
-
-    // Data Enrichment: Populate card names and assets for the rendering engine
-    const allCards = await Card.find({});
-    const cardMap = allCards.reduce((acc, c) => {
-      acc[c.cardId] = { name: c.name, image_url: c.image_url };
-      return acc;
-    }, {});
-
-    const enrichedDeck = deck.toObject();
-    const cId = Number(deck.costruttoreId);
-    enrichedDeck.id = String(deck._id); // Ensure id is string for filename
-    enrichedDeck.costruttore_name = cardMap[cId]?.name || 'Unknown Architect';
-    enrichedDeck.costruttore_image_url = cardMap[cId]?.image_url || '';
-    
-    enrichedDeck.cards = enrichedDeck.cards.map(c => {
-      const cardNumId = Number(c.cardId);
-      return {
-        ...c,
-        name: cardMap[cardNumId]?.name || 'Unknown Entity',
-        image_url: cardMap[cardNumId]?.image_url || ''
-      };
-    });
-
-    const tmpJsonPath = path.join(tmpDir, `deck_${id}.json`);
-    fs.writeFileSync(tmpJsonPath, JSON.stringify(enrichedDeck, null, 2));
-
-    // Dynamic Execution Environment
-    const scriptPath = path.join(backendDir, 'deckbuilder.py');
-    let pythonPath = 'python3'; // Default for Production (Render)
-
-    // Local override for dev environments using venv
-    const localVenv = path.join(backendDir, '../venv/bin/python3');
-    if (fs.existsSync(localVenv)) {
-      pythonPath = localVenv;
-    }
-
-    logger.info(`VIGIL_SYSTEM: Invoking Python synthesis engine [${pythonPath}] for deck ${id}`);
-
-    exec(`${pythonPath} ${scriptPath} ${tmpJsonPath} ${format}`, (error, stdout, stderr) => {
-      // Lifecycle: Purge temporary JSON manifest
-      if (fs.existsSync(tmpJsonPath)) fs.unlinkSync(tmpJsonPath);
-
-      if (error) {
-        logger.error(`PYTHON_SYNTHESIS_ERROR: ${error.message}`);
-        return res.status(500).json({ error: 'Fallimento del motore di sintesi durante la generazione degli asset.' });
-      }
-
-      const extension = format === 'pdf' ? 'pdf' : 'zip';
-      const filePath = path.join(exportsDir, `deck_export_${id}.${extension}`);
-
-      if (!fs.existsSync(filePath)) {
-        logger.error(`EXPORT_FILE_NOT_FOUND: ${filePath}`);
-        return res.status(500).json({ error: 'Artifact generato non trovato nel registro di esportazione.' });
-      }
-
-      const downloadName = format === 'tts' 
-        ? `Joule_${deck.name}_TTS_Kit.zip` 
-        : `Joule_${deck.name}_Decklist.pdf`;
-
-      res.download(filePath, downloadName, (err) => {
-        if (err) {
-          logger.error(`DOWNLOAD_DISPATCH_ERROR: ${err.message}`);
-        }
-      });
-    });
-
-  } catch (error) {
-    logger.error(`DECK_EXPORT_PROTOCOL_ERROR: ${error.message}`);
-    res.status(500).json({ error: 'Fallimento imprevisto del protocollo durante la sequenza di esportazione.' });
-  }
-};
 
 module.exports = {
   getDecks,
@@ -438,5 +337,4 @@ module.exports = {
   importDeck,
   deleteUserDecks,
   getDeckById,
-  exportDeck,
 };

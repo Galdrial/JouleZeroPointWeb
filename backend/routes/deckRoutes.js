@@ -10,8 +10,7 @@ const {
   voteDeck, 
   importDeck,
   deleteUserDecks,
-  getDeckById,
-  exportDeck
+  getDeckById
 } = require('../controllers/deckController');
 const { protect, optionalProtect } = require('../middleware/authMiddleware');
 
@@ -46,13 +45,6 @@ router.get('/public', getPublicDecks);
  * @access  Mixed (Optional Protection)
  */
 router.get('/:id', optionalProtect, getDeckById);
-
-/**
- * @route   GET /api/v1/decks/:id/export
- * @desc    Initiate PDF/TTS asset synthesis protocol
- * @access  Mixed (Optional Protection)
- */
-router.get('/:id/export', optionalProtect, exportDeck);
 
 /**
  * @route   POST /api/v1/decks
