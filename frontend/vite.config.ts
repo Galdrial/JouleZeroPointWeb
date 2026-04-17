@@ -1,9 +1,95 @@
 import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vitest/config';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // https://vite.dev/config/
 export default defineConfig( {
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    VitePWA( {
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.webp', 'favicon.ico', 'apple-touch-icon.png'],
+      manifest: {
+        name: 'Joule: Zero Point',
+        short_name: 'Joule ZP',
+        description: 'Il primo simulatore di conflitti temporali. Un Living Card Game competitivo basato sulla termodinamica.',
+        theme_color: '#0c121c',
+        background_color: '#0c121c',
+        display: 'standalone',
+        orientation: 'portrait-primary',
+        start_url: '/',
+        scope: '/',
+        lang: 'it',
+        categories: ['games', 'entertainment'],
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+        ],
+        shortcuts: [
+          {
+            name: 'Terminale',
+            short_name: 'Terminal',
+            url: '/terminale-punto-zero',
+            description: 'Accedi al Terminale AI',
+          },
+          {
+            name: 'Database Carte',
+            short_name: 'Carte',
+            url: '/cards',
+            description: 'Sfoglia i Frammenti',
+          },
+          {
+            name: 'Deckbuilder',
+            short_name: 'Mazzi',
+            url: '/deckbuilder',
+            description: 'Costruisci il tuo mazzo',
+          },
+        ],
+      },
+      workbox: {
+        // Cache static assets aggressively
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+        // Runtime caching for API calls — network first, fallback to cache
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\/api\/v1\/cards/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'joule-cards-cache',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 60 * 60 * 24, // 24h
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/.*\/api\/v1\/news/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'joule-news-cache',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60, // 1h
+              },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        // Enable PWA in dev mode so you can test it locally
+        enabled: true,
+      },
+    } ),
+  ],
   test: {
     globals: true,
     environment: 'jsdom',
