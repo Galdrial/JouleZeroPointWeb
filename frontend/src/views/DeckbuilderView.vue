@@ -321,7 +321,9 @@ const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
   );
 
   try {
-    const deckInfo = decks.value.find((d) => String(d.id) === String(deckId));
+    const deckInfo = decks.value.find((d: any) => 
+      String(d.id || d._id) === String(deckId)
+    );
     if (!deckInfo) throw new Error("Mazzo non trovato in cache.");
     
     const costruttoreCard = allCards.value.find((c) => String(c.id) === String(deckInfo.costruttoreId));
