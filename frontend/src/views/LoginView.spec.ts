@@ -47,6 +47,7 @@ describe( 'LoginView', () => {
         token: 'jwt-token',
         username: 'Simone',
         isAdmin: true,
+        email: 'simone@example.com',
       },
     } )
 
@@ -69,7 +70,7 @@ describe( 'LoginView', () => {
       email: 'simone@example.com',
       password: 'password123',
     } )
-    expect( mocks.setAuth ).toHaveBeenCalledWith( 'jwt-token', 'Simone', true )
+    expect( mocks.setAuth ).toHaveBeenCalledWith( 'jwt-token', 'Simone', true, 'simone@example.com' )
     expect( mocks.success ).toHaveBeenCalled()
 
     vi.advanceTimersByTime( 800 )

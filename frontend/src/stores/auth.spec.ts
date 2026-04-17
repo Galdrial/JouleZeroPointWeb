@@ -23,11 +23,11 @@ describe( 'auth store', () => {
     expect( localStorage.getItem( 'isAdmin' ) ).toBe( 'true' )
   } )
 
-  it( 'logout resets auth state and clears persistence', () => {
+  it( 'logout resets auth state and clears persistence', async () => {
     const store = useAuthStore()
     store.setAuth( 'jwt-token', 'simone', true, 'simone@joule.zero' )
 
-    store.logout()
+    await store.logout()
 
     expect( store.isLoggedIn ).toBe( false )
     expect( store.username ).toBe( '' )
