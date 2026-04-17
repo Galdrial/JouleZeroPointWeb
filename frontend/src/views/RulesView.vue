@@ -11,24 +11,17 @@ const handleDownload = async () => {
 
   isDownloading.value = true;
   notifications.info(
-    "Sincronizzazione in corso: Generazione manuale integrale...",
+    "Sincronizzazione in corso: Accesso ai file core...",
   );
 
   try {
-    const response = await api({
-      url: "/rules/download",
-      method: "GET",
-      responseType: "blob",
-    });
-
-    const blobUrl = window.URL.createObjectURL(new Blob([response.data]));
     const link = document.createElement("a");
-    link.href = blobUrl;
+    link.href = "/Regolamento_Joule_Zero_Point.pdf";
     link.setAttribute("download", "Regolamento_Joule_Zero_Point.pdf");
+    link.setAttribute("target", "_blank");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    window.URL.revokeObjectURL(blobUrl);
     notifications.success(
       "Acquisizione completata: Il manuale è ora disponibile nel tuo dispositivo.",
     );
