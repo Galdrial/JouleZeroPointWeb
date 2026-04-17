@@ -23,6 +23,7 @@
   <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white" alt="OpenAI" />
   <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
+  <img src="https://img.shields.io/badge/License-UNLICENSED-red.svg?style=flat-square" alt="License" />
 </p>
 
 ---
@@ -82,6 +83,10 @@ The beating heart of the project is the **Zero Point Terminal**, an AI-powered n
 - **Security:** Helmet, Rate Limiter, CORS, NoSQL Injection Sanitizer
 - **Logging:** Winston
 - **Email:** Nodemailer (SMTP — verification, password reset)
+
+### Scripts & Utility
+- **Database Management:** Node.js scripts in `backend/scripts/` (Seeding, Syncing)
+- **Legacy Components:** The Python percentage (approx. 2.7%) in the repository corresponds to the legacy core and development virtual environment (`venv`). The active production system is entirely powered by Node.js.
 
 ---
 
@@ -167,6 +172,7 @@ The Zero Point Terminal is engineered for stability under unstable AI conditions
 **Simone Camerano** — Design, Mechanics & Lead Development
 
 > Joule: Zero Point is registered on the **Patamu Registry** (deposit #284864).
+> © 2026 Simone Camerano. All Rights Reserved. Proprietary software.
 
 ---
 

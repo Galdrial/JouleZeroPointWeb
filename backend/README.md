@@ -69,7 +69,6 @@ Default API URL: `http://localhost:3000`
 - `GET /`
 - `GET /public`
 - `POST /`
-- `POST /`
 - `DELETE /:id`
 - `POST /:id/vote`
 - `POST /:id/import`
