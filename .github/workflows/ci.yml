@@ -71,3 +71,10 @@ jobs:
 
       - name: ✅ Verify startup (dry-run syntax check)
         run: node --check index.js
+
+      - name: 🧪 Run backend unit tests (excluding live AI tests)
+        run: npx jest --testPathIgnorePatterns="tests/ai_integrity" --detectOpenHandles --forceExit
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test-secret-ci
+          MONGODB_URI: ${{ secrets.MONGODB_URI_TEST }}
