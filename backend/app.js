@@ -28,7 +28,9 @@ const allowedOrigins = [
   'https://www.joulezeropoint.com',                     // www version
   'https://joulezeropoint.com',                         // apex version
   'http://localhost:5173',                              // Local development
-  'http://localhost:5174'                               // Alternative local development
+  'http://localhost:5174',                              // Alternative local development
+  'http://127.0.0.1:5173',                             // IP-based local dev
+  'http://127.0.0.1:5174'                              // IP-based local dev
 ];
 
 app.use( cors( {
@@ -36,6 +38,7 @@ app.use( cors( {
     if ( !origin || allowedOrigins.includes( origin ) ) {
       callback( null, true );
     } else {
+      logger.warn( `[SECURITY] CORS_REJECTED: Origin=${origin} non è nella whitelist.` );
       callback( new Error( 'Non autorizzato dalla politica CORS di Joule.' ) );
     }
   },

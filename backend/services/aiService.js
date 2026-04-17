@@ -45,6 +45,21 @@ const SYSTEM_RULE_HIERARCHY_BLOCK = `### GERARCHIA DELLE REGOLE (REGOLA DELLE EC
 1. IL TESTO DELLA CARTA VINCE SEMPRE: Se l'effetto di una carta (Frammento, Evento, Anomalia) o di un Costruttore (es. Eris) contraddice il regolamento generale, l'effetto della carta HA LA PRECEDENZA. 
 2. INVESTIGAZIONE OBBLIGATORIA: Prima di confermare un danno o un costo IT basato sul manuale, usa SEMPRE 'search_cards' per verificare se la carta o il Costruttore nominato hanno effetti che modificano quella regola.
 
+### PROTOCOLLO DI RICERCA TECNICA (QUERIES STRUTTURATE) ###
+Quando esegui una ricerca con 'search_cards', usa i parametri tecnici per massimizzare la precisione:
+- COMPARAZIONI: Per trovare 'la più costosa' o 'la più forte', usa 'sort_by' (es: cost_et, pep) con 'sort_order: desc' e 'limit: 1'.
+- FILTRI STATISTICI: Se l'utente chiede carte con 'alto PEP' o 'reazione forte', usa 'min_pep' o 'min_rp' (es: min_pep: 5).
+- CATEGORIE: 'Frammento' NON è un tipo nel database. I Frammenti sono registrati come 'Solido', 'Liquido', 'Gas' o 'Plasma'. Se cerchi un Frammento generico, lascia vuoto il parametro 'type'. Usa 'Anomalia', 'Evento' o 'Costruttore' per le altre categorie reali.
+- CONFRONTI: Se l'utente chiede di confrontare o elencare differenze tra due o più carte, effettua SEMPRE una chiamata tool 'search_cards' separata per OGNI carta menzionata. Non cercare mai più nomi in un'unica query testuale.
+- SINTESI DATI: Se trovi più risultati, riassumi le loro statistiche chiave in base alla domanda.
+
+### DIZIONARIO TECNICO (MAPPING TERMINOLOGICO) ###
+Traduci SEMPRE i termini dell'utente in termini tecnici per la query:
+- 'Temperatura/Calore/Freddo' -> Cerca 'TP' nel parametro 'query'.
+- 'Energia/Costo' -> Usa parametri 'min_et'/'max_et' o cerca 'ET'.
+- 'Attacco/Potenza/Forza' -> Usa parametro 'min_pep' o cerca 'PEP'.
+- 'Difesa/Resistenza/Reazione' -> Usa parametro 'min_rp' o cerca 'RP'.
+- 'Punti Vita/Salute' -> Riferito a 'IT' (Inversione Temporale).
 `;
 
 const SYSTEM_RULEBOOK_BLOCK = `=== REGOLAMENTO TECNICO STRUTTURATO ===
@@ -213,11 +228,20 @@ const AI_TOOLS = [
         type: "function",
         function: {
             name: "search_cards",
-            description: "Cerca carte, frammenti o effetti. Usalo per trovare dettagli tecnici, costi (ET), statistiche Pep/Rp e richieste comparative o di ranking come carte più costose o più economiche.",
+            description: "Cerca carte e frammenti nel database di Joule: Zero Point. Usalo per trovare dettagli tecnici, statistiche Pep/Rp, costi ET e per eseguire comparazioni o ranking (es: 'le più costose', 'le più forti').",
             parameters: {
                 type: "object",
-                properties: { query: { type: "string" } },
-                required: ["query"]
+                properties: {
+                    query: { type: "string", description: "Termine di ricerca libera per nome o effetto." },
+                    type: { type: "string", enum: ["Frammento", "Evento", "Anomalia", "Costruttore"], description: "Filtra per categoria." },
+                    min_et: { type: "number", description: "Costo energetico minimo." },
+                    max_et: { type: "number", description: "Costo energetico massimo." },
+                    min_pep: { type: "number", description: "PEP (potenziale di attacco) minimo." },
+                    min_rp: { type: "number", description: "RP (punti reazione/difesa) minimo." },
+                    sort_by: { type: "string", enum: ["cost_et", "pep", "rp", "name"], description: "Campo su cui ordinare." },
+                    sort_order: { type: "string", enum: ["asc", "desc"], description: "Direzione dell'ordinamento." },
+                    limit: { type: "number", description: "Numero massimo di risultati (default 15)." }
+                }
             }
         }
     }
@@ -248,24 +272,6 @@ const INJECTION_PATTERNS = [
  */
 function isLikelyInjection( text ) {
     return INJECTION_PATTERNS.some( pattern => pattern.test( text ) );
-}
-
-/**
- * Detects comparative requests for maximum ET cost.
- * @param {string} lowerQuery
- * @returns {boolean}
- */
-function isHighestCostQuery( lowerQuery ) {
-    return /(pi[uù]\s+costos|pi[uù]\s+care|costo\s+(pi[uù]\s+alto|massimo)|max\s*et|et\s+massimo)/i.test( lowerQuery );
-}
-
-/**
- * Detects comparative requests for minimum ET cost.
- * @param {string} lowerQuery
- * @returns {boolean}
- */
-function isLowestCostQuery( lowerQuery ) {
-    return /(pi[uù]\s+economich|meno\s+costos|costo\s+(pi[uù]\s+basso|minimo)|min\s*et|et\s+minimo)/i.test( lowerQuery );
 }
 
 // ============================================================================
@@ -477,53 +483,93 @@ function buildPromptMessages( { userMessage, userRecord, userIdentity, historyMe
 // ============================================================================
 
 /**
- * Searches cards in the database by name, type, or semantic similarity.
- * @param {string} query - Search term.
+ * Searches cards in the database with high-precision technical filters.
+ * 
+ * @param {Object} params - Structured search parameters.
  * @returns {Promise<Array|Object>}
  */
-async function searchCards( query ) {
+async function searchCards( params = {} ) {
     try {
-        const lowerQuery = query.toLowerCase();
+        const { query, type, min_et, max_et, min_pep, min_rp, sort_by, sort_order, limit } = params;
+        const mongoQuery = {};
         let results = [];
 
-        if ( isHighestCostQuery( lowerQuery ) ) {
-            const highestCostCard = await Card.findOne( { cost_et: { $ne: null } } )
-                .sort( { cost_et: -1, name: 1 } )
-                .lean();
-
-            if ( !highestCostCard ) {
-                return [];
-            }
-
-            results = await Card.find( { cost_et: highestCostCard.cost_et } )
-                .sort( { name: 1 } )
-                .lean();
-        } else if ( isLowestCostQuery( lowerQuery ) ) {
-            const lowestCostCard = await Card.findOne( { cost_et: { $ne: null } } )
-                .sort( { cost_et: 1, name: 1 } )
-                .lean();
-
-            if ( !lowestCostCard ) {
-                return [];
-            }
-
-            results = await Card.find( { cost_et: lowestCostCard.cost_et } )
-                .sort( { name: 1 } )
-                .lean();
-        } else if ( ['anomalia', 'frammento', 'evento', 'costruttore'].includes( lowerQuery ) ) {
-            results = await Card.find( { type: { $regex: new RegExp( `^${query}$`, 'i' ) } } ).limit( 20 );
-        } else {
-            const exactMatch = await Card.find( { name: { $regex: new RegExp( `^${query}$`, 'i' ) } } );
-            if ( exactMatch.length > 0 ) {
-                results = exactMatch;
+        // 1. Structural Filters
+        if ( type ) {
+            if ( type.toLowerCase() === 'frammento' ) {
+                mongoQuery.type = { $in: [/Solido/i, /Liquido/i, /Gas/i, /Plasma/i] };
             } else {
-                const queryVector = await generateEmbedding( query );
-                const cards = await Card.find( { embedding: { $exists: true, $ne: [] } } );
-                results = cards.map( c => ( {
-                    ...c.toObject(),
-                    score: cosineSimilarity( queryVector, c.embedding )
-                } ) ).sort( ( a, b ) => b.score - a.score ).slice( 0, 15 );
+                mongoQuery.type = { $regex: new RegExp( `^${type}$`, 'i' ) };
             }
+        }
+
+        // 2. Statistical Filters
+        if ( min_et !== undefined || max_et !== undefined ) {
+            mongoQuery.cost_et = {};
+            if ( min_et !== undefined ) mongoQuery.cost_et.$gte = min_et;
+            if ( max_et !== undefined ) mongoQuery.cost_et.$lte = max_et;
+        }
+
+        if ( min_pep !== undefined ) {
+            mongoQuery.pep = { $gte: min_pep };
+        }
+
+        if ( min_rp !== undefined ) {
+            mongoQuery.rp = { $gte: min_rp };
+        }
+
+        // 3. Hybrid Search Logic (Regex -> Text Index -> Semantic)
+        if ( query ) {
+            const queryRegex = new RegExp( query, 'i' );
+            
+            // Priority 1: Exact or Partial Name Match (Regex) within filters
+            const nameMatches = await Card.find( { ...mongoQuery, name: queryRegex } ).limit( limit || 15 );
+            
+            if ( nameMatches.length > 0 ) {
+                results = nameMatches;
+            } else {
+                // Priority 2: Keyword match in Effect (Regex) within filters
+                const effectMatches = await Card.find( { ...mongoQuery, effect: queryRegex } ).limit( limit || 15 );
+                
+                if ( effectMatches.length > 0 ) {
+                    results = effectMatches;
+                } else {
+                    // Priority 3: Semantic fallback (Vector Similarity) for conceptual queries
+                    try {
+                        const queryVector = await generateEmbedding( query );
+                        const filteredCards = await Card.find( { ...mongoQuery, embedding: { $exists: true, $ne: [] } } );
+                        
+                        const semanticResults = filteredCards
+                            .map( c => ( {
+                                ...c.toObject(),
+                                score: cosineSimilarity( queryVector, c.embedding )
+                            } ) )
+                            .filter( c => c.score > 0.7 ) // Calibrated threshold
+                            .sort( ( a, b ) => b.score - a.score )
+                            .slice( 0, limit || 15 );
+                            
+                        if ( semanticResults.length > 0 ) {
+                            results = semanticResults;
+                        }
+                    } catch ( embedError ) {
+                        logger.error( `SEMANTIC_FAIL: ${embedError.message}` );
+                    }
+                }
+            }
+        }
+
+        // 4. Execution with Sorting and Limits (for technical listing or broad search)
+        if ( results.length === 0 ) {
+            let queryExec = Card.find( mongoQuery );
+
+            if ( sort_by ) {
+                const order = sort_order === 'desc' ? -1 : 1;
+                queryExec = queryExec.sort( { [sort_by]: order, name: 1 } );
+            } else if ( !query ) {
+                queryExec = queryExec.sort( { name: 1 } );
+            }
+
+            results = await queryExec.limit( limit || 15 ).lean();
         }
 
         return results.map( c => ( {
@@ -534,11 +580,13 @@ async function searchCards( query ) {
             difesa_rp: c.rp,
             effetto: c.effect
         } ) );
+
     } catch ( error ) {
         logger.error( `SEARCH_CARDS_FAILURE: ${error.message}` );
         return { error: "Errore di sincronizzazione con il database della Matrice durante il recupero delle carte." };
     }
 }
+
 
 /**
  * Executes model-requested tool calls and returns tool result messages.
@@ -548,12 +596,22 @@ async function searchCards( query ) {
 async function executeToolCalls( toolCalls ) {
     const toolResults = [];
     for ( const toolCall of toolCalls ) {
+        const toolName = toolCall.function.name;
         const args = JSON.parse( toolCall.function.arguments );
-        const result = await searchCards( args.query );
+        
+        logger.info( `AI_TOOL_EXECUTION: Name=${toolName}, Args=${JSON.stringify(args)}` );
+        
+        let result;
+        if ( toolName === 'search_cards' ) {
+            result = await searchCards( args );
+        } else {
+            result = { error: `Strumento '${toolName}' non riconosciuto dal Terminale.` };
+        }
+
         toolResults.push( {
             tool_call_id: toolCall.id,
             role: "tool",
-            name: "search_cards",
+            name: toolName,
             content: JSON.stringify( result )
         } );
     }

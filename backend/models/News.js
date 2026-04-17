@@ -60,6 +60,11 @@ const newsSchema = new mongoose.Schema({
     type: Number, // Priority sequencing for featured items
     default: null,
   },
+  embedding: {
+    type: [Number], // Vector representation for semantic search
+    default: [],
+    index: false,
+  },
 }, {
   // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true,
