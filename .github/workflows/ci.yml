@@ -41,6 +41,12 @@ jobs:
       - name: 🧪 Run unit tests
         run: npm run test
 
+      - name: 🎭 Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: 🤖 Run E2E tests
+        run: npx playwright test
+
       - name: 🏗️ Build frontend
         run: npm run build
 
