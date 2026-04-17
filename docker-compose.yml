@@ -1,0 +1,44 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: joule-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=development
+      - FRONTEND_URL=http://localhost:5174
+    depends_on:
+      - mongodb
+    networks:
+      - joule-network
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: joule-frontend
+    ports:
+      - "5174:80" # Maps local port 5174 to Nginx port 80
+    networks:
+      - joule-network
+    depends_on:
+      - backend
+
+  mongodb:
+    image: mongo:latest
+    container_name: joule-mongodb
+    ports:
+      - "27017:27017" # Mapping local port for accessibility outside Docker if needed
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - joule-network
+
+networks:
+  joule-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

@@ -81,6 +81,7 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+docker-compose.override.yml
 
 # --- File di grandi dimensioni (limite GitHub 100MB) ---
 archivio.pdf
