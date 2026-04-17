@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/favicon.webp" width="96" alt="Joule: Zero Point Logo" />
+  <img src="./frontend/public/favicon.webp" width="96" alt="Joule: Zero Point Logo" />
 </p>
 
 <h1 align="center">JOULE: ZERO POINT</h1>
@@ -13,6 +13,12 @@
   <a href="https://www.joulezeropoint.com/">
     <img src="https://img.shields.io/badge/🌐_Live-joulezeropoint.com-00f2ff?style=for-the-badge&labelColor=0a0e1a" alt="Live Site" />
   </a>
+  <a href="https://discord.gg/csXJz6zB">
+    <img src="https://img.shields.io/badge/💬_Discord-Join_Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
+  </a>
+  <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132">
+    <img src="https://img.shields.io/badge/🎮_Play_on_TTS-Steam_Workshop-171a21?style=for-the-badge&logo=steam&logoColor=white" alt="Steam Workshop" />
+  </a>
 </p>
 
 <p align="center">
@@ -20,9 +26,9 @@
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node.js" />
   <img src="https://img.shields.io/badge/MongoDB_Atlas-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Docker_Compose-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/OpenAI-412991?style=flat-square&logo=openai&logoColor=white" alt="OpenAI" />
-  <img src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" alt="Vercel" />
   <img src="https://img.shields.io/badge/License-UNLICENSED-red.svg?style=flat-square" alt="License" />
 </p>
 
@@ -39,16 +45,16 @@ The beating heart of the project is the **Zero Point Terminal**, an AI-powered n
 ## 🖼️ Screenshots
 
 ### 🏠 Home — The Zero Point Atmosphere
-![Home](docs/screenshots/home.webp)
+![Home](./docs/screenshots/home.webp)
 
 ### 🖥️ Zero Point Terminal — AI Neural Interface
-![Terminal](docs/screenshots/terminal.webp)
+![Terminal](./docs/screenshots/terminal.webp)
 
 ### 🎴 Fragment Database — Card Discovery
-![Database](docs/screenshots/database.webp)
+![Database](./docs/screenshots/database.webp)
 
 ### 🛠️ Deckbuilder — Tactical Workshop
-![Deckbuilder](docs/screenshots/deckbuilder.webp)
+![Deckbuilder](./docs/screenshots/deckbuilder.webp)
 
 ---
 
@@ -65,86 +71,49 @@ The beating heart of the project is the **Zero Point Terminal**, an AI-powered n
 
 ---
 
+## 🚀 Quick Start with Docker (Recommended)
+
+The entire ecosystem (Frontend, Backend, and local MongoDB) is orchestrated via Docker Compose for an instant setup.
+
+```bash
+git clone https://github.com/Galdrial/JouleZeroPointWeb.git
+cd JouleZeroPointWeb
+docker compose up --build
+```
+> [!TIP]
+> The frontend will be available at `http://localhost:5174`. The backend will use your `.env` configuration for Atlas, or can be pointed to the local containerized MongoDB.
+
+---
+
 ## 🧪 Tech Stack
 
 ### Frontend
 - **Framework:** Vue 3 (Composition API) + TypeScript
 - **Build Engine:** Vite
 - **State Management:** Pinia
-- **API Client:** Axios
+- **Styling:** Vanilla CSS — custom cyberpunk design system
 - **Synthesis Engine:** jsPDF (PDF) & JSZip (TTS)
-- **Styling:** Vanilla CSS — custom cyberpunk design system (glassmorphism, dark mode)
-- **Utilities:** Marked (Markdown), DOMPurify (sanitization)
 
 ### Backend
 - **Runtime:** Node.js & Express
 - **Database:** MongoDB Atlas (Mongoose ODM)
-- **AI Engine:** OpenAI SDK (Gemini/GPT integration)
+- **AI Engine:** OpenAI SDK (Neural Terminal)
 - **Security:** Helmet, Rate Limiter, CORS, NoSQL Injection Sanitizer
-- **Logging:** Winston
-- **Email:** Nodemailer (SMTP — verification, password reset)
-
-### Scripts & Utility
-- **Database Management:** Node.js scripts in `backend/scripts/` (Seeding, Syncing)
-- **Legacy Components:** The Python percentage (approx. 2.7%) in the repository corresponds to the legacy core and development virtual environment (`venv`). The active production system is entirely powered by Node.js.
-
----
-
-## 🚀 Local Installation
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/Galdrial/JouleZeroPointWeb.git
-cd JouleZeroPointWeb
-```
-
-### 2. Backend setup
-
-```bash
-cd backend
-npm install
-cp .env.example .env   # Fill in your keys (see .env.example)
-npm run dev
-```
-
-### 3. Frontend setup
-
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
-
-> The frontend Vite proxy is pre-configured to forward `/api` calls to `http://localhost:3000`. No extra config needed for local dev.
+- **Infrastructure:** Docker & Docker Compose
 
 ---
 
 ## 🔐 Environment Variables
 
-Copy `backend/.env.example` and fill in the required values:
+Copy `backend/.env.example` to `backend/.env` and fill in the required values:
 
 | Variable | Description |
 |---|---|
-| `PORT` | Backend server port (default: `3000`) |
 | `JWT_SECRET` | Secret key for signing JWTs |
 | `MONGODB_URI` | MongoDB Atlas connection string |
 | `OPENAI_API_KEY` | OpenAI API key for the AI Terminal |
 | `ASSISTANT_ID` | OpenAI Assistant ID |
 | `SMTP_HOST / USER / PASS` | SMTP credentials for transactional email |
-| `FRONTEND_URL` | Base URL for email links (e.g. `https://joulezeropoint.com`) |
-| `ADMIN_KEY` | Secret key for admin news management |
-
----
-
-## 🛡️ AI Resilience Architecture
-
-The Zero Point Terminal is engineered for stability under unstable AI conditions:
-
-- **Context Guard:** Automatic history truncation to prevent token limit overflows
-- **Safety Post-Audit:** Outbound response analysis to prevent prompt leaks / out-of-character replies
-- **Recovery UX:** Integrated Retry mechanism that preserves user input on communication error
-- **Rate Limiting:** Per-IP request throttling to prevent AI API abuse
 
 ---
 
@@ -152,22 +121,13 @@ The Zero Point Terminal is engineered for stability under unstable AI conditions
 
 | Layer | Platform |
 |---|---|
-| Frontend | Vercel (auto-deploy on `main`) |
-| Backend | DigitalOcean (self-managed, Docker-ready) |
+| Frontend | Vercel (Production) |
+| Backend | DigitalOcean / Private VPS |
 | Database | MongoDB Atlas |
-| Media | Cloudinary |
 
 ---
 
-## 📚 Contributing
-
-- Contributor guide: [CONTRIBUTING.md](CONTRIBUTING.md)
-- Language policy: **English** for all code comments, docs, commits, and PRs
-- Comment policy: explain **why**, not what the code does line-by-line
-
----
-
-## 👤 Author
+## 👤 Author & Legal
 
 **Simone Camerano** — Design, Mechanics & Lead Development
 
