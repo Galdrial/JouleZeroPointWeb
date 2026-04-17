@@ -60,7 +60,7 @@ The beating heart of the project is the **Zero Point Terminal**, an AI-powered n
 | 🛠️ **Deckbuilder** | Create, save, and share tactical decks with Constructor hero |
 | 📜 **Rulebook & Lore** | Integrated Rulebook 5.0 and News/Lore communication hub |
 | 🔐 **Identity System** | JWT auth, email verification, alias management, password recovery |
-| 📤 **Deck Export** | Export decklists as PDF or Tabletop Simulator (TTS) format |
+| 📤 **Deck Export** | Client-side generation of PDFs and TTS kits (no backend dependency) |
 
 ---
 
@@ -71,6 +71,7 @@ The beating heart of the project is the **Zero Point Terminal**, an AI-powered n
 - **Build Engine:** Vite
 - **State Management:** Pinia
 - **API Client:** Axios
+- **Synthesis Engine:** jsPDF (PDF) & JSZip (TTS)
 - **Styling:** Vanilla CSS — custom cyberpunk design system (glassmorphism, dark mode)
 - **Utilities:** Marked (Markdown), DOMPurify (sanitization)
 

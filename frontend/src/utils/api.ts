@@ -74,7 +74,7 @@ const api = axios.create( {
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true // Importante se gestisci cookie/sessioni in the future
+  withCredentials: true // Important for future cookie/session management
 } );
 
 /**

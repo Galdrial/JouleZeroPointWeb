@@ -39,10 +39,10 @@ const sendVerificationEmail = async ( email, token ) => {
   const verifyUrl = `${frontendBase}/verify-email/${token}`;
 
   // EMERGENCY LOG: Allows recovering the link from server logs if email delivery fails
-  logger.info( `VIGIL_SYSTEM: [MANUAL_OVERRIDE] Per l'utente ${email}, link di attivazione: ${verifyUrl}` );
+  logger.info( `VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, activation link: ${verifyUrl}` );
 
   if ( !process.env.SMTP_USER || !process.env.SMTP_PASS ) {
-    logger.warn( "SMTP_WARNING: Credenziali mancanti. L'email non verrà inviata. Usa il link di override sopra." );
+    logger.warn( "SMTP_WARNING: Missing credentials. Email will not be sent. Use the override link above." );
     return;
   }
 
@@ -68,7 +68,7 @@ const sendVerificationEmail = async ( email, token ) => {
     } );
     logger.info( `VIGIL_SYSTEM: Real Verification Email Successfully dispatched to ${email} (via ${fromAddress})` );
   } catch ( error ) {
-    logger.error( `EMAIL_DISPATCH_ERROR: ${error.message} - Accertati che le variabili SMTP siano configurate e che il provider accetti connessioni esterne.` );
+    logger.error( `EMAIL_DISPATCH_ERROR: ${error.message} - Ensure SMTP variables are configured and the provider accepts external connections.` );
   }
 };
 
@@ -76,10 +76,10 @@ const sendPasswordResetEmail = async ( email, token ) => {
   const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
   const resetUrl = `${frontendBase}/reset-password/${token}`;
 
-  logger.info( `VIGIL_SYSTEM: [MANUAL_OVERRIDE] Per l'utente ${email}, link di reset: ${resetUrl}` );
+  logger.info( `VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, reset link: ${resetUrl}` );
 
   if ( !process.env.SMTP_USER || !process.env.SMTP_PASS ) {
-    logger.warn( "SMTP_WARNING: Credenziali mancanti per il reset password." );
+    logger.warn( "SMTP_WARNING: Missing credentials for password reset." );
     return;
   }
   try {

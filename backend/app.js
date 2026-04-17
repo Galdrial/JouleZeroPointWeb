@@ -24,11 +24,11 @@ app.set( 'trust proxy', 1 );
  * Configures Cross-Origin Resource Sharing (CORS) and standard JSON body parsing.
  */
 const allowedOrigins = [
-  process.env.FRONTEND_URL,                             // Dominio da variabile d'ambiente
-  'https://www.joulezeropoint.com',                     // Versione con www
-  'https://joulezeropoint.com',                         // Versione senza www
-  'http://localhost:5173',                              // Dev locale
-  'http://localhost:5174'                               // Dev locale alternativo
+  process.env.FRONTEND_URL,                             // Domain from environment variable
+  'https://www.joulezeropoint.com',                     // www version
+  'https://joulezeropoint.com',                         // apex version
+  'http://localhost:5173',                              // Local development
+  'http://localhost:5174'                               // Alternative local development
 ];
 
 app.use( cors( {
@@ -93,7 +93,7 @@ app.use( hpp() );
 
 // Uptime liveness ping: excluded from rate limiter (lightweight monitor endpoint)
 app.get( '/ping', ( req, res ) => {
-  logger.info( '[MATRIX] Pulsazione rilevata (Root).' );
+  logger.info( '[MATRIX] Pulse detected (Root).' );
   res.status( 200 ).send( 'pong' );
 } );
 
@@ -145,7 +145,7 @@ app.get( '/api/v1/health', ( req, res ) => {
   const isHealthy = dbReadyState === 1;
 
   res.status( isHealthy ? 200 : 503 ).json( {
-    status: isHealthy ? 'OPERATIVO' : 'DEGRADATO',
+    status: isHealthy ? 'OPERATIONAL' : 'DEGRADED',
     timestamp: new Date().toISOString(),
     service: 'nucleo-punto-zero',
     uptimeSeconds: Math.floor( process.uptime() ),

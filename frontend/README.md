@@ -1,6 +1,6 @@
 # Joule Zero Point - Frontend
 
-Vue 3 + Vite + TypeScript client for Joule: Zero Point.
+Vue 3 + Vite + TypeScript client for Joule: Zero Point. Features a fully decentralized, client-side export engine for PDF architecture.
 
 ## Quick Start (Local)
 
@@ -51,6 +51,7 @@ npm run test:e2e
 ## Notes
 
 - API traffic is proxied through Vite (`/api` -> backend on port `3000`) during local development.
+- **Client-side Synthesis**: All PDF and Tabletop Simulator (TTS) assets are generated in-memory using `jsPDF` and `JSZip`. This ensures zero server load and enhanced user privacy.
 - Chat-related backend tuning variables (optional):
   - `CHAT_MAX_MESSAGE_LENGTH` (default: `1200`)
   - `CHAT_RATE_WINDOW_MS` (default: `60000`)

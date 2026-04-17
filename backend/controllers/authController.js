@@ -329,7 +329,7 @@ const resendVerificationEmail = async ( req, res ) => {
       return res.status( 400 ).json( { error: 'Account già verificato.' } );
     }
 
-    // Rigenera il token
+    // Regenerate the token
     const verificationToken = crypto.randomBytes( 32 ).toString( 'hex' );
     user.verificationToken = verificationToken;
     await user.save();

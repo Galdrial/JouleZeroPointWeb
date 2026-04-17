@@ -1,6 +1,6 @@
 # Joule: Zero Point - Backend
 
-Express + MongoDB API layer for authentication, deck management, news, and AI terminal features.
+High-performance Express + MongoDB API layer for authentication, deck management, news, and AI neural interface. Fully decentralized from legacy processing engines.
 
 ## Quick Start (Local)
 
@@ -69,9 +69,12 @@ Default API URL: `http://localhost:3000`
 - `GET /`
 - `GET /public`
 - `POST /`
+- `POST /`
 - `DELETE /:id`
 - `POST /:id/vote`
 - `POST /:id/import`
+
+> Note: PDF/TTS export generation has been migrated to the client-side for enhanced privacy and reduced server latency.
 
 ### Terminal (`/api/v1/terminal`)
 
