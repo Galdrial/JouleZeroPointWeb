@@ -19,6 +19,7 @@
   <a href="https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132">
     <img src="https://img.shields.io/badge/🎮_Play_on_TTS-Steam_Workshop-171a21?style=for-the-badge&logo=steam&logoColor=white" alt="Steam Workshop" />
   </a>
+  <img src="https://github.com/Galdrial/JouleZeroPointWeb/actions/workflows/ci.yml/badge.svg" alt="CI Status" />
 </p>
 
 <p align="center">
