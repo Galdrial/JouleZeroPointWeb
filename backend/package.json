@@ -6,14 +6,16 @@
   "scripts": {
     "test": "jest --detectOpenHandles",
     "test:ai": "jest tests/ai_integrity.test.js --detectOpenHandles",
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch './**/*.ts' --ext 'ts,json' --exec 'ts-node' index.ts",
+    "build": "tsc && mkdir -p dist/config && cp config/*.json dist/config/ && cp -r public dist/ || true"
   },
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
   "type": "commonjs",
   "dependencies": {
+    "@types/qs": "^6.15.0",
     "axios": "^1.13.6",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.5.1",
@@ -33,13 +35,21 @@
     "node-cron": "^4.2.1",
     "nodemailer": "^8.0.4",
     "openai": "^6.32.0",
+    "qs": "^6.15.1",
     "sqlite3": "^6.0.1",
     "winston": "^3.19.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/hpp": "^0.2.7",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.1.0",
     "@types/node": "^25.5.0",
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^8.0.0",
+    "@types/supertest": "^7.2.0",
     "jest": "^30.3.0",
     "mongodb-memory-server": "^11.0.1",
     "nodemon": "^3.1.14",
