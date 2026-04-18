@@ -13,10 +13,18 @@ import * as path from 'path';
  */
 
 // --- Constants & Config ---
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-    timeout: 60000,
-});
+let _openai: OpenAI | null = null;
+
+const getOpenAIClient = () => {
+    if (!_openai) {
+        const apiKey = process.env.OPENAI_API_KEY || 'test-dummy-key';
+        _openai = new OpenAI({
+            apiKey,
+            timeout: 60000,
+        });
+    }
+    return _openai;
+};
 
 const PRIMARY_MODEL = 'gpt-4o';
 const FALLBACK_MODEL = 'gpt-4o-mini';
@@ -210,6 +218,7 @@ export async function streamChat(
     for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         const model = attempt < MAX_RETRIES ? PRIMARY_MODEL : FALLBACK_MODEL;
         try {
+            const openai = getOpenAIClient();
             const stream = await openai.chat.completions.create({
                 model,
                 messages: messages,
@@ -268,6 +277,7 @@ export async function streamChat(
                     });
                 }
 
+                const openai = getOpenAIClient();
                 const secondStream = await openai.chat.completions.create({
                     model,
                     messages: [
