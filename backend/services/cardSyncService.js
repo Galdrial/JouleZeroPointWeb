@@ -95,6 +95,10 @@ const syncCards = async () => {
             total: externalCards.length
         };
 
+        // Purge the Quantum Cache to ensure fresh data (including virtual 'id') is served
+        const { clearCache } = require('./cardService');
+        clearCache();
+
         logger.info(`SYNC_ENGINE: Synchronization successful. Updated/Inserted: ${summary.updated}/${summary.total} nodes.`);
         return summary;
 
