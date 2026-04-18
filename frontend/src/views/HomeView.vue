@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useAuthStore } from "../stores/auth";
+import { useHead } from "@unhead/vue";
 import api from "../utils/api";
 import { resolveNewsImage } from "../utils/imageResolver";
 import {
@@ -8,6 +9,29 @@ import {
   isStoryCategory,
   type NewsCategory,
 } from "../utils/newsCategory";
+
+// SEO Optimization: Primary Metadata
+useHead({
+  title: "Joule: Zero Point - Il Gioco di Carte Sci-Fi Strategico",
+  meta: [
+    {
+      name: "description",
+      content: "Entra nel Punto Zero. Manipola il tempo e la materia in un mondo Sci-Fi e sfida la realtà in questo gioco di carte strategico unico.",
+    },
+    {
+      property: "og:title",
+      content: "Joule: Zero Point - Card Game Strategico",
+    },
+    {
+      property: "og:description",
+      content: "Domina il Passato, Presente e Futuro. Un'esperienza di gioco Sci-Fi strategica basata sulla termodinamica.",
+    },
+    {
+      name: "twitter:title",
+      content: "Joule: Zero Point - Il Tempo è la tua Arma",
+    },
+  ],
+});
 
 /**
  * NewsPreview Data Structure

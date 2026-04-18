@@ -1,16 +1,19 @@
-# Costruttori, Crawler e Spider: benvenuti nella matrice Joule.
-# Regolamento Globale per l'indicizzazione.
+# [JOULE: ZERO POINT] CRAWLER DIRECTIVES
+# Protocol: Zero Point Indexing v1.0
 
 User-agent: *
 Allow: /
+Allow: /news
+Allow: /rules
 
-# Zone proibite (Terminali Riservati / Aree Amministrazione)
-Disallow: /admin
-Disallow: /admin-news
-Disallow: /login
-Disallow: /register
-Disallow: /profile
-Disallow: /*?user=
+# RESTRICTED TERMINALS (Security & Admin)
+Disallow: /admin/
+Disallow: /admin-news/
+Disallow: /login/
+Disallow: /register/
+Disallow: /profile/
+Disallow: /deck-builder/
+Disallow: /api/
 
-# Sitemaps: placeholder (inserire l'URL vero del sito in produzione)
-# Sitemap: https://[DOMINIO_OG_PLACEHOLDER]/sitemap.xml
+# SITEMAP COORDINATES
+Sitemap: https://joule-zeropoint.com/sitemap.xml

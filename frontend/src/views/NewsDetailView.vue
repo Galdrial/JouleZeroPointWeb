@@ -2,12 +2,40 @@
 import { computed, onMounted, ref } from "vue";
 import api from "../utils/api";
 import { useRoute } from "vue-router";
+import { useHead } from "@unhead/vue";
 import {
   getNewsCategoryLabel,
   isStoryCategory,
   type NewsCategory,
 } from "../utils/newsCategory";
 import { resolveNewsImage } from "../utils/imageResolver";
+
+// SEO Optimization: Dynamic News & Lore Metadata
+useHead({
+  title: computed(() => news.value ? `${news.value.title} - Joule News` : "Caricamento News..."),
+  meta: [
+    {
+      name: "description",
+      content: computed(() => news.value?.summary || "Leggi le ultime novità e la storia ufficiale di Joule: Zero Point."),
+    },
+    {
+      property: "og:title",
+      content: computed(() => news.value?.title),
+    },
+    {
+      property: "og:description",
+      content: computed(() => news.value?.summary),
+    },
+    {
+      property: "og:image",
+      content: computed(() => news.value?.imageUrl ? resolveNewsImage(news.value.imageUrl) : ""),
+    },
+    {
+      name: "twitter:card",
+      content: "summary_large_image",
+    },
+  ],
+});
 
 /**
  * NewsDetail Data Structure

@@ -12,11 +12,13 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "generate:sitemap": "node scripts/generate-sitemap.js"
   },
   "dependencies": {
     "@types/dompurify": "^3.0.5",
     "@types/highlight.js": "^9.12.4",
+    "@unhead/vue": "^3.0.4",
     "axios": "^1.13.6",
     "dompurify": "^3.3.3",
     "highlight.js": "^11.11.1",

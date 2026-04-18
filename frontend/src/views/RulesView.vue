@@ -1,6 +1,27 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useHead } from "@unhead/vue";
 import { useNotificationStore } from "../stores/notificationStore";
+
+// SEO Optimization: Rules & Strategy Metadata
+useHead({
+  title: "Regolamento e Strategia - Joule: Zero Point",
+  meta: [
+    {
+      name: "description",
+      content: "Consulta il regolamento ufficiale di Joule: Zero Point. Impara le meccaniche di slittamento temporale, gestione dell'entropia e strategie avanzate per dominare il Punto Zero.",
+    },
+    {
+      property: "og:title",
+      content: "Joule: Zero Point - Regolamento v5.0",
+    },
+    {
+      property: "og:description",
+      content: "Tutte le direttive operative e le meccaniche di gioco per diventare un Costruttore esperto nel Punto Zero.",
+    },
+  ],
+});
+
 const isDownloading = ref(false);
 const notifications = useNotificationStore();
 
@@ -43,7 +64,7 @@ const handleDownload = async () => {
     <section class="glass-panel intro-panel">
       <div class="intro-flex">
         <div class="intro-text">
-          <h1>&gt;_ DIRETTIVE OPERATIVE: JOULE ZERO POINT v5.0</h1>
+          <h2>&gt;_ DIRETTIVE OPERATIVE: JOULE ZERO POINT v5.0</h2>
           <p class="copyright-notice">
             © 2026 Simone Camerano. Tutti i diritti riservati. Opera depositata
             su Patamu Registry, n. 284864.
