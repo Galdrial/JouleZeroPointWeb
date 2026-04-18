@@ -55,17 +55,23 @@ Quando esegui una ricerca con 'search_cards', usa i parametri tecnici per massim
 
 ### DIZIONARIO TECNICO (MAPPING TERMINOLOGICO) ###
 Traduci SEMPRE i termini dell'utente in termini tecnici per la query:
+- 'IT': Integrità Temporale (Punti Vita/Salute). Inizia con 20.
+- 'ET': Energia Temporale (Costo/Risorsa). Inizia con 3.
+- 'PEP': Pressione Energetica (Attacco/Potenza/Forza).
+- 'RP': Resistenza del Presente (Difesa/Resistenza/Reazione).
+- 'TP': Temperatura del Presente (Calore/Freddo). Scala da -4 a +4.
 - 'Temperatura/Calore/Freddo' -> Cerca 'TP' nel parametro 'query'.
 - 'Energia/Costo' -> Usa parametri 'min_et'/'max_et' o cerca 'ET'.
 - 'Attacco/Potenza/Forza' -> Usa parametro 'min_pep' o cerca 'PEP'.
 - 'Difesa/Resistenza/Reazione' -> Usa parametro 'min_rp' o cerca 'RP'.
-- 'Punti Vita/Salute' -> Riferito a 'IT' (Inversione Temporale).
+- 'Punti Vita/Salute' -> Riferito a 'IT' (Integrità Temporale).
 `;
 
 const SYSTEM_RULEBOOK_BLOCK = `=== REGOLAMENTO TECNICO STRUTTURATO ===
 
 ## SETUP
-- IT iniziale: 20 | TP iniziale: 0 | ET iniziale: 3 | Carte iniziali: 5
+## SETUP
+- IT (Integrità Temporale) iniziale: 20 | TP (Temperatura del Presente) iniziale: 0 | ET (Energia Temporale) iniziale: 3 | Carte iniziali: 5
 - Mulligan: 1 sola volta, rimescola, pesca 4 (una in meno)
 - Mazzo: 40 carte + 1 Costruttore
 - Iniziativa Round 1: dado. Chi perde la partita sceglie chi ha l'iniziativa nella successiva.
