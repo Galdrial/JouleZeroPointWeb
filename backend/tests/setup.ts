@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import dotenv from 'dotenv';
+
+// Load environment variables for tests. 
+// Provide a dummy key if missing to prevent OpenAI library initialization crash in CI.
+dotenv.config();
+process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY || 'test-dummy-key';
 
 /**
  * Test Database Helpers — Joule Zero Point (TypeScript)

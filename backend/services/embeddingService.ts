@@ -1,8 +1,17 @@
 import { OpenAI } from 'openai';
 import logger from '../config/logger';
 
-// Initialize the OpenAI interface with the environment-provided API key.
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Lazy initialization of the OpenAI interface to prevent boot-time crashes when keys are missing.
+let _openai: OpenAI | null = null;
+
+const getOpenAIClient = () => {
+    if (!_openai) {
+        const apiKey = process.env.OPENAI_API_KEY || 'test-dummy-key';
+        _openai = new OpenAI({ apiKey });
+    }
+    return _openai;
+};
+
 
 /**
  * Generates a high-dimensional vector embedding for the provided text.
@@ -17,6 +26,7 @@ export const generateEmbedding = async (text: string): Promise<number[]> => {
     try {
         if (!text || typeof text !== 'string') return [];
         
+        const openai = getOpenAIClient();
         const response = await openai.embeddings.create({
             model: "text-embedding-3-small",
             input: text.replace(/\n/g, " "),
