@@ -6,7 +6,10 @@ WORKDIR /app
 # Copy dependency manifests
 COPY package*.json ./
 
-# Install ALL dependencies (including devDependencies like tsc)
+# Force NODE_ENV to development to ensure devDependencies (like tsc) are installed
+ENV NODE_ENV=development
+
+# Install ALL dependencies
 RUN npm ci
 
 # Copy the source code and configuration
