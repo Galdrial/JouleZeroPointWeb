@@ -1,17 +1,21 @@
-name: CI — Joule Zero Point
+name: CI — Joule Zero Point (Optimized)
 
 on:
   push:
     branches: [main, dev]
+    paths-ignore:
+      - '**/*.md'
+      - 'docs/**'
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # ─────────────────────────────────────────
-  # FRONTEND: TypeScript check + Unit Tests + Build
+  # FRONTEND: TypeScript + Unit Tests + Build
   # ─────────────────────────────────────────
   frontend:
     name: Frontend CI
@@ -41,17 +45,11 @@ jobs:
       - name: 🧪 Run unit tests
         run: npm run test
 
-      - name: 🎭 Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
-
-      - name: 🤖 Run E2E tests
-        run: npx playwright test
-
       - name: 🏗️ Build frontend
         run: npm run build
 
   # ─────────────────────────────────────────
-  # BACKEND: Dependency install + Lint check
+  # BACKEND: Install + Tests
   # ─────────────────────────────────────────
   backend:
     name: Backend CI
@@ -75,10 +73,49 @@ jobs:
       - name: 📦 Install dependencies
         run: npm ci
 
-      - name: ✅ Verify startup (dry-run syntax check)
-        run: node --check index.js
-
-      - name: 🧪 Run backend unit tests (excluding live AI tests)
+      - name: 🧪 Run backend unit tests
         run: npm test
         env:
           NODE_ENV: test
+
+  # ─────────────────────────────────────────
+  # E2E TESTS: Solo PR o manuale
+  # ─────────────────────────────────────────
+  e2e:
+    name: Playwright E2E Tests
+    runs-on: ubuntu-latest
+    needs: [frontend, backend]
+
+    if: |
+      github.event_name == 'pull_request' ||
+      github.event_name == 'workflow_dispatch'
+
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: 📦 Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: 💾 Cache Playwright Browsers
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('frontend/package-lock.json') }}
+
+      - name: 🎭 Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: 🤖 Run E2E tests
+        run: npx playwright test
