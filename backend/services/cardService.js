@@ -23,7 +23,8 @@ const getCachedCards = async () => {
     try {
         logger.info('VIGIL_SYSTEM: Fetching master card records from MongoDB Atlas.');
         // Retrieve cards sorted by cardId for consistent UI presentation
-        const cards = await Card.find().sort({ cardId: 1 }).lean();
+        // Removed .lean() to allow virtuals (like 'id') to be computed correctly for the frontend
+        const cards = await Card.find().sort({ cardId: 1 });
         
         cardsCache.set(CACHE_KEY, cards);
         return cards;
