@@ -1,5 +1,22 @@
 @import "./pdf-tts-style.css";
 
+/* JOULE CORE FONTS: Self-hosted to optimize Best Practices & Privacy */
+@font-face {
+  font-family: 'Outfit';
+  src: url('/fonts/outfit.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+  font-style: normal;
+}
+
 :root {
   --bg-color: #0b0d17;
   --surface-glass: rgba(20, 22, 40, 0.7);

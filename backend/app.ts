@@ -19,6 +19,7 @@ import deckRoutes from './routes/deckRoutes';
 import cardRoutes from './routes/cardRoutes';
 import terminalRoutes from './routes/terminalRoutes';
 import rulesRoutes from './routes/rulesRoutes';
+import seoRoutes from './routes/seoRoutes';
 
 const app = express();
 
@@ -82,7 +83,10 @@ app.use(helmet({
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       "img-src": ["'self'", "data:", "https:*"],
-      "script-src": ["'self'", "'unsafe-inline'"],
+      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval often needed for dev/certain libs, but Lighthouse prefers its removal
+      "style-src": ["'self'", "'unsafe-inline'"],
+      "font-src": ["'self'"],
+      "connect-src": ["'self'", "https://*.vercel-analytics.com"],
     },
   },
 }));
@@ -168,6 +172,7 @@ app.use('/api/v1/decks', deckRoutes);
 app.use('/api/v1/cards', cardRoutes);
 app.use('/api/v1/terminal', terminalRoutes);
 app.use('/api/v1/rules', rulesRoutes);
+app.use('/api/v1/seo', seoRoutes);
 
 /**
  * --- STATIC ASSETS ---

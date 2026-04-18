@@ -28,15 +28,9 @@
     .hero-image-stage { background: #05070c; min-height: 400px; }
   </style>
 
-  <!-- Critical Path: Font Discovery Optimization -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  
-  <!-- Non-blocking Font Loading for Mobile FCP -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap" media="print" onload="this.media='all'">
-  <noscript>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500&display=swap">
-  </noscript>
+  <!-- Critical Path: Font Discovery Optimization (Self-hosted) -->
+  <link rel="preload" href="/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
 
   <!-- Critical Asset Preloading: Responsive Hero Selection -->
   <link rel="preload" as="image" href="/images/hero-mobile.webp" media="(max-width: 768px)" fetchpriority="high">

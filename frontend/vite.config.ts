@@ -123,13 +123,17 @@ export default defineConfig( {
     }
   },
   build: {
-    modulePreload: false,
+    sourcemap: true,
+    modulePreload: true,
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks( id ) {
           if ( id.includes( 'highlight.js' ) || id.includes( 'marked' ) || id.includes( 'dompurify' ) ) {
             return 'editor-bundle';
+          }
+          if ( id.includes( 'axios' ) || id.includes( 'pinia' ) ) {
+            return 'core-libs';
           }
           if ( id.includes( 'node_modules' ) ) {
             return 'vendor';
