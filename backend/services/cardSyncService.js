@@ -49,7 +49,12 @@ const parseCSV = (fileContent) => {
         if (data['URL_Immagine']) {
             card.image_url = data['URL_Immagine'];
         } else {
-            card.image_url = `/assets/cards/${String(id).padStart(3, '0')}_${(data['Nome'] || '').replace(/,/g, '').replace(/ /g, '_')}.png`;
+            // Refined Sanity: Remove apostrophes and commas to match disk filenames
+            const sanitizedName = (data['Nome'] || '')
+                .replace(/'/g, '')
+                .replace(/,/g, '')
+                .replace(/ /g, '_');
+            card.image_url = `/assets/cards/${String(id).padStart(3, '0')}_${sanitizedName}.png`;
         }
 
         if (card.name) {

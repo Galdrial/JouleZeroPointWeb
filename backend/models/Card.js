@@ -31,7 +31,18 @@ const cardSchema = new mongoose.Schema({
   }
 }, {
   // Automatic lifecycle tracking: createdAt and updatedAt timestamps
-  timestamps: true
+  timestamps: true,
+  // Ensure virtuals are included in the JSON response for the frontend
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+/**
+ * Compatibility Virtual: Maps Joule cardId to the 'id' field expected by the frontend.
+ * Overwrites the default Mongoose ObjectID virtual to maintain system integrity.
+ */
+cardSchema.virtual('id').get(function() {
+  return this.cardId;
 });
 
 /**
