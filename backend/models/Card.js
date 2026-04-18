@@ -32,6 +32,8 @@ const cardSchema = new mongoose.Schema({
 }, {
   // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true,
+  // Disable the default 'id' virtual (ObjectID) to allow our custom 'id' (cardId) to take priority
+  id: false,
   // Ensure virtuals are included in the JSON response for the frontend
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
