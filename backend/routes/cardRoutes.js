@@ -1,3 +1,5 @@
+const express = require('express');
+const router = express.Router();
 const { getAllCards } = require('../controllers/cardController');
 const { syncCards } = require('../services/cardSyncService');
 const { clearCache } = require('../services/cardService');
