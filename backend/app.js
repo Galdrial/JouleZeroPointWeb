@@ -197,7 +197,18 @@ app.use( '/news', ( req, res, next ) => {
 }, express.static( path.join( __dirname, 'public/news' ) ) );
 
 /**
- * --- 3. GLOBAL ERROR HANDLER ---
+ * --- 3. 404 HANDLER (JSON Matrix) ---
+ * Catch-all for undefined routes. Guarantees a JSON response instead of default Express HTML.
+ */
+app.use( ( req, res, next ) => {
+  res.status( 404 ).json( {
+    success: false,
+    message: `Il varco richiesto (${req.originalUrl}) non esiste nella matrice Joule.`
+  } );
+} );
+
+/**
+ * --- 4. GLOBAL ERROR HANDLER ---
  * Final safety net to capture unhandled exceptions and return consistent JSON error objects.
  */
 app.use( ( err, req, res, next ) => {
