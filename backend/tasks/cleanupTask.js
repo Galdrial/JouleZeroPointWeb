@@ -5,7 +5,7 @@ const logger = require('../config/logger');
 
 /**
  * Cleanup Task Initialization: Automated System Sanitation.
- * Orchestrates the recurring scan and removal of ephemeral artifacts (PDF exports, temporary assets).
+ * Orchestrates the recurring scan and removal of ephemeral artifacts (temporary assets, uploads, logs).
  * Periodicity: Hourly (0 * * * *).
  * Expiry Threshold: 30 minutes (1800000ms) based on modification time (mtime).
  */
@@ -20,7 +20,7 @@ const initCleanupTask = () => {
     ];
 
     const NOW = Date.now();
-    const EXPIRY_MS = 30 * 60 * 1000; // 30-minute thermal limit for artifacts
+    const EXPIRY_MS = 30 * 60 * 1000; // 30-minute thermal limit for temporary artifacts
 
     directories.forEach(dir => {
       // Guard Check: Ensure the target sector exists before scanning
