@@ -95,7 +95,7 @@ const handleDownload = async () => {
         <p>JOULE: ZERO POINT – Regolamento Ufficiale (Riorganizzato)</p>
         <h3 style="color: var(--accent-gold); margin-top: 1rem;">1. Introduzione e Concetti Chiave</h3>
         <h3 style="color: var(--accent-gold); margin-top: 1rem;">Filosofia del Gioco:</h3>
-        <p>A seguito dell'evento noto come Punto Zero, le leggi dello spazio-tempo si sono infrante. In questo universo senza più regole si ergono i Costruttori, entità visionarie il cui scopo è ripristinare l'equilibrio. Tuttavia, ogni Costruttore possiede una visione radicalmente opposta di come debba essere questo nuovo ordine: c'è chi cerca la perfezione del gelo assoluto, chi il caos purificatore del calore e chi l'adattabilità dei fluidi. Per imporre la propria visione della realtà, i Costruttori non evocano eserciti, ma plasmano e ricompongono i Frammenti dell'universo originario (colossali reliquie geologiche, tempeste di energia, masse oscure) forzandoli nel Presente. Quando due visioni incompatibili si scontrano, la linea temporale più debole collassa. Chi riuscirà a imporre i propri Frammenti, detterà le nuove leggi della fisica.</p>
+        <p>A seguito dell'evento noto come Punto Zero, le leggi dello spazio-tempo si sono infrante. In questo universo senza più regole si ergono i Costruttori, entità visionarie il cui scopo è ripristinare l'equilibrio. Tuttavia, ogni Costruttore possiede una visione radicalmente opposta di come debba essere questo nuovo ordine: c'è chi cerca la perfezione del gelo assoluto, chi il caos purificatore del calore e chi l'adattabilità dei fluidi. Per imporre la propria visione della realtà, i Costruttori non evocano eserciti, ma plasmano e ricompongono i Frammenti dell'universo originario (colossali reliquie geologiche, tempeste di energia, masse oscure) forzandoli nel Presente. Quando due visioni incompatibili si scontrano, la linea temporale più debole collassa. Chi riuscirà a imporre i propri Frammenti, detterà le nuove leggi dell'Universo.</p>
         <h3 style="color: var(--accent-gold); margin-top: 1rem;">Il campo è diviso in tre colonne condivise:</h3>
         <ul><li>Passato – memoria e risonanza (supporto)</li></ul>
         <ul><li>Presente – conflitto (istante di collisione)</li></ul>
@@ -204,6 +204,7 @@ const handleDownload = async () => {
         <ul><li>🔴: Il Frammento acquisisce anche le proprietà dello stato superiore (es. Gas diventa Gas+Plasma).</li></ul>
         <ul><li>🔵: Il Frammento acquisisce anche le proprietà dello stato inferiore.</li></ul>
         <ul><li>Nota: Non modifica i valori di PEP/RP stampati.</li></ul>
+        <ul><li>Nota Termodinamica: La Materia Oscura è un'anomalia estranea alla fisica classica. È totalmente immune ai cambiamenti di Temperatura, non riceve mai i segnalini 🔴 o 🔵 e non subisce Transizioni di Stato.</li></ul>
         <p>Regola d'Oro Termodinamica: Il Cambio di Segno &quot;A causa dell'estrema instabilità del Punto Zero, ai fini della risoluzione degli effetti delle carte, si considera che la TP 'cambi segno' non solo quando passa direttamente da un valore positivo a uno negativo (o viceversa), ma anche ogni volta che il suo valore raggiunge o attraversa esattamente lo 0 partendo da un valore positivo (Caldo) o negativo (Freddo).&quot;</p>
       </article>
       <article class="glass-panel text-content wide-panel">
