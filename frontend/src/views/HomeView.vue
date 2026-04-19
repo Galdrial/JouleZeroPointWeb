@@ -624,20 +624,28 @@ onMounted(async () => {
 .hero-image-stage {
   position: relative;
   width: 100vw;
-  height: auto;
+  aspect-ratio: 16 / 9;
   text-align: center;
   overflow: hidden;
   isolation: isolate;
   background: #05070c;
 }
 
+@media (max-width: 768px) {
+  .hero-image-stage {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 .hero-bg-image {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
   z-index: 0;
   display: block;
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 100%;
+  object-fit: cover;
   object-position: center bottom;
 }
 

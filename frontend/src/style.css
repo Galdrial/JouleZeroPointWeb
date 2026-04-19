@@ -101,6 +101,7 @@ body {
   left: 0;
   right: 0;
   z-index: 310;
+  min-height: 4.5rem; /* Persistent height to avoid CLS */
 }
 
 @supports (backdrop-filter: blur(1px)) {

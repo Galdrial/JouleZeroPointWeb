@@ -24,8 +24,11 @@
       font-family: 'Outfit', system-ui, -apple-system, sans-serif;
     }
     .home-view { background-color: var(--bg-dark); min-height: 100vh; }
-    .hero-section { min-height: 400px; position: relative; background-color: var(--bg-dark); }
-    .hero-image-stage { background: #05070c; min-height: 400px; }
+    .hero-section { width: 100vw; position: relative; background-color: var(--bg-dark); aspect-ratio: 16 / 9; overflow: hidden; }
+    .hero-image-stage { background: #05070c; width: 100%; height: 100%; }
+    @media (max-width: 768px) {
+      .hero-section { aspect-ratio: 4 / 3; } /* Adjust for mobile hero proportions if different */
+    }
   </style>
 
   <!-- Critical Path: Font Discovery Optimization (Self-hosted) -->
