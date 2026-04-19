@@ -29,11 +29,9 @@ const handleOpenBanner = () => {
 };
 
 // Consent Triggers
-const setConsent = (choice: "all" | "essential") => {
-  // Store choice persistently
-  localStorage.setItem(COOKIE_STORAGE_KEY, choice);
-  
-  // Here in the future, if choice === 'all', you might inject tracking scripts like Google Analytics.
+// Consent Trigger: We only have essential cookies, so we just acknowledge
+const acceptRef = () => {
+  localStorage.setItem(COOKIE_STORAGE_KEY, "acknowledged");
   isVisible.value = false;
 };
 </script>
@@ -45,18 +43,13 @@ const setConsent = (choice: "all" | "essential") => {
         <div class="cookie-text-section">
           <h2 class="cookie-title"><span class="terminal-prompt">&gt; </span>CALIBRAZIONE SENSORI E COOKIE</h2>
           <p class="cookie-desc">
-            Il Sistema "Joule: Zero Point" utilizza stralci di memoria locale (cookie tecnici essenziali) per garantire il corretto funzionamento dell'autenticazione, della plancia di comando e della tua sessione di hacking nel Deckbuilder. 
-            Utilizziamo cookie aggiuntivi (se approvati) esclusivamente per analizzare il traffico anonimizzato e prevenire fratture nella Matrice. 
-            Puoi ricalibrare i sensori consultando l'<RouterLink to="/privacy" class="link-privacy">Informativa sulla Privacy</RouterLink>.
+            Il Sistema "Joule: Zero Point" utilizza esclusivamente frammenti di memoria tecnica (cookie essenziali) per garantire la stabilità della tua sessione e l'integrità del Deckbuilder. Non effettuiamo tracciamenti di terze parti né profilazione nella Matrice.
           </p>
         </div>
         
         <div class="cookie-actions">
-          <button @click="setConsent('essential')" class="btn btn-secondary btn-essenziali" aria-label="Rifiuta telemetrie, solo essenziali">
-            SOLO ESSENZIALI
-          </button>
-          <button @click="setConsent('all')" class="btn btn-primary btn-accetta" aria-label="Accetta calibrazione completa">
-            ACCETTA TUTTO
+          <button @click="acceptRef" class="btn btn-primary btn-accetta" aria-label="Accetta e prosegui">
+            RICEVUTO
           </button>
         </div>
       </div>
