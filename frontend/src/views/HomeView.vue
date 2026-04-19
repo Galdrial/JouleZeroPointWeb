@@ -60,6 +60,7 @@ const latestNews = ref<NewsPreview[]>([]);
 const tabletopGuideUrl =
   "https://steamcommunity.com/sharedfiles/filedetails/?id=3673801132";
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
+const particleStyles = ref<any[]>([]);
 
 /**
  * Format the news publication date into a human-readable locale string.
@@ -76,22 +77,23 @@ const formatNewsDate = (value: string) =>
  * Visual Engine: Ambient Particle System
  * Generates randomized styles for background micro-animations.
  */
-const particleCount =
-  typeof window !== "undefined" && window.innerWidth < 768 ? 40 : 150;
-const particleStyles = Array.from({ length: particleCount }, () => ({
-  left: `${Math.random() * 100}%`,
-  top: `${Math.random() * 100}%`,
-  "--size": `${(1.4 + Math.random() * 2.8).toFixed(2)}px`,
-  "--alpha": (0.35 + Math.random() * 0.5).toFixed(2),
-  "--duration": `${(5.5 + Math.random() * 8).toFixed(2)}s`,
-  "--delay": `${(-Math.random() * 13).toFixed(2)}s`,
-  "--flicker-duration": `${(0.9 + Math.random() * 1.8).toFixed(2)}s`,
-  "--flicker-delay": `${(-Math.random() * 2.5).toFixed(2)}s`,
-  "--dx-start": `${(-28 + Math.random() * 56).toFixed(1)}px`,
-  "--dy-start": `${(-22 + Math.random() * 44).toFixed(1)}px`,
-  "--dx-end": `${(-40 + Math.random() * 80).toFixed(1)}px`,
-  "--dy-end": `${(-34 + Math.random() * 68).toFixed(1)}px`,
-}));
+const generateParticles = () => {
+  const count = window.innerWidth < 768 ? 18 : 150;
+  particleStyles.value = Array.from({ length: count }, () => ({
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    "--size": `${(1.4 + Math.random() * 2.8).toFixed(2)}px`,
+    "--alpha": (0.35 + Math.random() * 0.5).toFixed(2),
+    "--duration": `${(5.5 + Math.random() * 8).toFixed(2)}s`,
+    "--delay": `${(-Math.random() * 13).toFixed(2)}s`,
+    "--flicker-duration": `${(0.9 + Math.random() * 1.8).toFixed(2)}s`,
+    "--flicker-delay": `${(-Math.random() * 2.5).toFixed(2)}s`,
+    "--dx-start": `${(-28 + Math.random() * 56).toFixed(1)}px`,
+    "--dy-start": `${(-22 + Math.random() * 44).toFixed(1)}px`,
+    "--dx-end": `${(-40 + Math.random() * 80).toFixed(1)}px`,
+    "--dy-end": `${(-34 + Math.random() * 68).toFixed(1)}px`,
+  }));
+};
 
 import { STARTER_DECKS } from "../constants/starterDecks";
 
@@ -146,6 +148,11 @@ onMounted(async () => {
   document
     .querySelectorAll(".starter-card")
     .forEach((card) => observer.observe(card));
+
+  // Lazy Initialization: Defer particle generation to avoid blocking the initial LCP paint
+  setTimeout(() => {
+    generateParticles();
+  }, 100);
 });
 </script>
 

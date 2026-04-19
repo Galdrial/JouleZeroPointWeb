@@ -29,8 +29,8 @@
   </style>
 
   <!-- Critical Path: Font Discovery Optimization (Self-hosted) -->
-  <link rel="preload" href="/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/outfit.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
+  <link rel="preload" href="/fonts/inter.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
 
   <!-- Critical Asset Preloading: Responsive Hero Selection -->
   <link rel="preload" as="image" href="/images/hero-mobile.webp" media="(max-width: 768px)" fetchpriority="high">
