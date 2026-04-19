@@ -18,8 +18,12 @@ const authStore = useAuthStore();
 
 const isTerminalOpen = ref(false);
 
-onMounted(() => {
-  authStore.initialize();
+onMounted(async () => {
+  // Defer non-critical auth initialization to prioritize Home LCP
+  setTimeout(() => {
+    authStore.initialize();
+  }, 1500);
+
   if (route.query.terminal === "1") {
     isTerminalOpen.value = true;
   }

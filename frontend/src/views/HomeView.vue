@@ -120,17 +120,20 @@ const scrollToDeck = (index: number) => {
 };
 
 onMounted(async () => {
-  // Inventory Sync
-  try {
-    const response = await api.get("/cards");
-    fragmentCount.value = response.data.length;
-  } catch (err) {}
+  // Defer global stats and news sync to avoid main thread jank during Hero paint
+  setTimeout(async () => {
+    // Inventory Sync
+    try {
+      const response = await api.get("/cards");
+      fragmentCount.value = response.data.length;
+    } catch (err) {}
 
-  // News Sync
-  try {
-    const response = await api.get("/news", { params: { limit: 6 } });
-    latestNews.value = response.data;
-  } catch (err) {}
+    // News Sync
+    try {
+      const response = await api.get("/news", { params: { limit: 6 } });
+      latestNews.value = response.data;
+    } catch (err) {}
+  }, 800);
 
   // Mobile Carousel Observer
   const observer = new IntersectionObserver(
