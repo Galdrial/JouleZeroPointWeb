@@ -14,7 +14,6 @@ cp .env.example .env
 
 - `MONGODB_URI`
 - `OPENAI_API_KEY`
-- `ASSISTANT_ID`
 - `JWT_SECRET`
 
 3. Install and run:

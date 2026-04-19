@@ -113,7 +113,6 @@ Copy `backend/.env.example` to `backend/.env` and fill in the required values:
 | `JWT_SECRET` | Secret key for signing JWTs |
 | `MONGODB_URI` | MongoDB Atlas connection string |
 | `OPENAI_API_KEY` | OpenAI API key for the AI Terminal |
-| `ASSISTANT_ID` | OpenAI Assistant ID |
 | `SMTP_HOST / USER / PASS` | SMTP credentials for transactional email |
 
 ---
