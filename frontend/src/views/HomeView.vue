@@ -158,9 +158,13 @@ onMounted(async () => {
     .forEach((card) => observer.observe(card));
 
   // Staged Rendering Orchestration: Progressive hydration to free the main thread
-  setTimeout(() => { isDashboardVisible.value = true; }, 150);
-  setTimeout(() => { isNewsVisible.value = true; }, 400);
-  setTimeout(() => { isDecksVisible.value = true; }, 700);
+  // Faster waves on Desktop to reduce visible hydration lag
+  const isMobile = window.innerWidth < 768;
+  const timing = isMobile ? { dash: 150, news: 400, decks: 700 } : { dash: 50, news: 150, decks: 300 };
+
+  setTimeout(() => { isDashboardVisible.value = true; }, timing.dash);
+  setTimeout(() => { isNewsVisible.value = true; }, timing.news);
+  setTimeout(() => { isDecksVisible.value = true; }, timing.decks);
 
   // Lazy Initialization: Defer particle generation to avoid blocking the initial LCP paint
   setTimeout(() => {
@@ -476,12 +480,19 @@ onMounted(async () => {
 }
 
 /* Hydration Placeholders to maintain CLS 0.00 */
-.dashboard-placeholder { height: 280px; width: 100%; border-radius: 16px; margin-bottom: 2rem; }
-.news-placeholder { height: 600px; width: 100%; margin-top: 2.6rem; }
-.decks-placeholder { height: 800px; width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+.dashboard-placeholder { height: 750px; width: 100%; border-radius: 16px; margin-bottom: 2rem; }
+.news-placeholder { height: 1600px; width: 100%; margin-top: 2.6rem; }
+.decks-placeholder { height: 1800px; width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+
+@media (min-width: 768px) {
+  .dashboard-placeholder { height: 260px; }
+  .news-placeholder { height: 1000px; }
+  .decks-placeholder { height: 850px; }
+}
 
 .home-view > section, .home-view > div {
   transform: translateZ(0); /* Optimize composite layers */
+  contain: paint; /* Contain layout/paint for better performance */
 }
 
 .starter-card {
