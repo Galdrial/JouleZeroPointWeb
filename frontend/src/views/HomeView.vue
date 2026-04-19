@@ -62,6 +62,11 @@ const tabletopGuideUrl =
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
 const particleStyles = ref<any[]>([]);
 
+// Staged Rendering: Defer non-critical sections to prioritize LCP/FCP
+const isDashboardVisible = ref(false);
+const isNewsVisible = ref(false);
+const isDecksVisible = ref(false);
+
 /**
  * Format the news publication date into a human-readable locale string.
  * @param value ISO date string
@@ -149,10 +154,15 @@ onMounted(async () => {
     .querySelectorAll(".starter-card")
     .forEach((card) => observer.observe(card));
 
+  // Staged Rendering Orchestration: Progressive hydration to free the main thread
+  setTimeout(() => { isDashboardVisible.value = true; }, 150);
+  setTimeout(() => { isNewsVisible.value = true; }, 400);
+  setTimeout(() => { isDecksVisible.value = true; }, 700);
+
   // Lazy Initialization: Defer particle generation to avoid blocking the initial LCP paint
   setTimeout(() => {
     generateParticles();
-  }, 100);
+  }, 1200);
 });
 </script>
 
@@ -214,8 +224,11 @@ onMounted(async () => {
         </div>
       </div>
     </section>
+    
+    <!-- Render Placeholder to prevent CLS during hydration -->
+    <div v-if="!isDashboardVisible" class="dashboard-placeholder"></div>
 
-    <div class="dashboard-grid">
+    <div v-if="isDashboardVisible" class="dashboard-grid fade-in">
       <div class="glass-panel info-card">
         <h3>STORIA: IL PUNTO ZERO</h3>
         <p>
@@ -281,7 +294,10 @@ onMounted(async () => {
       </div>
     </div>
 
-    <section class="news-section">
+    <!-- Render Placeholder to prevent CLS during hydration -->
+    <div v-if="!isNewsVisible" class="news-placeholder"></div>
+
+    <section v-if="isNewsVisible" class="news-section fade-in">
       <div class="news-section-header">
         <h3>ULTIME NEWS</h3>
         <RouterLink to="/news" class="news-header-link">
@@ -367,8 +383,11 @@ onMounted(async () => {
       </div>
     </section>
 
+    <!-- Render Placeholder to prevent CLS during hydration -->
+    <div v-if="!isDecksVisible" class="decks-placeholder"></div>
+
     <!-- Starter Decks Section (Full Viewport Edition) -->
-    <section class="starter-decks-viewport">
+    <section v-if="isDecksVisible" class="starter-decks-viewport fade-in">
       <div class="starter-decks-bg-glow"></div>
       <div class="starter-decks-inner">
         <div class="starter-header">
@@ -453,8 +472,14 @@ onMounted(async () => {
   padding: 0 clamp(0.5rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2rem);
 }
 
-/* ... existing styles ... */
-/* Add only new styles for deck visuals below or after starter-card */
+/* Hydration Placeholders to maintain CLS 0.00 */
+.dashboard-placeholder { height: 280px; width: 100%; border-radius: 16px; margin-bottom: 2rem; }
+.news-placeholder { height: 600px; width: 100%; margin-top: 2.6rem; }
+.decks-placeholder { height: 800px; width: 100vw; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
+
+.home-view > section, .home-view > div {
+  transform: translateZ(0); /* Optimize composite layers */
+}
 
 .starter-card {
   position: relative;
