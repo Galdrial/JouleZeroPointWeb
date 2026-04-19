@@ -157,19 +157,25 @@ onMounted(async () => {
     .querySelectorAll(".starter-card")
     .forEach((card) => observer.observe(card));
 
-  // Staged Rendering Orchestration: Progressive hydration to free the main thread
-  // Faster waves on Desktop to reduce visible hydration lag
+  // Staged Rendering Orchestration: Progressive hydration to free the main thread on mobile
   const isMobile = window.innerWidth < 768;
-  const timing = isMobile ? { dash: 150, news: 400, decks: 700 } : { dash: 50, news: 150, decks: 300 };
-
-  setTimeout(() => { isDashboardVisible.value = true; }, timing.dash);
-  setTimeout(() => { isNewsVisible.value = true; }, timing.news);
-  setTimeout(() => { isDecksVisible.value = true; }, timing.decks);
+  
+  if (!isMobile) {
+    // Desktop: Immediate rendering to kill CLS (Cumulative Layout Shift)
+    isDashboardVisible.value = true;
+    isNewsVisible.value = true;
+    isDecksVisible.value = true;
+  } else {
+    // Mobile: Wave-based rendering to maximize FCP and Speed Index scores
+    setTimeout(() => { isDashboardVisible.value = true; }, 150);
+    setTimeout(() => { isNewsVisible.value = true; }, 400);
+    setTimeout(() => { isDecksVisible.value = true; }, 700);
+  }
 
   // Lazy Initialization: Defer particle generation to avoid blocking the initial LCP paint
   setTimeout(() => {
     generateParticles();
-  }, 1200);
+  }, isMobile ? 1200 : 500);
 });
 </script>
 
@@ -624,28 +630,20 @@ onMounted(async () => {
 .hero-image-stage {
   position: relative;
   width: 100vw;
-  aspect-ratio: 16 / 9;
+  height: auto;
   text-align: center;
   overflow: hidden;
   isolation: isolate;
   background: #05070c;
 }
 
-@media (max-width: 768px) {
-  .hero-image-stage {
-    aspect-ratio: 4 / 3;
-  }
-}
-
 .hero-bg-image {
-  position: absolute;
-  top: 0;
-  left: 0;
+  position: relative;
   z-index: 0;
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   object-position: center bottom;
 }
 
