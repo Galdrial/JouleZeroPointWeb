@@ -11,7 +11,7 @@ A differenza di molti progetti che gestiscono i dati tramite pannelli admin comp
 ### 📊 La Sorgente: Google Sheets
 - **Perché**: Permette al game designer di bilanciare le statistiche (IT, PEP, RP, ET) in tempo reale su un'interfaccia familiare, senza toccare il codice.
 - **Formato**: I dati vengono esportati in formato **TSV** (Tab-Separated Values).
-    - *Nota Tecnica*: Abbiamo scelto TSV invece di CSV perché gli effetti delle carte contengono spesso virgole, che romperebbero la struttura di un CSV standard.
+    - *Nota Tecnica*: Ho scelto TSV invece di CSV perché gli effetti delle carte contengono spesso virgole, che romperebbero la struttura di un CSV standard.
 
 ### 🧪 Il Tubo: `seedCards.js`
 Lo script di sincronizzazione (`backend/scripts/seedCards.js`):
@@ -80,7 +80,7 @@ Il frontend non è solo un'interfaccia, ma un'applicazione reattiva complessa ge
 - **`imageResolver.ts`**: Gestisce l'identità visiva delle carte, mappando gli ID della sorgente Google Sheets ai file fisici salvati nel frontend.
 
 ### 📄 Export Universe (PDF & TTS)
-Abbiamo implementato sistemi di esportazione per portare il gioco oltre il browser:
+Ho implementato sistemi di esportazione per portare il gioco oltre il browser:
 1. **jsPDF**: Genera layout di stampa per mazzi cartacei, calcolando margini e posizionamento delle immagini delle carte.
 2. **JSZip + JSON**: Genera pacchetti pronti per **Tabletop Simulator (Steam)**, permettendo ai giocatori di testare il mazzo in un ambiente 3D professionale.
 
