@@ -143,6 +143,8 @@ export const sendPasswordResetEmail = async (email: string, token: string): Prom
 export const sendContactMessage = async (name: string, email: string, subject: string, message: string): Promise<void> => {
   const adminEmail = process.env.CONTACT_RECIPIENT_EMAIL || process.env.SMTP_USER;
   
+  logger.info(`VIGIL_SYSTEM: Attempting to dispatch contact signal. Recipient: ${adminEmail}`);
+
   if (!adminEmail) {
     logger.warn("SMTP_WARNING: Cannot send contact message, missing recipient admin email.");
     return;
@@ -150,6 +152,7 @@ export const sendContactMessage = async (name: string, email: string, subject: s
 
   try {
     const fromAddress = process.env.EMAIL_FROM || process.env.SMTP_USER;
+    logger.info(`VIGIL_SYSTEM: Sending from: ${fromAddress}`);
     const fromName = "Joule Zero Point System";
 
     await transporter.sendMail({
