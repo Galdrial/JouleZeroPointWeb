@@ -89,3 +89,8 @@ flyer.pdf
 *.pdf
 info.txt
 set5.0.csv
+
+# --- Documentazione Esame / Locale ---
+EXAM_COMPLIANCE_MATRIX_IT.md
+docs/TECHNICAL_DEEP_DIVE_IT.md
+EXAM_SHOWCASE_GUIDE_IT.md

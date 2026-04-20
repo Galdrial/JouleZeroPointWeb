@@ -43,6 +43,16 @@ The beating heart of the project is the **Zero Point Terminal**, an AI-powered n
 
 ---
 
+## 📘 Technical Documentation
+
+For a comprehensive analysis of the system's architecture, security protocols, and engineering decisions, I have prepared a dedicated document:
+
+👉 **[Technical Deep Dive (docs/TECHNICAL_DEEP_DIVE.md)](./docs/TECHNICAL_DEEP_DIVE.md)**
+
+*Includes details on: SSoT with Google Sheets, AI Scudo Temporale (Safety Audit), NoSQL Sanitization, and PWA Caching Strategy.*
+
+---
+
 ## 🖼️ Screenshots
 
 ### 🏠 Home — The Zero Point Atmosphere
