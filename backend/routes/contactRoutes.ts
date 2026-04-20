@@ -16,7 +16,12 @@ router.post(
     body('email').trim().isEmail().withMessage('Email non valida').normalizeEmail(),
     body('subject').optional().trim().escape(),
     body('message').trim().notEmpty().withMessage('Il messaggio è richiesto').escape(),
-    body('privacyConsent').isBoolean().equals('true').withMessage('Il consenso alla Privacy Policy è obbligatorio'),
+    body('privacyConsent').custom((value) => {
+      if (value !== true && value !== 'true') {
+        throw new Error('Il consenso alla Privacy Policy è obbligatorio');
+      }
+      return true;
+    }),
   ],
   submitContactForm
 );

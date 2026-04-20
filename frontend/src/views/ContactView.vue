@@ -154,7 +154,6 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
                 <input 
                   type="checkbox" 
                   v-model="form.privacyConsent" 
-                  required 
                 />
                 <span class="checkbox-custom"></span>
                 <span>
