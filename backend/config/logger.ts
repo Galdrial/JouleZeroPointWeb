@@ -30,15 +30,13 @@ const logger = winston.createLogger({
   ],
 });
 
-// Development Enhancement: Inject colorized output into the terminal matrix
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: combine(
-      colorize(),
-      timestamp({ format: 'HH:mm:ss' }),
-      logFormat
-    ),
-  }));
-}
+// Console Logging: Mandatory for Docker/Containerized environments (stdout)
+logger.add(new winston.transports.Console({
+  format: combine(
+    colorize(),
+    timestamp({ format: 'HH:mm:ss' }),
+    logFormat
+  ),
+}));
 
 export default logger;
