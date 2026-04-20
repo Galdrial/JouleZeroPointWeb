@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import api from "../api/axios";
+import api from "../utils/api";
 import { useNotificationStore } from "../stores/notificationStore";
 
 const notificationStore = useNotificationStore();
