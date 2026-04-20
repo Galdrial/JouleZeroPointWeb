@@ -131,3 +131,48 @@ export const sendPasswordResetEmail = async (email: string, token: string): Prom
     logger.error(`EMAIL_DISPATCH_ERROR: ${(error as Error).message}`);
   }
 };
+
+/**
+ * Forwards a contact form message to the administrator.
+ * 
+ * @param name - Sender's name.
+ * @param email - Sender's email.
+ * @param subject - Message subject.
+ * @param message - The body of the message.
+ */
+export const sendContactMessage = async (name: string, email: string, subject: string, message: string): Promise<void> => {
+  const adminEmail = process.env.CONTACT_RECIPIENT_EMAIL || process.env.SMTP_USER;
+  
+  if (!adminEmail) {
+    logger.warn("SMTP_WARNING: Cannot send contact message, missing recipient admin email.");
+    return;
+  }
+
+  try {
+    const fromAddress = process.env.EMAIL_FROM || process.env.SMTP_USER;
+    const fromName = "Joule Zero Point System";
+
+    await transporter.sendMail({
+      from: `"${fromName}" <${fromAddress}>`,
+      to: adminEmail,
+      replyTo: email,
+      subject: `[JOULE CONTACT] ${subject || 'Nuovo messaggio'} da ${name}`,
+      html: `
+        <div style="font-family: monospace; background: #0c121c; padding: 30px; color: #00f0ff; border: 1px solid rgba(0, 240, 255, 0.3);">
+          <h2 style="color: #fff; letter-spacing: 2px;">NUOVO SEGNALE CRIPTATO IN INGRESSO</h2>
+          <p><strong>Identificativo (Nome):</strong> ${name}</p>
+          <p><strong>Coordinate (Email):</strong> ${email}</p>
+          <p><strong>Oggetto:</strong> ${subject || 'Nessun oggetto'}</p>
+          <hr style="border-color: rgba(0, 240, 255, 0.3);">
+          <p style="white-space: pre-wrap; color: #fff;">${message}</p>
+          <br><br><br>
+          <p style="color: #666; font-size: 11px;">Rispondi direttamente a questa email per contattare il costruttore.</p>
+        </div>
+      `,
+    });
+    logger.info(`VIGIL_SYSTEM: Contact message from ${email} successfully dispatched to admin.`);
+  } catch (error) {
+    logger.error(`CONTACT_DISPATCH_ERROR: ${(error as Error).message}`);
+    throw error;
+  }
+};

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import api from "../api/axios";
 import { useNotificationStore } from "../stores/notificationStore";
 
 const notificationStore = useNotificationStore();
@@ -14,6 +15,7 @@ const form = ref({
   email: "",
   subject: "",
   message: "",
+  privacyConsent: false,
 });
 
 const isSubmitting = ref(false);
@@ -26,22 +28,32 @@ const handleSubmit = async () => {
     return;
   }
 
+  if (!form.value.privacyConsent) {
+    notificationStore.error(
+      "È necessario accettare la Privacy Policy per inviare il segnale.",
+    );
+    return;
+  }
+
   isSubmitting.value = true;
 
-  // Send simulation (pending backend/external-service integration)
-  setTimeout(() => {
-    // Professional fallback: open email client with pre-filled data
-    const mailtoLink = `mailto:info@joulezeropoint.com?subject=${encodeURIComponent(form.value.subject || "Contatto da Joule ZP")}&body=${encodeURIComponent(`Nome: ${form.value.name}\nEmail: ${form.value.email}\n\nMessaggio:\n${form.value.message}`)}`;
-    window.location.href = mailtoLink;
-
+  try {
+    const response = await api.post('/contact', form.value);
+    
     notificationStore.success(
-      "Canale di comunicazione aperto. Reindirizzamento al client email...",
+      response.data.message || "Segnale trasmesso con successo. Il team riceverà la comunicazione."
     );
 
     // Reset form
-    form.value = { name: "", email: "", subject: "", message: "" };
+    form.value = { name: "", email: "", subject: "", message: "", privacyConsent: false };
+  } catch (error: any) {
+    console.error("Contact Form Error:", error);
+    notificationStore.error(
+      error.response?.data?.error || "Interferenza durante la trasmissione. Riprovare."
+    );
+  } finally {
     isSubmitting.value = false;
-  }, 800);
+  }
 };
 
 const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
@@ -135,6 +147,22 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
                 placeholder="Scrivi qui il tuo messaggio..."
                 required
               ></textarea>
+            </div>
+
+            <div class="form-group checkbox-group">
+              <label class="privacy-label">
+                <input 
+                  type="checkbox" 
+                  v-model="form.privacyConsent" 
+                  required 
+                />
+                <span class="checkbox-custom"></span>
+                <span>
+                  Ho letto e accetto la 
+                  <router-link to="/privacy" target="_blank" class="privacy-link">Privacy Policy</router-link> 
+                  per il trattamento dei miei dati personali.
+                </span>
+              </label>
             </div>
 
             <button
@@ -320,5 +348,82 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
   background-clip: text;
   -webkit-text-fill-color: transparent;
   text-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+}
+
+/* Privacy Checkbox Styling */
+.checkbox-group {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.privacy-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  cursor: pointer;
+  font-size: 0.85rem !important;
+  color: var(--text-muted) !important;
+  line-height: 1.4;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  font-weight: normal !important;
+}
+
+.privacy-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-custom {
+  position: relative;
+  display: inline-block;
+  min-width: 18px;
+  height: 18px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--glass-border);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  margin-top: 2px;
+}
+
+.privacy-label:hover input ~ .checkbox-custom {
+  border-color: var(--accent-gold);
+}
+
+.privacy-label input:checked ~ .checkbox-custom {
+  background-color: rgba(212, 175, 55, 0.2);
+  border-color: var(--accent-gold);
+}
+
+.checkbox-custom:after {
+  content: "";
+  position: absolute;
+  display: none;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--accent-gold);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.privacy-label input:checked ~ .checkbox-custom:after {
+  display: block;
+}
+
+.privacy-link {
+  color: var(--accent-gold);
+  text-decoration: underline;
+  text-decoration-color: rgba(212, 175, 55, 0.4);
+  transition: all 0.2s ease;
+}
+
+.privacy-link:hover {
+  text-decoration-color: var(--accent-gold);
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
 }
 </style>
