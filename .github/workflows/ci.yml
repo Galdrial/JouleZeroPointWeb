@@ -1,14 +1,7 @@
 name: CI — Joule Zero Point (Optimized)
 
 on:
-  push:
-    branches: [main, dev]
-    paths-ignore:
-      - '**/*.md'
-      - 'docs/**'
-  pull_request:
-    branches: [main]
-  workflow_dispatch:
+  workflow_dispatch: # Permette l'avvio manuale dalla scheda Actions di GitHub
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
