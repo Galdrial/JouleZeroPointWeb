@@ -92,7 +92,37 @@ cd JouleZeroPointWeb
 docker compose up --build
 ```
 > [!TIP]
-> The frontend will be available at `http://localhost:5174`. The backend will use your `.env` configuration for Atlas, or can be pointed to the local containerized MongoDB.
+> The frontend will be available at `http://localhost:5174`. The backend will use your `.env` configuration.
+
+### 🧪 Database Seeding (Mandatory)
+After the containers are up, you **must** populate the database with the card fragments:
+```bash
+docker exec -it joule-backend node scripts/seedCards.js
+```
+
+---
+
+## 🛠️ Manual Installation (Non-Docker)
+
+If you prefer to run the ecosystem without Docker, ensure you have **Node.js (v20+)** and **MongoDB** installed.
+
+### 1. Backend Setup
+```bash
+cd backend
+npm install --legacy-peer-deps
+cp .env.example .env  # Configure your MONGODB_URI
+npm run build         # Required for seeding
+node scripts/seedCards.js
+npm run dev
+```
+
+### 2. Frontend Setup
+```bash
+cd frontend
+npm install --legacy-peer-deps
+cp .env.example .env  # Ensure VITE_API_URL=http://localhost:3000/api/v1
+npm run dev
+```
 
 ---
 
