@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import Deck, { IDeck } from '../models/Deck';
-import Card from '../models/Card';
 import logger from '../config/logger';
+import Card from '../models/Card';
+import Deck, { IDeck } from '../models/Deck';
 
 /**
  * Deck Controller (TypeScript).
@@ -15,30 +15,30 @@ import logger from '../config/logger';
  * @route   GET /api/v1/decks
  * @access  Protected
  */
-export const getDecks = async (req: Request, res: Response) => {
+export const getDecks = async ( req: Request, res: Response ) => {
   try {
     const { creator, q, costruttoreId, page = 1, limit = 12 } = req.query;
     const requester = req.user ? req.user.username.toLowerCase() : null;
     const creatorLower = creator ? creator.toString().toLowerCase() : null;
 
     let query: any = {};
-    
-    if (creatorLower) {
+
+    if ( creatorLower ) {
       query.creator = creatorLower;
-      if (requester !== creatorLower) {
+      if ( requester !== creatorLower ) {
         query.isPublic = true;
       }
-    } else if (requester) {
+    } else if ( requester ) {
       query.creator = requester;
     }
 
-    if (typeof q === 'string' && q.trim()) {
-      const searchRegex = new RegExp(q.trim(), 'i');
-      const matchingCards = await Card.find({ 
-        name: searchRegex, 
-        type: 'Costruttore' 
-      }).select('cardId');
-      const costruttoreIds = matchingCards.map(c => c.cardId);
+    if ( typeof q === 'string' && q.trim() ) {
+      const searchRegex = new RegExp( q.trim(), 'i' );
+      const matchingCards = await Card.find( {
+        name: searchRegex,
+        type: 'Costruttore'
+      } ).select( 'cardId' );
+      const costruttoreIds = matchingCards.map( c => c.cardId );
 
       query.$or = [
         { name: searchRegex },
@@ -46,19 +46,23 @@ export const getDecks = async (req: Request, res: Response) => {
       ];
     }
 
-    if (costruttoreId && costruttoreId !== '') {
-      query.costruttoreId = Number(costruttoreId);
+    if ( costruttoreId && costruttoreId !== '' ) {
+      query.costruttoreId = Number( costruttoreId );
     }
+
+    const parsedLimit = Math.min(parseInt(limit as string, 10) || 12, 50);
+    const parsedPage = Math.max(parseInt(page as string, 10) || 1, 1);
 
     const total = await Deck.countDocuments(query);
     const decks = await Deck.find(query)
       .sort({ updatedAt: -1 })
-      .skip((parseInt(page as string) - 1) * parseInt(limit as string))
-      .limit(parseInt(limit as string));
+      .skip((parsedPage - 1) * parsedLimit)
+      .limit(parsedLimit);
 
     res.json({ decks, total });
-  } catch (error) {
-    logger.error(`DECK_LIST_ERROR: ${(error as Error).message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`DECK_LIST_ERROR: ${errorMessage}`);
     res.status(500).json({ error: 'Errore durante il recupero del registro dei mazzi.' });
   }
 };
@@ -68,20 +72,20 @@ export const getDecks = async (req: Request, res: Response) => {
  * @route   GET /api/v1/decks/public
  * @access  Public
  */
-export const getPublicDecks = async (req: Request, res: Response) => {
+export const getPublicDecks = async ( req: Request, res: Response ) => {
   try {
     const { q, costruttoreId, sort = 'recent', page = 1, limit = 12 } = req.query;
     const requester = req.headers['x-user'] as string || '';
 
     let query: any = { isPublic: true };
 
-    if (typeof q === 'string' && q.trim()) {
-      const searchRegex = new RegExp(q.trim(), 'i');
-      const matchingCards = await Card.find({ 
-        name: searchRegex, 
-        type: 'Costruttore' 
-      }).select('cardId');
-      const costruttoreIds = matchingCards.map(c => c.cardId);
+    if ( typeof q === 'string' && q.trim() ) {
+      const searchRegex = new RegExp( q.trim(), 'i' );
+      const matchingCards = await Card.find( {
+        name: searchRegex,
+        type: 'Costruttore'
+      } ).select( 'cardId' );
+      const costruttoreIds = matchingCards.map( c => c.cardId );
 
       query.$or = [
         { name: searchRegex },
@@ -90,37 +94,41 @@ export const getPublicDecks = async (req: Request, res: Response) => {
       ];
     }
 
-    if (costruttoreId && costruttoreId !== '') {
-      query.costruttoreId = Number(costruttoreId);
+    if ( costruttoreId && costruttoreId !== '' ) {
+      query.costruttoreId = Number( costruttoreId );
     }
 
     let sortOption: any = { createdAt: -1 };
-    if (sort === 'top') {
+    if ( sort === 'top' ) {
       sortOption = { 'votes.length': -1, createdAt: -1 };
-    } else if (sort === 'imports') {
+    } else if ( sort === 'imports' ) {
       sortOption = { importsCount: -1, createdAt: -1 };
     }
+
+    const parsedLimit = Math.min(parseInt(limit as string, 10) || 12, 50);
+    const parsedPage = Math.max(parseInt(page as string, 10) || 1, 1);
 
     const total = await Deck.countDocuments(query);
     const decks = await Deck.find(query)
       .sort(sortOption)
-      .skip((parseInt(page as string) - 1) * parseInt(limit as string))
-      .limit(parseInt(limit as string));
+      .skip((parsedPage - 1) * parsedLimit)
+      .limit(parsedLimit);
 
-    const formattedDecks = decks.map(d => {
+    const formattedDecks = decks.map((d) => {
       const votesCount = d.votes.length;
       const userVoted = requester ? d.votes.includes(requester) : false;
       return {
         ...d.toObject(),
         votesCount,
-        userVoted
+        userVoted,
       };
     });
 
     res.json({ decks: formattedDecks, total });
-  } catch (error) {
-    logger.error(`PUBLIC_DECK_ERROR: ${(error as Error).message}`);
-    res.status(500).json({ error: 'Errore durante la sincronizzazione dell\'archivio pubblico.' });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`PUBLIC_DECK_ERROR: ${errorMessage}`);
+    res.status(500).json({ error: "Errore durante la sincronizzazione dell'archivio pubblico." });
   }
 };
 
@@ -129,55 +137,56 @@ export const getPublicDecks = async (req: Request, res: Response) => {
  * @route   POST /api/v1/decks
  * @access  Protected
  */
-export const saveDeck = async (req: Request, res: Response) => {
+export const saveDeck = async ( req: Request, res: Response ) => {
   try {
     const { id, name, cards, costruttoreId, isPublic } = req.body;
     const creator = req.user?.username;
-    
-    if (!creator) {
-      return res.status(401).json({ error: 'Identità utente non verificata.' });
+
+    if ( !creator ) {
+      return res.status( 401 ).json( { error: 'Identità utente non verificata.' } );
     }
 
-    if (!name) {
-      return res.status(400).json({ error: 'Il titolo del mazzo è obbligatorio.' });
+    if ( !name ) {
+      return res.status( 400 ).json( { error: 'Il titolo del mazzo è obbligatorio.' } );
     }
 
-    const duplicate = await Deck.findOne({ 
-      name: name.trim(), 
-      creator, 
-      _id: { $ne: id || null } 
-    });
+    const duplicate = await Deck.findOne( {
+      name: name.trim(),
+      creator,
+      _id: { $ne: id || null }
+    } );
 
-    if (duplicate) {
-      return res.status(409).json({ error: 'Un mazzo con questo nome esiste già nel tuo registro.' });
+    if ( duplicate ) {
+      return res.status( 409 ).json( { error: 'Un mazzo con questo nome esiste già nel tuo registro.' } );
     }
 
     let savedDeck: IDeck | null;
-    const finalCostruttoreId = Number(costruttoreId);
+    const finalCostruttoreId = Number( costruttoreId );
 
-    if (id) {
+    if ( id ) {
       savedDeck = await Deck.findOneAndUpdate(
         { _id: id, creator },
         { name, cards, costruttoreId: finalCostruttoreId, isPublic },
         { new: true, runValidators: true }
       );
 
-      if (!savedDeck) {
-        return res.status(404).json({ error: 'Mazzo non trovato o accesso non autorizzato.' });
+      if ( !savedDeck ) {
+        return res.status( 404 ).json( { error: 'Mazzo non trovato o accesso non autorizzato.' } );
       }
     } else {
-      savedDeck = await Deck.create({
+      savedDeck = await Deck.create( {
         name,
         cards,
         costruttoreId: finalCostruttoreId,
         creator,
         isPublic
-      });
+      } );
     }
 
     res.status(id ? 200 : 201).json(savedDeck);
-  } catch (error) {
-    logger.error(`DECK_SAVE_ERROR: ${(error as Error).message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`DECK_SAVE_ERROR: ${errorMessage}`);
     res.status(500).json({ error: 'Fallimento del protocollo durante il salvataggio del mazzo.' });
   }
 };
@@ -187,22 +196,23 @@ export const saveDeck = async (req: Request, res: Response) => {
  * @route   DELETE /api/v1/decks/:id
  * @access  Protected
  */
-export const deleteDeck = async (req: Request, res: Response) => {
+export const deleteDeck = async ( req: Request, res: Response ) => {
   try {
     const creator = req.user?.username;
-    if (!creator) {
-      return res.status(401).json({ error: 'Accesso negato.' });
+    if ( !creator ) {
+      return res.status( 401 ).json( { error: 'Accesso negato.' } );
     }
-    const deck = await Deck.findOneAndDelete({ _id: req.params.id, creator });
+    const deck = await Deck.findOneAndDelete( { _id: req.params.id, creator } );
 
-    if (!deck) {
-      return res.status(404).json({ error: 'Mazzo non trovato o accesso non autorizzato.' });
+    if ( !deck ) {
+      return res.status( 404 ).json( { error: 'Mazzo non trovato o accesso non autorizzato.' } );
     }
 
     logger.info(`VIGIL_SYSTEM: Deck decommissioned: ${deck.name} by ${creator}`);
     res.status(204).send();
-  } catch (error) {
-    logger.error(`DECK_DELETE_ERROR: ${(error as Error).message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`DECK_DELETE_ERROR: ${errorMessage}`);
     res.status(500).json({ error: 'Fallimento del protocollo durante la dismissione del mazzo.' });
   }
 };
@@ -212,33 +222,34 @@ export const deleteDeck = async (req: Request, res: Response) => {
  * @route   POST /api/v1/decks/:id/vote
  * @access  Protected
  */
-export const voteDeck = async (req: Request, res: Response) => {
+export const voteDeck = async ( req: Request, res: Response ) => {
   try {
     const username = req.user?.username;
-    if (!username) {
-        return res.status(401).json({ error: 'Autenticazione richiesta.' });
+    if ( !username ) {
+      return res.status( 401 ).json( { error: 'Autenticazione richiesta.' } );
     }
-    const deck: IDeck | null = await Deck.findById(req.params.id);
+    const deck: IDeck | null = await Deck.findById( req.params.id );
 
-    if (!deck || !deck.isPublic) {
-      return res.status(404).json({ error: 'Designazione del mazzo pubblico non trovata.' });
+    if ( !deck || !deck.isPublic ) {
+      return res.status( 404 ).json( { error: 'Designazione del mazzo pubblico non trovata.' } );
     }
 
-    const voteIndex = deck.votes.indexOf(username);
-    if (voteIndex > -1) {
-      deck.votes.splice(voteIndex, 1);
+    const voteIndex = deck.votes.indexOf( username );
+    if ( voteIndex > -1 ) {
+      deck.votes.splice( voteIndex, 1 );
     } else {
-      deck.votes.push(username);
+      deck.votes.push( username );
     }
 
     await deck.save();
     res.json({
       votesCount: deck.votes.length,
-      userVoted: deck.votes.includes(username)
+      userVoted: deck.votes.includes(username),
     });
-  } catch (error) {
-    logger.error(`DECK_VOTE_ERROR: ${(error as Error).message}`);
-    res.status(500).json({ error: 'Errore durante la sincronizzazione dell\'influenza.' });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`DECK_VOTE_ERROR: ${errorMessage}`);
+    res.status(500).json({ error: "Errore durante la sincronizzazione dell'influenza." });
   }
 };
 
@@ -247,39 +258,40 @@ export const voteDeck = async (req: Request, res: Response) => {
  * @route   POST /api/v1/decks/:id/import
  * @access  Protected
  */
-export const importDeck = async (req: Request, res: Response) => {
+export const importDeck = async ( req: Request, res: Response ) => {
   try {
     const username = req.user?.username;
-    if (!username) {
-        return res.status(401).json({ error: 'Autenticazione richiesta.' });
+    if ( !username ) {
+      return res.status( 401 ).json( { error: 'Autenticazione richiesta.' } );
     }
-    const sourceDeck: IDeck | null = await Deck.findById(req.params.id);
+    const sourceDeck: IDeck | null = await Deck.findById( req.params.id );
 
-    if (!sourceDeck || !sourceDeck.isPublic) {
-      return res.status(404).json({ error: 'Mazzo sorgente pubblico non trovato.' });
-    }
-
-    if (sourceDeck.creator === username) {
-      return res.status(403).json({ error: 'Rilevata ricorsione: Non puoi importare i tuoi stessi mazzi.' });
+    if ( !sourceDeck || !sourceDeck.isPublic ) {
+      return res.status( 404 ).json( { error: 'Mazzo sorgente pubblico non trovato.' } );
     }
 
-    const importedName = `${sourceDeck.name} (Imported)`;
-    
-    const newDeck = await Deck.create({
+    if ( sourceDeck.creator === username ) {
+      return res.status( 403 ).json( { error: 'Rilevata ricorsione: Non puoi importare i tuoi stessi mazzi.' } );
+    }
+
+    const importedName = `${ sourceDeck.name } (Imported)`;
+
+    const newDeck = await Deck.create( {
       name: importedName,
       cards: sourceDeck.cards,
       costruttoreId: sourceDeck.costruttoreId,
       creator: username,
       isPublic: false,
       parentDeckId: sourceDeck._id.toString()
-    });
+    } );
 
     sourceDeck.importsCount += 1;
     await sourceDeck.save();
 
     res.status(201).json(newDeck);
-  } catch (error) {
-    logger.error(`DECK_IMPORT_ERROR: ${(error as Error).message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`DECK_IMPORT_ERROR: ${errorMessage}`);
     res.status(500).json({ error: 'Fallimento del protocollo durante la replica automatizzata del mazzo.' });
   }
 };
@@ -289,24 +301,25 @@ export const importDeck = async (req: Request, res: Response) => {
  * @route   DELETE /api/v1/decks/user/:username
  * @access  Protected
  */
-export const deleteUserDecks = async (req: Request, res: Response) => {
+export const deleteUserDecks = async ( req: Request, res: Response ) => {
   try {
     const { username } = req.params;
     const requester = req.user?.username.toLowerCase();
-    
-    if (!requester) {
-        return res.status(401).json({ error: 'Accesso negato.' });
-    }
-    const targetUsername = (username as string).toLowerCase();
 
-    if (targetUsername !== requester) {
-        return res.status(403).json({ error: 'Autorizzazione negata: Non puoi epurare registri esterni.' });
+    if ( !requester ) {
+      return res.status( 401 ).json( { error: 'Accesso negato.' } );
+    }
+    const targetUsername = ( username as string ).toLowerCase();
+
+    if ( targetUsername !== requester ) {
+      return res.status( 403 ).json( { error: 'Autorizzazione negata: Non puoi epurare registri esterni.' } );
     }
     const result = await Deck.deleteMany({ creator: requester });
     logger.info(`VIGIL_SYSTEM: ${result.deletedCount} deck artifacts for ${username} have been purged.`);
     res.json({ message: 'All deck entities removed successfully.', deletedCount: result.deletedCount });
-  } catch (error) {
-    logger.error(`USER_DECKS_PURGE_ERROR: ${(error as Error).message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`USER_DECKS_PURGE_ERROR: ${errorMessage}`);
     res.status(500).json({ error: 'Fallimento del protocollo durante la sequenza di tabula rasa del registro.' });
   }
 };
@@ -316,15 +329,16 @@ export const deleteUserDecks = async (req: Request, res: Response) => {
  * @route   GET /api/v1/decks/:id
  * @access  Public
  */
-export const getDeckById = async (req: Request, res: Response) => {
+export const getDeckById = async ( req: Request, res: Response ) => {
   try {
-    const deck: IDeck | null = await Deck.findById(req.params.id);
-    if (!deck) {
-      return res.status(404).json({ error: 'Mazzo non trovato nell\'archivio.' });
+    const deck: IDeck | null = await Deck.findById( req.params.id );
+    if ( !deck ) {
+      return res.status( 404 ).json( { error: 'Mazzo non trovato nell\'archivio.' } );
     }
     res.json(deck);
-  } catch (error) {
-    logger.error(`GET_DECK_BY_ID_ERROR: ${(error as Error).message}`);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';
+    logger.error(`GET_DECK_BY_ID_ERROR: ${errorMessage}`);
     res.status(500).json({ error: 'Errore durante la scoperta del mazzo specifico.' });
   }
 };
