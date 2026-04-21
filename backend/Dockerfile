@@ -10,7 +10,7 @@ COPY package*.json ./
 ENV NODE_ENV=development
 
 # Install ALL dependencies
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # Copy the source code and configuration
 COPY . .
@@ -30,7 +30,7 @@ ENV NODE_ENV=production
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --omit=dev
+RUN npm ci --legacy-peer-deps --omit=dev
 
 # Copy compiled code and assets from builder
 COPY --from=builder /app/dist ./dist
