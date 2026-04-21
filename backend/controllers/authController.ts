@@ -37,10 +37,14 @@ const generateToken = (id: string | any): string => {
  */
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, privacyAccepted } = req.body;
 
     if (!username || !email || !password) {
       return res.status(400).json({ error: 'Tutti i campi sono obbligatori.' });
+    }
+
+    if (!privacyAccepted) {
+      return res.status(400).json({ error: 'È necessario accettare l\'informativa sulla privacy per procedere.' });
     }
 
     if (password.length < 8) {
@@ -59,6 +63,8 @@ export const registerUser = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         userExists.password = await bcrypt.hash(password, salt);
         userExists.verificationToken = verificationToken;
+        userExists.privacyAccepted = true;
+        userExists.privacyAcceptedAt = new Date();
         await userExists.save();
 
         await emailService.sendVerificationEmail(userExists.email, verificationToken);
@@ -82,6 +88,9 @@ export const registerUser = async (req: Request, res: Response) => {
       email: email.toLowerCase(),
       password: hashedPassword,
       verificationToken,
+      privacyAccepted: true,
+      privacyAcceptedAt: new Date(),
+      privacyVersion: 'v1.0-2026-03'
     });
 
     if (user) {

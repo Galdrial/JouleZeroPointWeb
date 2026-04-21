@@ -157,6 +157,30 @@ const triggerPassphraseReset = async () => {
   }
 };
 
+/**
+ * Protocol: Execute Data Portability Export
+ * Requests a complete JSON archive of the user's Matrix footprint (GDPR Art. 20).
+ */
+const handleDataExport = async () => {
+  try {
+    notifications.info("Generazione archivio dati in corso...");
+    const response = await api.get('/auth/export-data', { responseType: 'blob' });
+    
+    // Create download bridge
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `joule_export_${authStore.username}.json`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    
+    notifications.success("Archivio dati scaricato con successo.");
+  } catch (error) {
+    notifications.error("Errore durante l'esportazione dei dati.");
+  }
+};
+
 onMounted(fetchProfileData);
 
 /**
@@ -323,6 +347,16 @@ const goToDeck = () => {
               >
                 {{ isSendingReset ? "DISPACCIAMENTO LINK..." : "INVIA LINK DI RESET" }}
               </button>
+
+              <div class="portability-section mt-spacing">
+                <button 
+                  @click="handleDataExport" 
+                  class="cyber-btn btn-secondary full-width"
+                >
+                  DOWNLOAD DATA EXTRACTION (JSON)
+                </button>
+                <small class="input-hint">Esporta i tuoi dati e i tuoi mazzi (Art. 20 GDPR).</small>
+              </div>
             </div>
           </div>
         </div>

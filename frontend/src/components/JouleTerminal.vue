@@ -85,6 +85,13 @@ const vClickOutside = {
         :is-loading="chatStore.isLoading || chatStore.isStreaming" 
         @send="chatStore.sendMessage" 
       />
+
+      <footer class="terminal-footer">
+        <p class="ai-disclaimer">
+          <span class="warning-icon">⚠</span>
+          <strong>AI TRANSPARENCY:</strong> Questo terminale è un sistema di intelligenza artificiale. Le risposte possono contenere imprecisioni. Non inserire dati personali.
+        </p>
+      </footer>
     </div>
   </Transition>
 </template>
@@ -188,5 +195,31 @@ const vClickOutside = {
     left: 1rem;
     bottom: 5rem;
   }
+}
+
+.terminal-footer {
+  padding: 0.6rem 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-top: 1px solid rgba(var(--accent-gold-rgb), 0.1);
+  text-align: center;
+}
+
+.ai-disclaimer {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+  letter-spacing: 0.5px;
+  opacity: 0.8;
+}
+
+.ai-disclaimer strong {
+  color: var(--accent-gold);
+  font-size: 0.7rem;
+}
+
+.warning-icon {
+  color: var(--accent-gold);
+  margin-right: 4px;
 }
 </style>

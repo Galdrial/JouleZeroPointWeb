@@ -15,6 +15,9 @@ export interface IUser extends Document {
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   isAdmin: boolean;
+  privacyAccepted: boolean;
+  privacyAcceptedAt: Date;
+  privacyVersion: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -54,6 +57,18 @@ const userSchema: Schema = new Schema({
     type: Boolean,
     default: false,
   },
+  privacyAccepted: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  privacyAcceptedAt: {
+    type: Date
+  },
+  privacyVersion: {
+    type: String,
+    default: 'v1.0-2026-03'
+  }
 }, {
   // Automatic lifecycle tracking: createdAt and updatedAt timestamps
   timestamps: true,

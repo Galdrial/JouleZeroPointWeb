@@ -29,8 +29,7 @@ const handleOpenBanner = () => {
 };
 
 // Consent Triggers
-// Consent Trigger: We only have essential cookies, so we just acknowledge
-const acceptRef = () => {
+const acceptConsent = () => {
   localStorage.setItem(COOKIE_STORAGE_KEY, "acknowledged");
   isVisible.value = false;
 };
@@ -48,8 +47,11 @@ const acceptRef = () => {
         </div>
         
         <div class="cookie-actions">
-          <button @click="acceptRef" class="btn btn-primary btn-accetta" aria-label="Accetta e prosegui">
-            RICEVUTO
+          <button @click="acceptConsent" class="cyber-btn btn-primary">
+            ACCETTA TUTTI
+          </button>
+          <button @click="acceptConsent" class="cyber-btn btn-primary">
+            RIFIUTA NON ESSENZIALI
           </button>
         </div>
       </div>

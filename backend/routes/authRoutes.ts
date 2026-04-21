@@ -12,6 +12,7 @@ import {
   logoutUser, 
   updateProfile 
 } from '../controllers/authController';
+import { exportUserData } from '../controllers/exportController';
 import { protect } from '../middleware/authMiddleware';
 
 /**
@@ -106,5 +107,12 @@ router.put('/profile', protect, updateProfile);
  * @access  Private/Protected
  */
 router.delete('/profile', protect, deleteAccount);
+
+/**
+ * @route   GET /api/v1/auth/export-data
+ * @desc    Export user data package (GDPR Portability)
+ * @access  Private/Protected
+ */
+router.get('/export-data', protect, exportUserData);
 
 export default router;

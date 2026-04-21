@@ -43,6 +43,14 @@ const goBack = () => {
         :is-loading="chatStore.isLoading || chatStore.isStreaming" 
         @send="chatStore.sendMessage" 
       />
+
+      <!-- AI Transparency Disclaimer (EU AI Act Compliance) -->
+      <footer class="terminal-footer">
+        <p class="transparency-note">
+          <span class="shield-icon">🛡️</span>
+          Interfaccia Automata: Stai interagendo con un'AI (OpenAI). Le conversazioni sono monitorate per sicurezza e conformità legale.
+        </p>
+      </footer>
     </div>
   </div>
 </template>
@@ -144,5 +152,25 @@ const goBack = () => {
   .terminal-container {
     border: none;
   }
+}
+
+.terminal-footer {
+  padding: 0.75rem 1.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  text-align: center;
+}
+
+.transparency-note {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin: 0;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+.shield-icon {
+  margin-right: 5px;
+  filter: grayscale(1) brightness(0.8);
 }
 </style>

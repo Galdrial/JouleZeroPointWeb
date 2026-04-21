@@ -114,3 +114,20 @@ I have implemented export systems to take the game beyond the browser:
 
 ---
 **Joule: Zero Point Engineering** — *Nothing is left to chance in the temporal flow.* 🛡️🚀⚖️🌌
+## ⚖️ Compliance & AI Ethics
+
+The "Joule: Zero Point" architecture is designed to exceed standard security requirements, aligning with **GDPR**, **ePrivacy**, and the **EU AI Act** (2026 Ready).
+
+### 🛡️ Data Privacy (GDPR)
+- **Right to Erasure (Art. 17)**: Users can permanently purge their genetic profile and all associated artifacts (decks/votes) via the Dashboard.
+- **Data Portability (Art. 20)**: Users can extract their entire Matrix footprint in a machine-readable JSON format for complete transparency.
+- **Accountability (Art. 5.2)**: Every registration records a cryptographic proof of Privacy Policy acceptance (Timestamp + Versioning).
+- **Minimization**: We utilize JWT for stateless authentication and only store the strictly necessary frequency (Email) for identity verification.
+
+### 🧠 AI Transparency (EU AI Act)
+- **Labeling (Art. 52)**: The "Terminal Punto Zero" explicitly identifies itself as an artificial system through persistent UI disclaimers.
+- **Privacy by Design**: The AI Core is governed by a System Prompt directive that prohibits requesting or processing PII (Personally Identifiable Information).
+
+### 🍪 Cookie Governance
+- **Zero Profiling**: The application operates without third-party tracking or profiling cookies.
+- **User Control**: The Consent Matrix allows users to explicitly accept or reject non-essential technical markers, ensuring a granular and informed choice.

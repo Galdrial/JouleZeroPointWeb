@@ -93,6 +93,7 @@ const submitForm = async () => {
         username: username.value,
         email: email.value,
         password: password.value,
+        privacyAccepted: acceptedTerms.value
       });
       notifications.success(
         res.data.message || "Frequenza generata! Controlla la posta.",

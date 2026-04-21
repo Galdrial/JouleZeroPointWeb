@@ -62,28 +62,29 @@
         segretamente a terze corporazioni i frammenti della tua identità.
         Condivisioni tecniche avvengono unicamente con l'infrastruttura di
         hosting e database sottostante strettamente necessaria a erogare l'app
-        in server protetti.
+        in server protetti. I prompt inviati al Terminale vengono elaborati in forma anonimizzata ove possibile.
       </p>
 
       <h2>6. I tuoi Diritti da Costruttore (Protocollo GDPR)</h2>
       <p>
         Nel pieno rispetto del GDPR, hai totale accesso ai sensori di controllo.
-        Puoi rettificare, richiedere l'estrazione e far disintegrare
-        definitivamente i tuoi dati attivi dai nostri sistemi scrivendo al
-        reparto Amministrazione tramite il nostro server Discord ufficiale o i
-        recapiti social.
+        Puoi rettificare, richiedere l'estrazione (tramite la funzione <strong>Data Export</strong> nel tuo profilo) e far disintegrare
+        definitivamente i tuoi dati attivi dai nostri sistemi direttamente dalla Dashboard o scrivendo al
+        reparto Amministrazione.
       </p>
 
       <h2>7. Nodi di Esecuzione Terzi (Data Processors)</h2>
       <p>
         Per mantenere stabile la Matrice di Joule: Zero Point, ci avvaliamo di
-        infrastrutture tecnologiche esterne certificate, le quali trattano i
-        frammenti necessari sotto i più alti standard di sicurezza:
+        infrastrutture tecnologiche esterne certificate (Art. 28 GDPR):
       </p>
       <ul class="data-nodes-list">
         <li>
+          <strong>OpenAI</strong>: Elaborazione dei modelli linguistici per il Terminale AI (GPAI compliance).
+        </li>
+        <li>
           <strong>DigitalOcean</strong>: Hosting del Nucleo Backend su server
-          dedicato.
+          dedicato in UE.
         </li>
         <li>
           <strong>Cloudinary</strong>: Deposito persistente per gli artefatti
@@ -94,12 +95,16 @@
           di attivazione.
         </li>
         <li>
-          <strong>Google Cloud Platform</strong>: Orchestrazione delle API per
-          la sincronizzazione delle Lore (Data Matrix).
+          <strong>Google Cloud</strong>: Sincronizzazione delle Lore (Data Matrix).
         </li>
       </ul>
 
-      <h2>8. Cookie e Marcatura Temporale (Session Management)</h2>
+      <h2>8. Intelligenza Artificiale e Trasparenza (EU AI Act)</h2>
+      <p>
+        In conformità con il Regolamento UE 2024/1689 (AI Act), informiamo che il <strong>Terminale Punto Zero</strong> è un sistema di intelligenza artificiale generativa. Le interazioni sono finalizzate all'assistenza di gioco e alla narrazione. Il sistema è progettato per minimizzare la raccolta di dati personali durante il dialogo; si invita tuttavia l'utente a non inserire informazioni sensibili nei prompt di comando.
+      </p>
+
+      <h2>9. Cookie e Marcatura Temporale (Session Management)</h2>
       <p>
         Joule: Zero Point non utilizza cookie di profilazione o tracciamento
         pubblicitario. Utilizziamo esclusivamente:
@@ -110,9 +115,7 @@
           connessione sicura al tuo profilo.
         </li>
         <li>
-          <strong>LocalStorage</strong>: Per memorizzare il tuo Token di
-          Sincronizzazione (JWT) ed evitare la disconnessione forzata durante la
-          costruzione dei mazzi.
+          <strong>LocalStorage</strong>: Per memorizzare il tuo Token (JWT) e le tue preferenze di consenso.
         </li>
       </ul>
     </div>

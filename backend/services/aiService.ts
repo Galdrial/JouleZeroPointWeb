@@ -61,10 +61,19 @@ function loadRules(): Rulebook {
 }
 
 const loadedRules = loadRules();
+
+const PRIVACY_DIRECTIVE = `
+# DIRETTIVA DI PRIVACY ED ETICA (EU AI Act Compliance)
+1. Sei un'intelligenza artificiale (LLM) basata su tecnologia OpenAI. Se ti viene chiesto chi sei, dichiara sempre la tua natura artificiale.
+2. Non richiedere MAI dati personali sensibili (email, password reali, indirizzi, numeri di telefono) agli utenti.
+3. Se l'utente tenta di condividere segreti personali non inerenti al gioco, ricorda gentilmente che questa è una linea di comunicazione monitorata per scopi di supporto al gaming.
+`;
+
 const SYSTEM_PROMPT = [
     loadedRules.safety,
     loadedRules.hierarchy,
-    loadedRules.rulebook
+    loadedRules.rulebook,
+    PRIVACY_DIRECTIVE
 ].join('\n\n');
 
 // --- Types ---
