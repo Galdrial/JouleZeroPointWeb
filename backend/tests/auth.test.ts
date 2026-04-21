@@ -32,18 +32,18 @@ describe('Auth API', () => {
     test('Should register a new user', async () => {
         const res = await request(app)
             .post('/api/v1/auth/register')
-            .send(testUser);
+            .send({ ...testUser, privacyAccepted: true });
 
         expect(res.statusCode).toBe(201);
         expect(res.body).toHaveProperty('message');
     });
 
     test('Should not register user with existing email', async () => {
-        await request(app).post('/api/v1/auth/register').send(testUser);
+        await request(app).post('/api/v1/auth/register').send({ ...testUser, privacyAccepted: true });
 
         const res = await request(app)
             .post('/api/v1/auth/register')
-            .send(testUser);
+            .send({ ...testUser, privacyAccepted: true });
 
         // Based on authController logic: 200 with message if user exists but not verified
         // or 400 if already exists and verified. 
@@ -52,7 +52,7 @@ describe('Auth API', () => {
     });
 
     test('Should login an existing user', async () => {
-        await request(app).post('/api/v1/auth/register').send(testUser);
+        await request(app).post('/api/v1/auth/register').send({ ...testUser, privacyAccepted: true });
 
         const createdUser = await User.findOne({ email: testUser.email.toLowerCase() });
         if (!createdUser) throw new Error('User not found');
@@ -72,7 +72,7 @@ describe('Auth API', () => {
     });
 
     test('Should fail login with wrong password', async () => {
-        await request(app).post('/api/v1/auth/register').send(testUser);
+        await request(app).post('/api/v1/auth/register').send({ ...testUser, privacyAccepted: true });
 
         const createdUser = await User.findOne({ email: testUser.email.toLowerCase() });
         if (!createdUser) throw new Error('User not found');
