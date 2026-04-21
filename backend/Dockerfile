@@ -37,6 +37,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
 # Copy config files if any were not in dist (just in case they were modified)
 COPY --from=builder /app/config ./config
+COPY --from=builder /app/scripts ./scripts
 
 # The app listens on PORT env var (fallback 3000)
 EXPOSE 3000

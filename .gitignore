@@ -15,7 +15,11 @@ backend/.env.*
 frontend/.env
 frontend/.env.*
 frontend/.env.*.local
+
+# Permetti esplicitamente i template d'esempio
+!.env.example
 !backend/.env.example
+!frontend/.env.example
 
 # --- Build output ---
 frontend/dist/
