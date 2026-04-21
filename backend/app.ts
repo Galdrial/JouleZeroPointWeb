@@ -83,7 +83,9 @@ app.use(helmet({
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
       "img-src": ["'self'", "data:", "https:*"],
-      "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // unsafe-eval often needed for dev/certain libs, but Lighthouse prefers its removal
+      "script-src": process.env.NODE_ENV === 'production'
+        ? ["'self'"]
+        : ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       "style-src": ["'self'", "'unsafe-inline'"],
       "font-src": ["'self'"],
       "connect-src": ["'self'", "https://*.vercel-analytics.com"],
@@ -112,20 +114,22 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use('/api', limiter);
+if (process.env.NODE_ENV !== 'test') {
+  app.use('/api', limiter);
 
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { error: 'Troppi tentativi di autenticazione. Il tuo portale di accesso è stato temporaneamente bloccato.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+  const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Troppi tentativi di autenticazione. Il tuo portale di accesso è stato temporaneamente bloccato.' },
+    standardHeaders: true,
+    legacyHeaders: false,
+  });
 
-app.use('/api/v1/auth/login', authLimiter);
-app.use('/api/v1/auth/register', authLimiter);
-app.use('/api/v1/auth/forgot-password', authLimiter);
-app.use('/api/v1/auth/resend-verification', authLimiter);
+  app.use('/api/v1/auth/login', authLimiter);
+  app.use('/api/v1/auth/register', authLimiter);
+  app.use('/api/v1/auth/forgot-password', authLimiter);
+  app.use('/api/v1/auth/resend-verification', authLimiter);
+}
 
 const DB_READY_STATE_LABELS: Record<number, string> = {
   0: 'disconnected',

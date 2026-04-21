@@ -76,7 +76,7 @@ describe('Auth API', () => {
 
         const createdUser = await User.findOne({ email: testUser.email.toLowerCase() });
         if (!createdUser) throw new Error('User not found');
-        
+
         await request(app).get(`/api/v1/auth/verify/${createdUser.verificationToken}`);
 
         const res = await request(app)
@@ -87,5 +87,33 @@ describe('Auth API', () => {
             });
 
         expect(res.statusCode).toBe(401);
+    });
+
+    test('Should return 401 (not 404) for non-existent email', async () => {
+        const res = await request(app)
+            .post('/api/v1/auth/login')
+            .send({ email: 'ghost@example.com', password: 'anypassword' });
+
+        expect(res.statusCode).toBe(401);
+    });
+
+    test('Should return identical error message for missing email and wrong password (anti-enumeration)', async () => {
+        await request(app).post('/api/v1/auth/register').send({ ...testUser, privacyAccepted: true });
+
+        const createdUser = await User.findOne({ email: testUser.email.toLowerCase() });
+        if (!createdUser) throw new Error('User not found');
+        await request(app).get(`/api/v1/auth/verify/${createdUser.verificationToken}`);
+
+        const wrongPasswordRes = await request(app)
+            .post('/api/v1/auth/login')
+            .send({ email: testUser.email, password: 'wrongpassword' });
+
+        const missingEmailRes = await request(app)
+            .post('/api/v1/auth/login')
+            .send({ email: 'ghost@example.com', password: 'anypassword' });
+
+        expect(wrongPasswordRes.statusCode).toBe(401);
+        expect(missingEmailRes.statusCode).toBe(401);
+        expect(wrongPasswordRes.body.error).toBe(missingEmailRes.body.error);
     });
 });

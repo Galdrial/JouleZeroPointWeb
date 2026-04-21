@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import Card from '../models/Card';
 import Message from '../models/Message';
-import User from '../models/User';
 import logger from '../config/logger';
+import { optionalProtect } from '../middleware/authMiddleware';
 import { isLikelyInjection, buildPromptMessages, streamChat } from '../services/aiService';
 
 /**
@@ -22,9 +22,8 @@ const MAX_MESSAGE_LENGTH = Number(process.env.CHAT_MAX_MESSAGE_LENGTH || 1200);
  * 
  * Response formatting: Server-Sent Events (SSE).
  */
-router.post('/chat', async (req: Request, res: Response) => {
+router.post('/chat', optionalProtect, async (req: Request, res: Response) => {
   const { message, gameState } = req.body;
-  const usernameHeader = req.headers['x-user'] as string | undefined;
 
   // --- 1. Input validation ---
   if (!message) {
@@ -49,37 +48,33 @@ router.post('/chat', async (req: Request, res: Response) => {
   }
 
   try {
-    // --- 4. Authentication and user context ---
-    let userRecord = null;
-    let userIdentity = "Costruttore Ignoto";
-    let historyMessages: { role: 'user' | 'assistant', content: string }[] = [];
+    // --- 4. User context (optional: anonymous users get a default identity) ---
+    const userRecord = req.user || null;
+    const userIdentity = userRecord
+      ? (userRecord.usernameDisplay || userRecord.username)
+      : 'Costruttore Ignoto';
 
     const totalCards = await Card.countDocuments();
 
-    if (usernameHeader) {
-      const normalizedUsername = usernameHeader.trim().toLowerCase();
-      userRecord = await User.findOne({ username: normalizedUsername });
+    let historyMessages: { role: 'user' | 'assistant', content: string }[] = [];
 
-      if (userRecord) {
-        userIdentity = userRecord.usernameDisplay || userRecord.username;
+    if (userRecord) {
+      // Retrieve and sanitize history (Last 15 messages)
+      const history = await Message.find({ userId: userRecord._id })
+        .sort({ timestamp: -1 })
+        .limit(15);
 
-        // Retrieve and sanitize history (Last 15 messages)
-        const history = await Message.find({ userId: userRecord._id })
-          .sort({ timestamp: -1 })
-          .limit(15);
+      // Filter out system warnings and specific AI limitations from context
+      const filteredHistory = history.filter(m =>
+        !m.content.includes("Anomalia rilevata") &&
+        !m.content.includes("Accesso alle funzioni di sistema negato") &&
+        !m.content.includes("non posso ricordare")
+      ).slice(0, 8);
 
-        // Filter out system warnings and specific AI limitations from context
-        const filteredHistory = history.filter(m =>
-          !m.content.includes("Anomalia rilevata") &&
-          !m.content.includes("Accesso alle funzioni di sistema negato") &&
-          !m.content.includes("non posso ricordare")
-        ).slice(0, 8);
-
-        historyMessages = filteredHistory.reverse().map(m => ({
-          role: m.role as 'user' | 'assistant',
-          content: m.content
-        }));
-      }
+      historyMessages = filteredHistory.reverse().map(m => ({
+        role: m.role as 'user' | 'assistant',
+        content: m.content
+      }));
     }
 
     // --- 5. Delegate to AI service ---
@@ -110,7 +105,7 @@ router.post('/chat', async (req: Request, res: Response) => {
       }
     );
 
-    // --- 7. Conversation persistence ---
+    // --- 7. Conversation persistence (only for authenticated users) ---
     if (userRecord && fullContent) {
       await Message.create([
         { userId: userRecord._id, role: 'user', content: message },

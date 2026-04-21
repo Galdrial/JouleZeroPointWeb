@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import logger from '../config/logger';
 import Card from '../models/Card';
 import Deck, { IDeck } from '../models/Deck';
+import { escapeRegex } from '../utils/escapeRegex';
 
 /**
  * Deck Controller (TypeScript).
@@ -33,7 +34,7 @@ export const getDecks = async ( req: Request, res: Response ) => {
     }
 
     if ( typeof q === 'string' && q.trim() ) {
-      const searchRegex = new RegExp( q.trim(), 'i' );
+      const searchRegex = new RegExp( escapeRegex( q.trim() ), 'i' );
       const matchingCards = await Card.find( {
         name: searchRegex,
         type: 'Costruttore'
@@ -80,7 +81,7 @@ export const getPublicDecks = async ( req: Request, res: Response ) => {
     let query: any = { isPublic: true };
 
     if ( typeof q === 'string' && q.trim() ) {
-      const searchRegex = new RegExp( q.trim(), 'i' );
+      const searchRegex = new RegExp( escapeRegex( q.trim() ), 'i' );
       const matchingCards = await Card.find( {
         name: searchRegex,
         type: 'Costruttore'

@@ -277,7 +277,13 @@ export async function streamChat(
             if (toolCalls.length > 0) {
                 const toolResults: ChatMessage[] = [];
                 for (const tc of toolCalls) {
-                    const args = JSON.parse(tc.function.arguments);
+                    let args: Record<string, unknown>;
+                    try {
+                        args = JSON.parse(tc.function.arguments);
+                    } catch {
+                        logger.warn(`TOOL_PARSE_ERROR: Malformed arguments for "${tc.function.name}": ${tc.function.arguments}`);
+                        continue;
+                    }
                     const res = await searchCards(args);
                     toolResults.push({ 
                         role: 'tool', 

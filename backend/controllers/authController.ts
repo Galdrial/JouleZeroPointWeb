@@ -121,12 +121,12 @@ export const loginUser = async (req: Request, res: Response) => {
     const user: IUser | null = await User.findOne({ email: email.toLowerCase() });
 
     if (!user) {
-      return res.status(404).json({ error: 'Utente non trovato.' });
+      return res.status(401).json({ error: 'Credenziali non sincronizzate con il database centrale.' });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
-      return res.status(401).json({ error: 'Credenziali errate.' });
+      return res.status(401).json({ error: 'Credenziali non sincronizzate con il database centrale.' });
     }
 
     if (!user.isVerified) {
