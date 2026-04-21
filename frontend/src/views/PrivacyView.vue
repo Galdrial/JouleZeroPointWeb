@@ -6,12 +6,13 @@
   <div class="legal-view fade-in">
     <h1 class="glitch-text" data-text="PRIVACY POLICY">INFORMATIVA PRIVACY</h1>
     <div class="glass-panel legal-content">
-      <p class="last-updated">Ultimo aggiornamento: 31 Marzo 2026</p>
+      <p class="last-updated">Ultimo aggiornamento: 21 Aprile 2026</p>
 
       <div class="controller-info">
         <strong>Titolare del Trattamento:</strong> Simone Camerano, Gradara
         (PU), Italia. <br />
-        <strong>Email di Contatto:</strong> info@joulezeropoint.com
+        <strong>Email di Contatto:</strong> info@joulezeropoint.com <br />
+        <strong>Responsabile della Protezione dei Dati (DPO):</strong> Non nominato in quanto non obbligatorio ai sensi dell'Art. 37 GDPR.
       </div>
 
       <h2>1. Origine e Natura dei Dati Raccolti</h2>
@@ -115,9 +116,24 @@
           connessione sicura al tuo profilo.
         </li>
         <li>
-          <strong>LocalStorage</strong>: Per memorizzare il tuo Token (JWT) e le tue preferenze di consenso.
+          <strong>LocalStorage</strong>: Tecnologia di archiviazione lato client utilizzata per memorizzare il Token (JWT) e le preferenze di consenso. A differenza dei cookie, questi dati non vengono inviati automaticamente al server ad ogni richiesta, garantendo maggiore controllo e sicurezza.
         </li>
       </ul>
+
+      <h2>10. Basi Giuridiche del Trattamento (Art. 6 GDPR)</h2>
+      <p>
+        Il trattamento dei tuoi dati avviene sulla base delle seguenti condizioni:
+      </p>
+      <ul>
+        <li><strong>Esecuzione del Contratto (Art. 6.1.b)</strong>: Per la creazione e gestione dell'account di gioco.</li>
+        <li><strong>Legittimo Interesse (Art. 6.1.f)</strong>: Per il monitoraggio dei log di errore e la sicurezza del sistema.</li>
+        <li><strong>Consenso dell'Interessato (Art. 6.1.a)</strong>: Per l'utilizzo delle funzionalità basate su Intelligenza Artificiale e per la gestione del consenso cookie.</li>
+      </ul>
+
+      <h2>11. Trasferimento Dati Extra-UE</h2>
+      <p>
+        Alcuni trattamenti (es. OpenAI, Google Cloud) avvengono su server situati negli Stati Uniti. Tali trasferimenti avvengono sulla base delle <strong>Clausole Contrattuali Standard (SCC)</strong> approvate dalla Commissione Europea e in conformità con il Data Privacy Framework, garantendo un livello di protezione adeguato agli standard UE.
+      </p>
     </div>
   </div>
 </template>
