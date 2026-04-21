@@ -15,6 +15,7 @@ import { useNotificationStore } from "../stores/notificationStore";
 import api from "../utils/api";
 import { jsPDF } from "jspdf";
 import JSZip from "jszip";
+import { vClickOutside } from "../utils/directives";
 
 // State Orchestration: Stores & Core Refs
 const authStore = useAuthStore();
@@ -458,23 +459,7 @@ const selectDashboardCostruttore = (id: number | "") => {
   isCostruttoreDropdownOpen.value = false;
 };
 
-/**
- * Click-Outside Directive Implementation
- * Manages modal/dropdown state hygiene.
- */
-const vClickOutside = {
-  mounted(el: any, binding: any) {
-    el.clickOutsideEvent = (event: any) => {
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value(event);
-      }
-    };
-    document.body.addEventListener("click", el.clickOutsideEvent);
-  },
-  unmounted(el: any) {
-    document.body.removeEventListener("click", el.clickOutsideEvent);
-  },
-};
+
 
 /**
  * Initiate Decommission Sequence (Delete)

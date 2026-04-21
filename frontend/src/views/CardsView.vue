@@ -7,6 +7,7 @@ import {
 } from "../constants/cardTypes";
 import { useCardStore, type Card } from "../stores/cardStore";
 import { useNotificationStore } from "../stores/notificationStore";
+import { vClickOutside } from "../utils/directives";
 
 // State Orchestration: Stores & Core Refs
 const cardStore = useCardStore();
@@ -182,22 +183,7 @@ watch(error, (newError) => {
   }
 });
 
-/**
- * UI Support: Click-Outside Directive
- */
-const vClickOutside = {
-  mounted(el: any, binding: any) {
-    el.clickOutsideEvent = (event: any) => {
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value(event);
-      }
-    };
-    document.body.addEventListener("click", el.clickOutsideEvent);
-  },
-  unmounted(el: any) {
-    document.body.removeEventListener("click", el.clickOutsideEvent);
-  },
-};
+
 </script>
 
 <template>

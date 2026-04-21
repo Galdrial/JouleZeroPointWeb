@@ -8,6 +8,7 @@ import { useNotificationStore } from "../stores/notificationStore";
 import api from "../utils/api";
 import { jsPDF } from "jspdf";
 import JSZip from "jszip";
+import { vClickOutside } from "../utils/directives";
 
 
 const loadImage = (src: string): Promise<HTMLImageElement> => {
@@ -90,23 +91,7 @@ const selectedSortLabel = computed(
 
 const totalPages = computed(() => Math.ceil(totalDecks.value / limit));
 
-/**
- * Custom Directive: Detect clicks outside the target element.
- * Used for dropdown closing protocols.
- */
-const vClickOutside = {
-  mounted(el: any, binding: any) {
-    el.clickOutsideEvent = (event: any) => {
-      if (!(el === event.target || el.contains(event.target))) {
-        binding.value(event);
-      }
-    };
-    document.body.addEventListener("click", el.clickOutsideEvent);
-  },
-  unmounted(el: any) {
-    document.body.removeEventListener("click", el.clickOutsideEvent);
-  },
-};
+
 
 /**
  * Registry Resolution: Map Constructor ID to Nominal identity.
