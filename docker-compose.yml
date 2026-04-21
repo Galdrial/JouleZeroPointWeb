@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
     container_name: joule-backend
+    restart: unless-stopped
     ports:
       - "3000:3000"
     env_file:
@@ -19,6 +20,7 @@ services:
     build:
       context: ./frontend
     container_name: joule-frontend
+    restart: unless-stopped
     ports:
       - "5174:80" # Maps local port 5174 to Nginx port 80
     networks:
@@ -29,8 +31,9 @@ services:
   mongodb:
     image: mongo:latest
     container_name: joule-mongodb
+    restart: unless-stopped
     ports:
-      - "27017:27017" # Mapping local port for accessibility outside Docker if needed
+      - "127.0.0.1:27017:27017" # Localhost only for security
     volumes:
       - mongo-data:/data/db
     networks:

@@ -10,18 +10,23 @@ import User from '../models/User';
  * Attaches the authenticated user to the Request object.
  */
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
-    let token: string | undefined;
+    const authHeader = req.headers.authorization;
 
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (authHeader && authHeader.startsWith('Bearer')) {
+        const parts = authHeader.split(' ');
+        
+        if (parts.length !== 2) {
+            return res.status(401).json({ error: 'Formato token non valido. Utilizzare Bearer [token].' });
+        }
+
+        const token = parts[1];
+
         try {
-            token = req.headers.authorization.split(' ')[1];
-
             if (!process.env.JWT_SECRET) {
                 throw new Error('JWT_SECRET is missing from environment.');
             }
 
             const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: string };
-
             const user = await User.findById(decoded.id).select('-password');
             
             if (!user) {
@@ -36,9 +41,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
         }
     }
 
-    if (!token) {
-        return res.status(401).json({ error: 'Accesso negato. Nessun segnale di autenticazione fornito.' });
-    }
+    return res.status(401).json({ error: 'Accesso negato. Nessun segnale di autenticazione fornito.' });
 };
 
 /**
@@ -48,18 +51,24 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
  * to proceed as anonymous if the token is missing or invalid.
  */
 export const optionalProtect = async (req: Request, res: Response, next: NextFunction) => {
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-        try {
-            const token = req.headers.authorization.split(' ')[1];
-            if (process.env.JWT_SECRET) {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: string };
-                const user = await User.findById(decoded.id).select('-password');
-                if (user) {
-                    req.user = user;
+    const authHeader = req.headers.authorization;
+
+    if (authHeader && authHeader.startsWith('Bearer')) {
+        const parts = authHeader.split(' ');
+        
+        if (parts.length === 2) {
+            const token = parts[1];
+            try {
+                if (process.env.JWT_SECRET) {
+                    const decoded = jwt.verify(token, process.env.JWT_SECRET) as { id: string };
+                    const user = await User.findById(decoded.id).select('-password');
+                    if (user) {
+                        req.user = user;
+                    }
                 }
+            } catch (error) {
+                logger.debug(`OPTIONAL_AUTH: Invalid or expired token: ${(error as Error).message}`);
             }
-        } catch (error) {
-            logger.debug(`OPTIONAL_AUTH: Invalid or expired token: ${(error as Error).message}`);
         }
     }
     next();
