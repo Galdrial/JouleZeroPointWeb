@@ -25,6 +25,7 @@ WORKDIR /app
 
 # Set production environment
 ENV NODE_ENV=production
+ENV PORT=3000
 
 # Copy package manifests
 COPY package*.json ./
