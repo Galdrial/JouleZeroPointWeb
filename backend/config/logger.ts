@@ -25,9 +25,9 @@ const logger = winston.createLogger({
   ),
   transports: [
     // Persistence Layer: Error logs are archived for post-mortem analysis
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+    new winston.transports.File({ filename: 'logs/error.log', level: 'error', maxsize: 5 * 1024 * 1024, maxFiles: 5 }),
     // Full Audit Layer: Combined logs for system state monitoring
-    new winston.transports.File({ filename: 'logs/combined.log' }),
+    new winston.transports.File({ filename: 'logs/combined.log', maxsize: 10 * 1024 * 1024, maxFiles: 7 }),
   ],
 });
 
