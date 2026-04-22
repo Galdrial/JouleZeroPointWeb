@@ -49,7 +49,6 @@ const isSortDropdownOpen = ref(false);
 
 const { 
   handleExport, 
-  isExporting, 
   exportingId, 
   exportingFormat 
 } = useDeckExport(allCards, decks);
