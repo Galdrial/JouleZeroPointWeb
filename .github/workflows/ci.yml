@@ -35,6 +35,9 @@ jobs:
       - name: 🔍 TypeScript type check
         run: npx vue-tsc -b --noEmit
 
+      - name: 🧹 ESLint
+        run: npm run lint
+
       - name: 🧪 Run unit tests
         run: npm run test
 
@@ -70,6 +73,24 @@ jobs:
         run: npm test
         env:
           NODE_ENV: test
+
+  # ─────────────────────────────────────────
+  # DOCKER BUILD: Verifica che le immagini si costruiscano
+  # ─────────────────────────────────────────
+  docker:
+    name: Docker Build Check
+    runs-on: ubuntu-latest
+    needs: [frontend, backend]
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🐳 Build backend image
+        run: docker build -t joule-backend:ci ./backend
+
+      - name: 🐳 Build frontend image
+        run: docker build -t joule-frontend:ci ./frontend
 
   # ─────────────────────────────────────────
   # E2E TESTS: Solo PR o manuale

@@ -58,14 +58,10 @@ export const useAuthStore = defineStore( 'auth', () => {
    * Synchronizes profile updates with the backend and local state.
    */
   async function updateProfile( data: { username?: string, password?: string } ) {
-    try {
-      const response = await api.put( '/auth/profile', data )
-      const { token: newToken, username: newUsername, isAdmin: newIsAdmin, email: newEmail } = response.data
-      setAuth( newToken, newUsername, !!newIsAdmin, newEmail )
-      return response.data
-    } catch ( error ) {
-      throw error
-    }
+    const response = await api.put( '/auth/profile', data )
+    const { token: newToken, username: newUsername, isAdmin: newIsAdmin, email: newEmail } = response.data
+    setAuth( newToken, newUsername, !!newIsAdmin, newEmail )
+    return response.data
   }
 
   /**
