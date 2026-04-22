@@ -2,16 +2,16 @@ import fs from 'fs';
 import axios from 'axios';
 
 // --- CONFIGURATION ---
-const BASE_URL = 'https://joule-zeropoint.com';
-const API_URL = process.env.VITE_API_URL || 'https://api.joule-zeropoint.com/api'; // Fallback for script
+const BASE_URL = 'https://www.joulezeropoint.com';
+const API_URL = process.env.VITE_API_URL || 'https://www.joulezeropoint.com/api/v1'; // Fallback for script
 const OUTPUT_PATH = './public/sitemap.xml';
 
 // Static routes of the SPA
 const staticRoutes = [
   { url: '/', priority: '1.0', changefreq: 'weekly' },
   { url: '/news', priority: '0.8', changefreq: 'daily' },
-  { url: '/rules', priority: '0.9', changefreq: 'monthly' },
-  { url: '/deck-builder', priority: '0.7', changefreq: 'monthly' },
+  { url: '/regolamento', priority: '0.9', changefreq: 'monthly' },
+  { url: '/deckbuilder', priority: '0.7', changefreq: 'monthly' },
   { url: '/login', priority: '0.5', changefreq: 'monthly' },
 ];
 

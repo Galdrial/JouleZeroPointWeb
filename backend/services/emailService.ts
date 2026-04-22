@@ -36,6 +36,8 @@ const transportOptions: SMTPTransportOptions = {
 
 const transporter = nodemailer.createTransport(transportOptions as any);
 
+const isTestEnvironment = process.env.NODE_ENV === 'test';
+
 // SMTP CONNECTION VERIFICATION
 if (process.env.NODE_ENV !== 'test') {
   transporter.verify((error: Error | null) => {
@@ -58,6 +60,11 @@ export const sendVerificationEmail = async (email: string, token: string): Promi
   const verifyUrl = `${frontendBase}/verify-email/${token}`;
 
   logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, activation link: ${verifyUrl}`);
+
+  if (isTestEnvironment) {
+    logger.debug(`SMTP_TEST_MODE: Skipping verification email dispatch to ${email}.`);
+    return;
+  }
 
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     logger.warn("SMTP_WARNING: Missing credentials. Email will not be sent. Use the override link above.");
@@ -102,6 +109,11 @@ export const sendPasswordResetEmail = async (email: string, token: string): Prom
 
   logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, reset link: ${resetUrl}`);
 
+  if (isTestEnvironment) {
+    logger.debug(`SMTP_TEST_MODE: Skipping password reset email dispatch to ${email}.`);
+    return;
+  }
+
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     logger.warn("SMTP_WARNING: Missing credentials for password reset.");
     return;
@@ -142,6 +154,11 @@ export const sendPasswordResetEmail = async (email: string, token: string): Prom
  */
 export const sendContactMessage = async (name: string, email: string, subject: string, message: string): Promise<void> => {
   const adminEmail = process.env.CONTACT_RECIPIENT_EMAIL || process.env.SMTP_USER;
+
+  if (isTestEnvironment) {
+    logger.debug(`SMTP_TEST_MODE: Skipping contact email dispatch from ${email}.`);
+    return;
+  }
   
   if (!adminEmail) {
     logger.warn("SMTP_WARNING: Cannot send contact message, missing recipient admin email.");

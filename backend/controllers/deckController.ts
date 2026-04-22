@@ -336,6 +336,14 @@ export const getDeckById = async ( req: Request, res: Response ) => {
     if ( !deck ) {
       return res.status( 404 ).json( { error: 'Mazzo non trovato nell\'archivio.' } );
     }
+
+    const requester = req.user?.username?.toLowerCase();
+    const creator = deck.creator.toLowerCase();
+
+    if ( !deck.isPublic && requester !== creator ) {
+      return res.status( 404 ).json( { error: 'Mazzo non trovato nell\'archivio.' } );
+    }
+
     res.json(deck);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Errore sconosciuto';

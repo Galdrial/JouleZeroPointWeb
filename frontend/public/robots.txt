@@ -4,7 +4,7 @@
 User-agent: *
 Allow: /
 Allow: /news
-Allow: /rules
+Allow: /regolamento
 
 # RESTRICTED TERMINALS (Security & Admin)
 Disallow: /admin/
@@ -12,8 +12,7 @@ Disallow: /admin-news/
 Disallow: /login/
 Disallow: /register/
 Disallow: /profile/
-Disallow: /deck-builder/
 Disallow: /api/
 
 # SITEMAP COORDINATES
-Sitemap: https://joule-zeropoint.com/sitemap.xml
+Sitemap: https://www.joulezeropoint.com/sitemap.xml

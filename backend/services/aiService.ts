@@ -5,6 +5,7 @@ import logger from '../config/logger';
 import { escapeRegex } from '../utils/escapeRegex';
 import * as fs from 'fs';
 import * as path from 'path';
+import type { SortOrder } from 'mongoose';
 
 /**
  * AI Service: Joule Zero Point — Cognitive Engine (TypeScript Edition).
@@ -79,6 +80,7 @@ const SYSTEM_PROMPT = [
 
 // --- Types ---
 type ChatMessage = OpenAI.Chat.ChatCompletionMessageParam;
+type SortableCardField = 'cost_et' | 'pep' | 'rp' | 'name';
 
 interface ChatError {
     category: string;
@@ -138,9 +140,14 @@ function performSafetyAudit(content: string): boolean {
  */
 export async function searchCards(params: any = {}) {
     try {
-        const { query, type, min_et, max_et, min_pep, min_rp, limit } = params;
+        const { query, type, min_et, max_et, min_pep, min_rp, sort_by, sort_order } = params;
+        const safeLimit = Math.min(Math.max(Number(params.limit) || 15, 1), 25);
         const mongoQuery: any = {};
         let results: any[] = [];
+        const allowedSortFields: SortableCardField[] = ['cost_et', 'pep', 'rp', 'name'];
+        const sortField = allowedSortFields.includes(sort_by) ? sort_by as SortableCardField : null;
+        const sortDirection: 1 | -1 = sort_order === 'asc' ? 1 : -1;
+        const sortOption: Record<string, SortOrder> | null = sortField ? { [sortField]: sortDirection } : null;
 
         if (type) {
             if (type.toLowerCase() === 'frammento') {
@@ -161,11 +168,15 @@ export async function searchCards(params: any = {}) {
 
         if (query) {
             const queryRegex = new RegExp(escapeRegex(query), 'i');
-            const nameMatches = await Card.find({ ...mongoQuery, name: queryRegex }).limit(limit || 15);
+            const nameQuery = Card.find({ ...mongoQuery, name: queryRegex });
+            if (sortOption) nameQuery.sort(sortOption);
+            const nameMatches = await nameQuery.limit(safeLimit);
             if (nameMatches.length > 0) {
                 results = nameMatches;
             } else {
-                const effectMatches = await Card.find({ ...mongoQuery, effect: queryRegex }).limit(limit || 15);
+                const effectQuery = Card.find({ ...mongoQuery, effect: queryRegex });
+                if (sortOption) effectQuery.sort(sortOption);
+                const effectMatches = await effectQuery.limit(safeLimit);
                 if (effectMatches.length > 0) {
                     results = effectMatches;
                 } else {
@@ -176,8 +187,10 @@ export async function searchCards(params: any = {}) {
                             results = filteredCards
                                 .map(c => ({ ...c.toObject(), score: cosineSimilarity(queryVector, c.embedding) }))
                                 .filter(c => c.score > 0.7)
-                                .sort((a, b) => b.score - a.score)
-                                .slice(0, limit || 15);
+                                .sort((a, b) => sortField
+                                    ? sortDirection * compareSortableCardValues(a, b, sortField)
+                                    : b.score - a.score)
+                                .slice(0, safeLimit);
                         }
                     } catch (e) {
                         logger.error(`SEMANTIC_SEARCH_SUB_FAILURE: ${(e as Error).message}`);
@@ -187,7 +200,9 @@ export async function searchCards(params: any = {}) {
         }
 
         if (results.length === 0) {
-            results = await Card.find(mongoQuery).limit(limit || 15).lean();
+            const fallbackQuery = Card.find(mongoQuery);
+            if (sortOption) fallbackQuery.sort(sortOption);
+            results = await fallbackQuery.limit(safeLimit).lean();
         }
 
         return results.map(c => ({
@@ -202,6 +217,14 @@ export async function searchCards(params: any = {}) {
         logger.error(`SEARCH_CARDS_FAILURE: ${(error as Error).message}`);
         return { error: "Database mapping error during card search matrix sync." };
     }
+}
+
+function compareSortableCardValues(a: any, b: any, field: SortableCardField): number {
+    if (field === 'name') {
+        return String(a.name || '').localeCompare(String(b.name || ''));
+    }
+
+    return Number(a[field] || 0) - Number(b[field] || 0);
 }
 
 // ============================================================================
@@ -241,7 +264,14 @@ export async function streamChat(
                             type: "object",
                             properties: {
                                 query: { type: "string", description: "Termine di ricerca o descrizione dell'effetto." },
-                                type: { type: "string", enum: ["Frammento", "Evento", "Anomalia", "Costruttore"] }
+                                type: { type: "string", enum: ["Frammento", "Evento", "Anomalia", "Costruttore"] },
+                                min_et: { type: "number", description: "Costo ET minimo." },
+                                max_et: { type: "number", description: "Costo ET massimo." },
+                                min_pep: { type: "number", description: "PEP minimo." },
+                                min_rp: { type: "number", description: "RP minimo." },
+                                sort_by: { type: "string", enum: ["cost_et", "pep", "rp", "name"], description: "Campo per ordinare i risultati." },
+                                sort_order: { type: "string", enum: ["asc", "desc"], description: "Direzione ordinamento." },
+                                limit: { type: "number", description: "Numero massimo di risultati, da 1 a 25." }
                             }
                         }
                     }

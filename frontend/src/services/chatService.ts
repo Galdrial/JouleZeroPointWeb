@@ -28,14 +28,19 @@ export const chatService = {
   ) {
     const authStore = useAuthStore();
     const API_URL = import.meta.env.VITE_API_URL || "/api/v1";
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      "x-user": authStore.username || "",
+    };
+
+    if (authStore.token) {
+      headers.Authorization = `Bearer ${authStore.token}`;
+    }
 
     try {
       const response = await fetch(`${API_URL}/terminal/chat`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user": authStore.username || "",
-        },
+        headers,
         body: JSON.stringify({ message, threadId }),
       });
 

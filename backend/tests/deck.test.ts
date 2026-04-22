@@ -1,6 +1,9 @@
 import request from 'supertest';
+import jwt from 'jsonwebtoken';
 import app from '../app';
 import { connectTestDB, closeTestDB, clearDatabase } from './setup';
+import Deck from '../models/Deck';
+import User from '../models/User';
 
 /**
  * Deck API Tests (TypeScript)
@@ -52,5 +55,75 @@ describe('Deck Search API — Regex Shield', () => {
         expect(res.statusCode).toBe(200);
         expect(res.body.decks).toEqual([]);
         expect(res.body.total).toBe(0);
+    });
+});
+
+describe('Deck Detail API — Privacy Shield', () => {
+    const createUserWithToken = async (username: string) => {
+        const user = await User.create({
+            username: username.toLowerCase(),
+            usernameDisplay: username,
+            email: `${username.toLowerCase()}@example.com`,
+            password: 'hashed-password',
+            isVerified: true,
+            privacyAccepted: true,
+            privacyAcceptedAt: new Date(),
+        });
+
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.JWT_SECRET || 'test-secret-at-least-thirty-two-chars-long'
+        );
+
+        return { user, token };
+    };
+
+    test('Should hide a private deck from anonymous users', async () => {
+        await createUserWithToken('Owner');
+        const deck = await Deck.create({
+            name: 'Private Timeline',
+            creator: 'owner',
+            cards: [],
+            costruttoreId: 1,
+            isPublic: false,
+        });
+
+        const res = await request(app).get(`/api/v1/decks/${deck._id}`);
+
+        expect(res.statusCode).toBe(404);
+    });
+
+    test('Should allow the owner to retrieve a private deck', async () => {
+        const { token } = await createUserWithToken('Owner');
+        const deck = await Deck.create({
+            name: 'Private Timeline',
+            creator: 'owner',
+            cards: [],
+            costruttoreId: 1,
+            isPublic: false,
+        });
+
+        const res = await request(app)
+            .get(`/api/v1/decks/${deck._id}`)
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.name).toBe('Private Timeline');
+    });
+
+    test('Should allow anonymous users to retrieve a public deck', async () => {
+        await createUserWithToken('Owner');
+        const deck = await Deck.create({
+            name: 'Public Timeline',
+            creator: 'owner',
+            cards: [],
+            costruttoreId: 1,
+            isPublic: true,
+        });
+
+        const res = await request(app).get(`/api/v1/decks/${deck._id}`);
+
+        expect(res.statusCode).toBe(200);
+        expect(res.body.name).toBe('Public Timeline');
     });
 });
