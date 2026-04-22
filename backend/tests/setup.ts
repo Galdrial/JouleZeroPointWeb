@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 // Load environment variables for tests. 
 // Provide dummy keys if missing to allow the app to function in CI without a .env file.
-dotenv.config();
+dotenv.config({ quiet: true });
 process.env.NODE_ENV = 'test';
 process.env.OPENAI_API_KEY = process.env.OPENAI_API_KEY || 'test-dummy-key';
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-secret-at-least-thirty-two-chars-long';

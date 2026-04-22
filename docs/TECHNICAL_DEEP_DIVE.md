@@ -71,7 +71,7 @@ The backend is built with a **Safe-by-Design** mindset.
     - **Sensitive APIs (Auth)**: 10 req / 15 min (to prevent brute-force attacks).
 
 ### 🔑 Authentication
-We use **JWT (JSON Web Tokens)** transmitted via `Authorization: Bearer` headers. Passwords are encrypted using **Argon2** (or Bcrypt), ensuring maximum resistance against leaked database rainbow tables.
+We use **JWT (JSON Web Tokens)** transmitted via `Authorization: Bearer` headers. Passwords are hashed with **bcryptjs** and per-password salts before storage, reducing exposure if the user database is leaked.
 
 ---
 

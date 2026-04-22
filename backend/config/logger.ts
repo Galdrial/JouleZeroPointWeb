@@ -17,6 +17,7 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
 
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+  silent: process.env.NODE_ENV === 'test',
   format: combine(
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     errors({ stack: true }), // Capture stack traces for anomalies

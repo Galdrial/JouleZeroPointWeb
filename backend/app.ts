@@ -1,7 +1,7 @@
 import path from 'path';
 import dotenv from 'dotenv';
 // Load environment variables before any other imports that might depend on them
-dotenv.config();
+dotenv.config({ quiet: true });
 
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';

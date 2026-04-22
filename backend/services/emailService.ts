@@ -59,12 +59,12 @@ export const sendVerificationEmail = async (email: string, token: string): Promi
   const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
   const verifyUrl = `${frontendBase}/verify-email/${token}`;
 
-  logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, activation link: ${verifyUrl}`);
-
   if (isTestEnvironment) {
     logger.debug(`SMTP_TEST_MODE: Skipping verification email dispatch to ${email}.`);
     return;
   }
+
+  logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, activation link: ${verifyUrl}`);
 
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     logger.warn("SMTP_WARNING: Missing credentials. Email will not be sent. Use the override link above.");
@@ -107,12 +107,12 @@ export const sendPasswordResetEmail = async (email: string, token: string): Prom
   const frontendBase = process.env.FRONTEND_URL || 'http://localhost:5173';
   const resetUrl = `${frontendBase}/reset-password/${token}`;
 
-  logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, reset link: ${resetUrl}`);
-
   if (isTestEnvironment) {
     logger.debug(`SMTP_TEST_MODE: Skipping password reset email dispatch to ${email}.`);
     return;
   }
+
+  logger.info(`VIGIL_SYSTEM: [MANUAL_OVERRIDE] For user ${email}, reset link: ${resetUrl}`);
 
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
     logger.warn("SMTP_WARNING: Missing credentials for password reset.");
