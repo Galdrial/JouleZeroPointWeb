@@ -1035,4 +1035,43 @@ onMounted(async () => {
   opacity: 0.3;
   cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+  .public-decks-view {
+    padding: 1rem;
+    gap: 1.2rem;
+  }
+
+  .main-title {
+    font-size: 2.2rem;
+    letter-spacing: 0.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .search-container {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .custom-dropdown {
+    min-width: 100%;
+  }
+
+  .decks-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+  }
+
+  .pagination {
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .page-info {
+    width: 100%;
+    text-align: center;
+    order: -1;
+  }
+}
 </style>
