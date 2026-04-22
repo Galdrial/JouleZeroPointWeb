@@ -64,7 +64,7 @@ export const STARTER_DECKS: StarterDeck[] = [
       { id: '50', count: 2 }, { id: '134', count: 2 }, { id: '165', count: 3 },
       { id: '66', count: 2 }, { id: '130', count: 3 }, { id: '248', count: 3 },
       { id: '90', count: 3 }, { id: '46', count: 2 }, { id: '209', count: 2 },
-      { id: '139', count: 1 }
+      { id: '25', count: 1 }, { id: '139', count: 1 }
     ]
   },
   {
