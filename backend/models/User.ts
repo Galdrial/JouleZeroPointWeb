@@ -12,6 +12,7 @@ export interface IUser extends Document {
   password: string;
   isVerified: boolean;
   verificationToken?: string;
+  verificationTokenExpires?: Date;
   resetPasswordToken?: string;
   resetPasswordExpires?: Date;
   isAdmin: boolean;
@@ -51,6 +52,7 @@ const userSchema: Schema = new Schema({
     default: false, // Prevents unregistered access
   },
   verificationToken: String,
+  verificationTokenExpires: Date,
   resetPasswordToken: String,
   resetPasswordExpires: Date,
   isAdmin: {

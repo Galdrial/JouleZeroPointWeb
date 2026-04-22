@@ -63,6 +63,7 @@ export const registerUser = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         userExists.password = await bcrypt.hash(password, salt);
         userExists.verificationToken = verificationToken;
+        userExists.verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
         userExists.privacyAccepted = true;
         userExists.privacyAcceptedAt = new Date();
         await userExists.save();
@@ -88,6 +89,7 @@ export const registerUser = async (req: Request, res: Response) => {
       email: email.toLowerCase(),
       password: hashedPassword,
       verificationToken,
+      verificationTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
       privacyAccepted: true,
       privacyAcceptedAt: new Date(),
       privacyVersion: 'v1.0-2026-03'
@@ -188,7 +190,10 @@ export const deleteAccount = async (req: any, res: Response) => {
 export const verifyEmail = async (req: Request, res: Response) => {
   try {
     const { token } = req.params;
-    const user: IUser | null = await User.findOne({ verificationToken: token });
+    const user: IUser | null = await User.findOne({
+      verificationToken: token,
+      verificationTokenExpires: { $gt: new Date() },
+    });
 
     if (!user) {
       return res.status(400).json({ error: 'Gettone di attivazione non valido o scaduto.' });
@@ -196,6 +201,7 @@ export const verifyEmail = async (req: Request, res: Response) => {
 
     user.isVerified = true;
     user.verificationToken = undefined;
+    user.verificationTokenExpires = undefined;
     await user.save();
 
     logger.info(`VIGIL_SYSTEM: Constructor verified: ${user.username}`);
@@ -344,6 +350,7 @@ export const resendVerificationEmail = async (req: Request, res: Response) => {
 
     const verificationToken = crypto.randomBytes(32).toString('hex');
     user.verificationToken = verificationToken;
+    user.verificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await user.save();
 
     await emailService.sendVerificationEmail(user.email, verificationToken);

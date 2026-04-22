@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import Card from '../models/Card';
 import { generateEmbedding, cosineSimilarity } from './embeddingService';
 import logger from '../config/logger';
+import { escapeRegex } from '../utils/escapeRegex';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -145,7 +146,7 @@ export async function searchCards(params: any = {}) {
             if (type.toLowerCase() === 'frammento') {
                 mongoQuery.type = { $in: [/Solido/i, /Liquido/i, /Gas/i, /Plasma/i] };
             } else {
-                mongoQuery.type = { $regex: new RegExp(`^${type}$`, 'i') };
+                mongoQuery.type = { $regex: new RegExp(`^${escapeRegex(type)}$`, 'i') };
             }
         }
 
@@ -159,7 +160,7 @@ export async function searchCards(params: any = {}) {
         if (min_rp !== undefined) mongoQuery.rp = { $gte: min_rp };
 
         if (query) {
-            const queryRegex = new RegExp(query, 'i');
+            const queryRegex = new RegExp(escapeRegex(query), 'i');
             const nameMatches = await Card.find({ ...mongoQuery, name: queryRegex }).limit(limit || 15);
             if (nameMatches.length > 0) {
                 results = nameMatches;
