@@ -76,6 +76,8 @@ backend/update_assistant.js
 # --- Asset generati / cache ---
 backend/public/news/
 backend/database_preview.json
+backend/coverage/
+frontend/coverage/
 
 # --- OS e editor ---
 .DS_Store
