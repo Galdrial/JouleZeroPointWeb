@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { reactive, watch } from "vue";
 import { resolveNewsImage } from "../../utils/imageResolver";
 
 type FormData = {
@@ -26,12 +27,18 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
+  (e: "update:form", form: FormData): void;
   (e: "submit"): void;
   (e: "cancel"): void;
   (e: "image-file-change", event: Event): void;
   (e: "upload-image"): void;
   (e: "image-preview-error"): void;
 }>();
+
+const localForm = reactive<FormData>({ ...props.form });
+
+watch(() => props.form, (val) => { Object.assign(localForm, val); }, { deep: true });
+watch(localForm, () => { emit("update:form", { ...localForm }); }, { deep: true });
 </script>
 
 <template>
@@ -47,7 +54,7 @@ const emit = defineEmits<{
       <div class="form-row">
         <label>Slug (URL)</label>
         <input
-          v-model="props.form.slug"
+          v-model="localForm.slug"
           :disabled="props.isEditing"
           type="text"
           class="admin-input"
@@ -58,13 +65,13 @@ const emit = defineEmits<{
 
       <div class="form-row">
         <label>Titolo</label>
-        <input v-model="props.form.title" type="text" class="admin-input" />
+        <input v-model="localForm.title" type="text" class="admin-input" />
       </div>
 
       <div class="form-row">
         <label>Sommario <span class="form-hint">(visibile in home)</span></label>
         <textarea
-          v-model="props.form.summary"
+          v-model="localForm.summary"
           class="admin-textarea"
           rows="2"
         />
@@ -76,7 +83,7 @@ const emit = defineEmits<{
           <span class="form-hint">(paragrafi separati da riga vuota)</span>
         </label>
         <textarea
-          v-model="props.form.content"
+          v-model="localForm.content"
           class="admin-textarea"
           rows="8"
         />
@@ -84,7 +91,7 @@ const emit = defineEmits<{
 
       <div class="form-row">
         <label>Categoria</label>
-        <select v-model="props.form.category" class="admin-input">
+        <select v-model="localForm.category" class="admin-input">
           <option value="news">News</option>
           <option value="storia">Storia</option>
         </select>
@@ -93,7 +100,7 @@ const emit = defineEmits<{
       <div class="form-row">
         <label>URL immagine (opzionale)</label>
         <input
-          v-model="props.form.imageUrl"
+          v-model="localForm.imageUrl"
           type="text"
           class="admin-input"
           placeholder="/news/cover.jpg oppure https://.../cover.jpg"
@@ -115,7 +122,7 @@ const emit = defineEmits<{
           </button>
         </div>
         <span
-          v-if="props.form.imageUrl && !props.isImageUrlValid"
+          v-if="localForm.imageUrl && !props.isImageUrlValid"
           class="form-error-inline"
         >
           URL non valido. Inserisci `/news/...` oppure un link completo
@@ -123,21 +130,21 @@ const emit = defineEmits<{
         </span>
         <div
           v-if="
-            props.form.imageUrl &&
+            localForm.imageUrl &&
               props.isImageUrlValid &&
               !props.imagePreviewError
           "
           class="image-preview-wrap"
         >
           <img
-            :src="resolveNewsImage(props.form.imageUrl)"
+            :src="resolveNewsImage(localForm.imageUrl)"
             alt="Anteprima immagine news"
             class="image-preview"
             @error="emit('image-preview-error')"
           />
         </div>
         <span
-          v-if="props.form.imageUrl && props.imagePreviewError"
+          v-if="localForm.imageUrl && props.imagePreviewError"
           class="form-error-inline"
         >
           Impossibile caricare l'immagine da questo URL.
@@ -148,7 +155,7 @@ const emit = defineEmits<{
         <div class="form-row">
           <label>Link fonte (opzionale)</label>
           <input
-            v-model="props.form.sourceUrl"
+            v-model="localForm.sourceUrl"
             type="url"
             class="admin-input"
             placeholder="https://..."
@@ -157,7 +164,7 @@ const emit = defineEmits<{
         <div class="form-row">
           <label>Data pubblicazione</label>
           <input
-            v-model="props.form.publishedAt"
+            v-model="localForm.publishedAt"
             type="datetime-local"
             class="admin-input"
           />
@@ -165,21 +172,21 @@ const emit = defineEmits<{
       </div>
 
       <label class="form-toggle">
-        <input v-model="props.form.isPublished" type="checkbox" />
+        <input v-model="localForm.isPublished" type="checkbox" />
         <span>Pubblicata</span>
       </label>
 
       <div class="form-row-inline form-row-inline--compact">
         <label class="form-toggle">
-          <input v-model="props.form.isFeatured" type="checkbox" />
+          <input v-model="localForm.isFeatured" type="checkbox" />
           <span>Metti in evidenza</span>
         </label>
 
         <div class="form-row">
           <label>Ordine evidenza</label>
           <input
-            v-model.number="props.form.featuredOrder"
-            :disabled="!props.form.isFeatured"
+            v-model.number="localForm.featuredOrder"
+            :disabled="!localForm.isFeatured"
             type="number"
             min="1"
             class="admin-input"

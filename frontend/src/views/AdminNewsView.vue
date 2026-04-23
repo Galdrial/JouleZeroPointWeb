@@ -276,6 +276,7 @@ onMounted(loadNews);
         :image-preview-error="imagePreviewError"
         :is-uploading-image="isUploadingImage"
         :form-error="formError"
+        @update:form="Object.assign(form, $event)"
         @submit="submitForm"
         @cancel="closeForm"
         @image-file-change="onImageFileChange"
