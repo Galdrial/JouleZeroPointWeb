@@ -4,6 +4,8 @@ Vue 3 + Vite + TypeScript client for Joule: Zero Point. Features a fully decentr
 
 ## Quick Start (Local)
 
+Prerequisites: Node.js 24.x with npm 10+.
+
 1. Prepare backend environment:
 
 ```bash

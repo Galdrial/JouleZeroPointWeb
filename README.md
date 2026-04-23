@@ -104,7 +104,7 @@ docker exec -it joule-backend node scripts/seedCards.js
 
 ## 🛠️ Manual Installation (Non-Docker)
 
-If you prefer to run the ecosystem without Docker, ensure you have **Node.js (v20+)** and **MongoDB** installed.
+If you prefer to run the ecosystem without Docker, ensure you have **Node.js 24.x** with **npm 10+** and **MongoDB** installed.
 
 ### 1. Backend Setup
 ```bash
