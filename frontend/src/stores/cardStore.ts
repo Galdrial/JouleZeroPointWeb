@@ -18,7 +18,7 @@ export interface Card {
   effect: string;
   role: string | null;
   image_url: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -49,8 +49,8 @@ export const useCardStore = defineStore('cards', () => {
     try {
       const response = await api.get('/cards');
       cards.value = response.data;
-    } catch (err: any) {
-      error.value = err.message || 'Error during Matrix synchronization.';
+    } catch (err: unknown) {
+      error.value = (err as Error).message || 'Error during Matrix synchronization.';
     } finally {
       loading.value = false;
     }

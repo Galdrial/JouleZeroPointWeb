@@ -90,10 +90,10 @@ export const chatService = {
           }
         }
       }
-    } catch (err: any) {
-      onError({ 
-        message: err.message || "Connection failure", 
-        category: "network" 
+    } catch (err: unknown) {
+      onError({
+        message: (err as Error).message || "Connection failure",
+        category: "network"
       });
     }
   },

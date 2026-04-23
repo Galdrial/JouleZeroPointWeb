@@ -67,6 +67,7 @@ const renderedContent = computed(() => {
         {{ authorLabel }}
       </span>
       <div class="message-content">
+        <!-- eslint-disable-next-line vue/no-v-html -- content is sanitized by DOMPurify before render -->
         <div v-if="content" class="markdown-body" v-html="renderedContent"></div>
         <slot v-else></slot>
 

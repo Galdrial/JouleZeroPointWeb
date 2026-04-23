@@ -7,7 +7,7 @@ import logo2 from "../../assets/logo2.webp";
  * Component Props
  * @property {boolean} isOpen - Current state of the terminal drawer.
  */
-const props = defineProps({
+defineProps({
   isOpen: Boolean
 });
 

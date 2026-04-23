@@ -46,16 +46,16 @@ export const useDeckStore = defineStore('decks', () => {
    * Requires authentication.
    * @param params - Optional pagination or filter parameters.
    */
-  async function fetchUserDecks(params: any = {}) {
+  async function fetchUserDecks(params: Record<string, unknown> = {}) {
     if (!authStore.isLoggedIn) return;
-    
+
     loading.value = true;
     try {
       const res = await api.get('/decks', { params });
       userDecks.value = res.data.decks;
       totalUserDecks.value = res.data.total;
-    } catch (err: any) {
-      error.value = err.message || 'Errore durante il caricamento dei mazzi.';
+    } catch (err: unknown) {
+      error.value = (err as Error).message || 'Errore durante il caricamento dei mazzi.';
     } finally {
       loading.value = false;
     }
@@ -66,14 +66,14 @@ export const useDeckStore = defineStore('decks', () => {
    * @param params - Optional search or sorting parameters.
    * @returns The raw response data for component-level processing.
    */
-  async function fetchPublicDecks(params: any = {}) {
+  async function fetchPublicDecks(params: Record<string, unknown> = {}) {
     loading.value = true;
     try {
       const res = await api.get('/decks/public', { params });
       publicDecks.value = res.data.decks || res.data;
       return res.data;
-    } catch (err: any) {
-      error.value = err.message || 'Errore durante il caricamento dei mazzi pubblici.';
+    } catch (err: unknown) {
+      error.value = (err as Error).message || 'Errore durante il caricamento dei mazzi pubblici.';
     } finally {
       loading.value = false;
     }
@@ -94,7 +94,7 @@ export const useDeckStore = defineStore('decks', () => {
       totalUserDecks.value--;
       notifications.success("Mazzo rimosso correttamente dalla memoria.");
       return true;
-    } catch (err) {
+    } catch {
       // Errors are handled by the global api interceptor
       return false;
     }
@@ -109,8 +109,8 @@ export const useDeckStore = defineStore('decks', () => {
     try {
       const res = await api.get(`/decks/${id}`);
       return res.data;
-    } catch (err: any) {
-      error.value = err.message || 'Errore durante il caricamento del mazzo.';
+    } catch (err: unknown) {
+      error.value = (err as Error).message || 'Errore durante il caricamento del mazzo.';
       return null;
     } finally {
       loading.value = false;
