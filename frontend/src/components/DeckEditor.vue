@@ -231,8 +231,8 @@ onMounted(() => {
         <div class="library-header">
           <h3 class="uppercase-title">ARCHIVIO FRAMMENTI</h3>
           <button
-            @click="emit('back')"
             class="cyber-btn btn-primary small-btn"
+            @click="emit('back')"
           >
             DASHBOARD
           </button>
@@ -244,8 +244,8 @@ onMounted(() => {
             class="glass-input small"
           />
           <div
-            class="custom-dropdown"
             v-click-outside="() => (isTypeDropdownOpen = false)"
+            class="custom-dropdown"
           >
             <div
               class="dropdown-trigger small"
@@ -318,10 +318,10 @@ onMounted(() => {
           <div class="costruttore-area">
             <label>COSTRUTTORE</label>
             <div
-              class="custom-dropdown"
               v-click-outside="
                 () => (isEditorCostruttoreDropdownOpen = false)
               "
+              class="custom-dropdown"
             >
               <div
                 class="dropdown-trigger"
@@ -332,13 +332,12 @@ onMounted(() => {
               >
                 {{
                   selectedCostruttore?.name.split(",")[0] ||
-                  "SCEGLI COSTRUTTORE"
+                    "SCEGLI COSTRUTTORE"
                 }}
                 <span
                   class="arrow"
                   :class="{ open: isEditorCostruttoreDropdownOpen }"
-                  >▼</span
-                >
+                >▼</span>
               </div>
               <Transition name="slide-up">
                 <div
@@ -367,7 +366,7 @@ onMounted(() => {
           </div>
           <div class="privacy-area">
             <label class="checkbox-container">
-              <input type="checkbox" v-model="isPublic" />
+              <input v-model="isPublic" type="checkbox" />
               <span class="checkmark"></span>
               Sincronia Pubblica (Condividi Mazzo)
             </label>
@@ -386,9 +385,9 @@ onMounted(() => {
               CARTE: <span>{{ totalCards }}</span>/40
             </div>
             <button
-              @click="showStatsModal = true"
               class="cyber-btn btn-primary stats-trigger-btn"
               title="Analisi Statistica"
+              @click="showStatsModal = true"
             >
               <span class="stats-icon">▁▃▅</span>
             </button>
@@ -429,9 +428,9 @@ onMounted(() => {
 
         <div class="editor-actions">
           <button
-            @click="saveDeck"
             class="cyber-btn btn-primary full-width"
             :disabled="isSaving"
+            @click="saveDeck"
           >
             {{ isSaving ? "SINCRONIZZAZIONE..." : "SALVA LINEA TEMPORALE" }}
           </button>
