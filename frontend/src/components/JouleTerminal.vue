@@ -21,11 +21,13 @@ const emit = defineEmits(["close"]);
 const authStore = useAuthStore();
 const chatStore = useChatStore();
 
-// Identity Isolation: Reset chat when current user changes
+// Identity Isolation: Reset chat only when a different user identity is detected
 watch(
   () => authStore.username,
-  () => {
-    chatStore.resetChat();
+  (newVal, oldVal) => {
+    if (newVal !== oldVal) {
+      chatStore.resetChat();
+    }
   }
 );
 

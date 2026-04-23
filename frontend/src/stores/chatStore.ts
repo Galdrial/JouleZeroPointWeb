@@ -22,7 +22,7 @@ export const useChatStore = defineStore("chat", () => {
     messages.value = [
       {
         role: "assistant",
-        content: "MEMORIA PURGATA. Connessione ripristinata.\n\nIn attesa di nuove direttive...",
+        content: "PROTOCOLLO DI ACCESSO DIRETTO ATTIVATO. Sono il Terminale Punto Zero.\n\nInserisci la tua direttiva, Costruttore.",
       },
     ];
     threadId.value = null;
