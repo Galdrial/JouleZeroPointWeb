@@ -53,7 +53,7 @@ const submitReset = async () => {
       <h2>Inizializzazione Sicurezza</h2>
       <p class="subtitle">La tua connessione all'enclave è protetta. Inserisci e conferma la tua nuova Passphrase.</p>
       
-      <form @submit.prevent="submitReset" class="reset-form">
+      <form class="reset-form" @submit.prevent="submitReset">
         <input 
           v-model="password" 
           type="password" 

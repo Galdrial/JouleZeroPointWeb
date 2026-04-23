@@ -86,8 +86,7 @@ function formatDate(value: string) {
                 :href="resolveNewsImage(item.imageUrl)"
                 target="_blank"
                 rel="noopener noreferrer"
-                >link</a
-              >
+              >link</a>
             </span>
           </div>
           <div class="news-row-actions">
@@ -107,9 +106,7 @@ function formatDate(value: string) {
             </span>
             <span v-if="item.isFeatured" class="news-badge badge-featured">
               Evidenza
-              <template v-if="item.featuredOrder"
-                >#{{ item.featuredOrder }}</template
-              >
+              <template v-if="item.featuredOrder">#{{ item.featuredOrder }}</template>
             </span>
             <button
               class="admin-btn btn-ghost btn-sm"

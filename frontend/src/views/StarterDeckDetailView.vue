@@ -91,7 +91,7 @@ onMounted(async () => {
       <div class="hero-content">
         <div class="content-inner">
           <RouterLink to="/" class="back-link">
-            <svg viewBox="0 0 24 24" class="back-icon"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor"/></svg>
+            <svg viewBox="0 0 24 24" class="back-icon"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" fill="currentColor" /></svg>
             TORNA ALLA HOME
           </RouterLink>
           
@@ -142,9 +142,9 @@ onMounted(async () => {
             <p>Importa questo mazzo nella tua collezione per iniziare a giocare o per usarlo come base nel Deckbuilder.</p>
             
             <button 
-              @click="handleImport" 
-              class="cyber-btn btn-primary import-btn"
+              class="cyber-btn btn-primary import-btn" 
               :disabled="isImporting"
+              @click="handleImport"
             >
               <span v-if="!isImporting">IMPORTA MAZZO</span>
               <span v-else class="importing-text">IMPORTAZIONE IN CORSO...</span>

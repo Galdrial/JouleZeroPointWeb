@@ -233,8 +233,8 @@ onMounted(async () => {
           <div class="alert-actions split-actions">
             <button
               class="cyber-btn btn-danger small-btn"
-              @click="executeDelete"
               :disabled="loading"
+              @click="executeDelete"
             >
               CONFERMA ELIMINAZIONE
             </button>

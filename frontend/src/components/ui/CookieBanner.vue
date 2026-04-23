@@ -47,10 +47,10 @@ const acceptConsent = () => {
         </div>
         
         <div class="cookie-actions">
-          <button @click="acceptConsent" class="cyber-btn btn-primary">
+          <button class="cyber-btn btn-primary" @click="acceptConsent">
             ACCETTA TUTTI
           </button>
-          <button @click="acceptConsent" class="cyber-btn btn-primary">
+          <button class="cyber-btn btn-primary" @click="acceptConsent">
             RIFIUTA NON ESSENZIALI
           </button>
         </div>

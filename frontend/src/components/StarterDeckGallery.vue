@@ -51,7 +51,7 @@ onMounted(() => {
         </p>
       </div>
 
-      <div class="starter-grid" ref="gridRef">
+      <div ref="gridRef" class="starter-grid">
         <div
           v-for="(deck, index) in starterDecks"
           :key="deck.id"
@@ -102,14 +102,14 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="starter-nav-dots" v-if="starterDecks.length > 1">
+      <div v-if="starterDecks.length > 1" class="starter-nav-dots">
         <button
           v-for="(_, index) in starterDecks"
           :key="index"
           class="nav-dot"
           :class="{ active: activeDeckIndex === index }"
-          @click="scrollToDeck(index)"
           :aria-label="`Vai al mazzo ${index + 1}`"
+          @click="scrollToDeck(index)"
         ></button>
       </div>
     </div>

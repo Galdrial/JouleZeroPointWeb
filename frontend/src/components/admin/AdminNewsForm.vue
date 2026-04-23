@@ -62,9 +62,7 @@ const emit = defineEmits<{
       </div>
 
       <div class="form-row">
-        <label
-          >Sommario <span class="form-hint">(visibile in home)</span></label
-        >
+        <label>Sommario <span class="form-hint">(visibile in home)</span></label>
         <textarea
           v-model="props.form.summary"
           class="admin-textarea"
@@ -126,8 +124,8 @@ const emit = defineEmits<{
         <div
           v-if="
             props.form.imageUrl &&
-            props.isImageUrlValid &&
-            !props.imagePreviewError
+              props.isImageUrlValid &&
+              !props.imagePreviewError
           "
           class="image-preview-wrap"
         >

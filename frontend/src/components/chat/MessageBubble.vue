@@ -67,12 +67,12 @@ const renderedContent = computed(() => {
         {{ authorLabel }}
       </span>
       <div class="message-content">
-        <div v-if="content" v-html="renderedContent" class="markdown-body"></div>
+        <div v-if="content" class="markdown-body" v-html="renderedContent"></div>
         <slot v-else></slot>
 
         <!-- Retry mechanism for resilient UX -->
         <div v-if="role === 'error' && originalInput" class="retry-actions">
-          <button @click="emit('retry', originalInput)" class="retry-btn">
+          <button class="retry-btn" @click="emit('retry', originalInput)">
             [ ESEGUI NUOVO TENTATIVO ]
           </button>
         </div>

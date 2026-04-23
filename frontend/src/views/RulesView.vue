@@ -77,9 +77,9 @@ const handleDownload = async () => {
         </div>
         <div class="intro-actions">
           <button
-            @click="handleDownload"
             class="cyber-btn btn-primary"
             :disabled="isDownloading"
+            @click="handleDownload"
           >
             {{
               isDownloading ? "SINCRONIZZAZIONE..." : "SCARICA PDF INTEGRALE"
@@ -89,7 +89,7 @@ const handleDownload = async () => {
       </div>
     </section>
 
-        <div class="rules-grid">
+    <div class="rules-grid">
       <article class="glass-panel text-content wide-panel">
         <p>JOULE: ZERO POINT © 2026 Simone Camerano. Tutti i diritti riservati. Opera depositata su Patamu Registry, numero deposito 284864. La riproduzione non autorizzata di testi, meccaniche e grafica sarà perseguita a termini di legge.</p>
         <p>JOULE: ZERO POINT – Regolamento Ufficiale (Riorganizzato)</p>

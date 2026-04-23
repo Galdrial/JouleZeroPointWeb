@@ -326,7 +326,7 @@ const goToDeck = () => {
                 class="glass-input no-margin"
                 autocomplete="username"
               />
-              <button @click="updateIdentity" class="cyber-btn btn-primary" :disabled="isUpdating || newName === authStore.username">
+              <button class="cyber-btn btn-primary" :disabled="isUpdating || newName === authStore.username" @click="updateIdentity">
                 {{ isUpdating ? "SYNC..." : "MODIFICA" }}
               </button>
             </div>
@@ -341,17 +341,17 @@ const goToDeck = () => {
                 Per garantire l'integrità neurale, il cambio password avviene tramite link di sincronizzazione inviato alla tua email registrata.
               </p>
               <button 
-                @click="triggerPassphraseReset" 
-                class="cyber-btn btn-secondary full-width"
+                class="cyber-btn btn-secondary full-width" 
                 :disabled="isSendingReset"
+                @click="triggerPassphraseReset"
               >
                 {{ isSendingReset ? "DISPACCIAMENTO LINK..." : "INVIA LINK DI RESET" }}
               </button>
 
               <div class="portability-section mt-spacing">
                 <button 
-                  @click="handleDataExport" 
-                  class="cyber-btn btn-secondary full-width"
+                  class="cyber-btn btn-secondary full-width" 
+                  @click="handleDataExport"
                 >
                   DOWNLOAD DATA EXTRACTION (JSON)
                 </button>
@@ -414,7 +414,7 @@ const goToDeck = () => {
         <div class="modal-header">
           <div class="header-icon-wrapper">
             <svg viewBox="0 0 24 24" class="cyber-icon gold" aria-hidden="true">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z" fill="currentColor"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z" fill="currentColor" />
             </svg>
           </div>
           <h2>SINCRONIZZAZIONE ALIAS</h2>
@@ -430,7 +430,7 @@ const goToDeck = () => {
           >
             ANNULLA
           </button>
-          <button class="cyber-btn btn-primary" @click="confirmUpdateIdentity" :disabled="isUpdating">
+          <button class="cyber-btn btn-primary" :disabled="isUpdating" @click="confirmUpdateIdentity">
             {{ isUpdating ? "IN CORSO..." : "CONFERMA SINCRONIZZAZIONE" }}
           </button>
         </div>

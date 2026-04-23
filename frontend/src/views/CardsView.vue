@@ -215,8 +215,8 @@ watch(error, (newError) => {
         <div class="filter-group">
           <label>Tipo</label>
           <div
-            class="custom-dropdown"
             v-click-outside="() => (isTypeDropdownOpen = false)"
+            class="custom-dropdown"
           >
             <div
               class="dropdown-trigger"
@@ -258,8 +258,8 @@ watch(error, (newError) => {
         <div class="filter-group">
           <label>Ordina Per</label>
           <div
-            class="custom-dropdown"
             v-click-outside="() => (isSortDropdownOpen = false)"
+            class="custom-dropdown"
           >
             <div
               class="dropdown-trigger"
@@ -322,6 +322,7 @@ watch(error, (newError) => {
 
         <div class="filter-group">
           <button
+            class="cyber-btn btn-danger small"
             @click="
               searchQuery = '';
               selectedType = '';
@@ -330,7 +331,6 @@ watch(error, (newError) => {
               filterRp = 10;
               sortBy = 'id';
             "
-            class="cyber-btn btn-danger small"
           >
             RESET
           </button>
@@ -357,9 +357,7 @@ watch(error, (newError) => {
       >
         <div class="card-header stacked">
           <h3>{{ card.name }}</h3>
-          <span class="badge" :class="card.type?.toLowerCase()"
-            >{{ card.type }} | {{ card.status }}</span
-          >
+          <span class="badge" :class="card.type?.toLowerCase()">{{ card.type }} | {{ card.status }}</span>
         </div>
         <div class="card-image-container">
           <img
@@ -449,19 +447,16 @@ watch(error, (newError) => {
                   <span
                     class="badge"
                     :class="selectedCard.type?.toLowerCase()"
-                    >{{ selectedCard.type }}</span
-                  >
+                  >{{ selectedCard.type }}</span>
                   <span class="rarity-badge">{{ selectedCard.rarity }}</span>
                 </div>
                 <p class="modal-effect">{{ selectedCard.effect }}</p>
                 <div class="modal-stats">
                   <div class="stat-box">
-                    <strong>ET</strong
-                    ><span>{{ selectedCard.cost_et ?? "-" }}</span>
+                    <strong>ET</strong><span>{{ selectedCard.cost_et ?? "-" }}</span>
                   </div>
                   <div class="stat-box">
-                    <strong>PEP</strong
-                    ><span>{{ selectedCard.pep ?? "-" }}</span>
+                    <strong>PEP</strong><span>{{ selectedCard.pep ?? "-" }}</span>
                   </div>
                   <div class="stat-box">
                     <strong>RP</strong><span>{{ selectedCard.rp ?? "-" }}</span>

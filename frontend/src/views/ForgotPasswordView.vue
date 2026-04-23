@@ -33,7 +33,7 @@ const submitRequest = async () => {
       <h2>Recupero Chiavi</h2>
       <p class="subtitle">Inserisci la tua Frequenza Temporale (Email) originaria. Il sistema invierà un gettone crittografico per ripristinare l'accesso.</p>
       
-      <form @submit.prevent="submitRequest" class="forgot-form">
+      <form class="forgot-form" @submit.prevent="submitRequest">
         <input 
           v-model="email" 
           type="email" 

@@ -27,8 +27,8 @@ const goBack = () => {
           TERMINALE PUNTO ZERO
         </div>
         <div class="header-actions">
-          <button @click="chatStore.resetChat" class="action-btn" title="Reset">⟳</button>
-          <button @click="goBack" class="action-btn" title="Esci">✕</button>
+          <button class="action-btn" title="Reset" @click="chatStore.resetChat">⟳</button>
+          <button class="action-btn" title="Esci" @click="goBack">✕</button>
         </div>
       </header>
 

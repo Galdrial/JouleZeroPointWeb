@@ -22,10 +22,8 @@
         mantenimento dell'identità del Costruttore: indirizzo e-mail, pseudonimo
         utente (username), password (inequivocabilmente cifrata) e la metrica di
         gioco (mazzi creati, cronologia esportazione in TTS o PDF).
-        <strong
-          >Il servizio non è destinato a minori di 14 anni e non raccogliamo
-          consapevolmente dati da tali soggetti.</strong
-        >
+        <strong>Il servizio non è destinato a minori di 14 anni e non raccogliamo
+          consapevolmente dati da tali soggetti.</strong>
       </p>
 
       <h2>2. Finalità di Computazione e Trattamento</h2>

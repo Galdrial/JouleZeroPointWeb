@@ -150,64 +150,64 @@ watch(() => route.query.category, (newCat) => {
         tag="section" 
         class="archive-grid"
       >
-      <article
-        v-for="news in newsItems"
-        :key="news.id"
-        class="glass-panel archive-card"
-        :class="{ 'archive-card--featured': news.isFeatured }"
-      >
-        <div class="archive-badges-row">
-          <div
-            class="archive-category-badge"
-            :class="
-              isStoryCategory(news.category)
-                ? 'archive-category-badge--lore'
-                : 'archive-category-badge--news'
-            "
-          >
-            {{ getNewsCategoryLabel(news.category, { uppercase: true }) }}
-          </div>
-          <div v-if="news.isFeatured" class="archive-badge">IN EVIDENZA</div>
-        </div>
-        <img
-          v-if="news.imageUrl"
-          :src="resolveNewsImage(news.imageUrl)"
-          :alt="news.title"
-          class="archive-cover"
-        />
-        <p class="archive-date">{{ formatNewsDate(news.publishedAt) }}</p>
-        <h2>{{ news.title }}</h2>
-        <p class="archive-summary">{{ news.summary }}</p>
-        <div class="archive-actions">
-          <RouterLink :to="`/news/${news.slug}`" class="archive-primary-link">
-            <span>Leggi la news completa</span>
-            <svg
-              viewBox="0 0 16 16"
-              class="archive-link-icon"
-              aria-hidden="true"
+        <article
+          v-for="news in newsItems"
+          :key="news.id"
+          class="glass-panel archive-card"
+          :class="{ 'archive-card--featured': news.isFeatured }"
+        >
+          <div class="archive-badges-row">
+            <div
+              class="archive-category-badge"
+              :class="
+                isStoryCategory(news.category)
+                  ? 'archive-category-badge--lore'
+                  : 'archive-category-badge--news'
+              "
             >
-              <path
-                d="M6.5 3.5L11 8l-4.5 4.5"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.8"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </RouterLink>
-          <a
-            v-if="news.sourceUrl"
-            :href="news.sourceUrl"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="archive-secondary-link"
-          >
-            Fonte esterna
-          </a>
-        </div>
-      </article>
-    </TransitionGroup>
+              {{ getNewsCategoryLabel(news.category, { uppercase: true }) }}
+            </div>
+            <div v-if="news.isFeatured" class="archive-badge">IN EVIDENZA</div>
+          </div>
+          <img
+            v-if="news.imageUrl"
+            :src="resolveNewsImage(news.imageUrl)"
+            :alt="news.title"
+            class="archive-cover"
+          />
+          <p class="archive-date">{{ formatNewsDate(news.publishedAt) }}</p>
+          <h2>{{ news.title }}</h2>
+          <p class="archive-summary">{{ news.summary }}</p>
+          <div class="archive-actions">
+            <RouterLink :to="`/news/${news.slug}`" class="archive-primary-link">
+              <span>Leggi la news completa</span>
+              <svg
+                viewBox="0 0 16 16"
+                class="archive-link-icon"
+                aria-hidden="true"
+              >
+                <path
+                  d="M6.5 3.5L11 8l-4.5 4.5"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </RouterLink>
+            <a
+              v-if="news.sourceUrl"
+              :href="news.sourceUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="archive-secondary-link"
+            >
+              Fonte esterna
+            </a>
+          </div>
+        </article>
+      </TransitionGroup>
     </div>
   </div>
 </template>

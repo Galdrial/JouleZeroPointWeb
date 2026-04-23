@@ -236,17 +236,15 @@ onMounted(async () => {
       </div>
 
       <div
-        class="custom-dropdown"
         v-click-outside="() => (isCostruttoreDropdownOpen = false)"
+        class="custom-dropdown"
       >
         <div
           class="dropdown-trigger"
           @click.stop="isCostruttoreDropdownOpen = !isCostruttoreDropdownOpen"
         >
           {{ selectedCostruttoreLabel }}
-          <span class="arrow" :class="{ open: isCostruttoreDropdownOpen }"
-            >▼</span
-          >
+          <span class="arrow" :class="{ open: isCostruttoreDropdownOpen }">▼</span>
         </div>
         <Transition name="slide-up">
           <div
@@ -276,8 +274,8 @@ onMounted(async () => {
       </div>
 
       <div
-        class="custom-dropdown"
         v-click-outside="() => (isSortDropdownOpen = false)"
+        class="custom-dropdown"
       >
         <div
           class="dropdown-trigger"
@@ -348,10 +346,10 @@ onMounted(async () => {
 
         <div class="deck-export-actions">
           <button
-            @click.stop="handleExport(d.id!, 'pdf')"
             class="cyber-export-btn pdf"
             :disabled="!!exportingId"
             title="Scarica PDF Decklist"
+            @click.stop="handleExport(d.id!, 'pdf')"
           >
             {{
               exportingId === d.id && exportingFormat === "pdf"
@@ -360,10 +358,10 @@ onMounted(async () => {
             }}
           </button>
           <button
-            @click.stop="handleExport(d.id!, 'tts')"
             class="cyber-export-btn tts"
             :disabled="!!exportingId"
             title="Esporta per Tabletop Simulator"
+            @click.stop="handleExport(d.id!, 'tts')"
           >
             {{
               exportingId === d.id && exportingFormat === "tts"
@@ -391,11 +389,11 @@ onMounted(async () => {
             class="cyber-btn btn-primary small"
             :disabled="
               (d.creator || '').trim().toLowerCase() ===
-              username.trim().toLowerCase()
+                username.trim().toLowerCase()
             "
             :title="
               (d.creator || '').trim().toLowerCase() ===
-              username.trim().toLowerCase()
+                username.trim().toLowerCase()
                 ? 'Non puoi importare un tuo mazzo.'
                 : ''
             "
@@ -442,9 +440,9 @@ onMounted(async () => {
 
             <div class="modal-export-group">
               <button
-                @click="handleExport(selectedDeck.id!, 'pdf')"
                 class="cyber-export-btn pdf"
                 :disabled="!!exportingId"
+                @click="handleExport(selectedDeck.id!, 'pdf')"
               >
                 {{
                   exportingId === selectedDeck.id && exportingFormat === "pdf"
@@ -453,9 +451,9 @@ onMounted(async () => {
                 }}
               </button>
               <button
-                @click="handleExport(selectedDeck.id!, 'tts')"
                 class="cyber-export-btn tts"
                 :disabled="!!exportingId"
+                @click="handleExport(selectedDeck.id!, 'tts')"
               >
                 {{
                   exportingId === selectedDeck.id && exportingFormat === "tts"

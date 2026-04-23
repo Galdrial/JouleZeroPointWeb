@@ -172,17 +172,13 @@ const submitForm = async () => {
           :class="{ 'shake-limit': shakeError && !acceptedTerms }"
         >
           <label class="cyber-checkbox-container">
-            <input type="checkbox" v-model="acceptedTerms" />
+            <input v-model="acceptedTerms" type="checkbox" />
             <span class="checkmark"></span>
             <span class="label-text">
               Accetto i
-              <RouterLink to="/terms" target="_blank"
-                >Termini di Utilizzo</RouterLink
-              >
+              <RouterLink to="/terms" target="_blank">Termini di Utilizzo</RouterLink>
               e confermo di avere più di 14 anni. Ho letto l'
-              <RouterLink to="/privacy" target="_blank"
-                >Informativa Privacy</RouterLink
-              >.
+              <RouterLink to="/privacy" target="_blank">Informativa Privacy</RouterLink>.
             </span>
           </label>
         </div>
@@ -202,10 +198,10 @@ const submitForm = async () => {
         </button>
       </form>
 
-      <p class="toggle-text forgot-wrapper" v-if="isLogin">
-        <RouterLink to="/forgot-password" class="forgot-link"
-          >Hai smarrito la Passphrase?</RouterLink
-        >
+      <p v-if="isLogin" class="toggle-text forgot-wrapper">
+        <RouterLink to="/forgot-password" class="forgot-link">
+          Hai smarrito la Passphrase?
+        </RouterLink>
       </p>
 
       <p class="toggle-text">

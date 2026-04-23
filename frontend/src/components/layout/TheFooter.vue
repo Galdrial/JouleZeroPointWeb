@@ -23,7 +23,6 @@ const openCookieSettings = () => {
     <div class="footer-social-section">
       <div class="footer-section-title">SOCIAL NETWORK</div>
       <div class="footer-socials">
-
         <a href="https://discord.gg/kjFWC5Uj" target="_blank" rel="noopener noreferrer" aria-label="Discord" class="footer-social-link">
           <svg viewBox="0 0 24 24" class="footer-social-icon" aria-hidden="true">
             <path fill="currentColor" d="M19.6 5.7a15 15 0 0 0-3.8-1.2l-.2.4c1.5.4 2.2 1 2.2 1a11 11 0 0 0-5.8-1.5A11 11 0 0 0 6.2 6s.7-.6 2.2-1l-.2-.4a15 15 0 0 0-3.8 1.2C2 9.2 1.4 12.5 1.6 15.8a15.6 15.6 0 0 0 4.6 2.3l1-1.6c-.6-.2-1.1-.5-1.6-.8l.4-.3c2 1 4.2 1.5 6.4 1.5s4.4-.5 6.4-1.5l.4.3c-.5.3-1 .6-1.6.8l1 1.6a15.6 15.6 0 0 0 4.6-2.3c.3-3.8-.6-7.1-3.6-10.1M8.9 14.1c-.8 0-1.4-.7-1.4-1.5c0-.9.6-1.5 1.4-1.5c.8 0 1.4.7 1.4 1.5c0 .9-.6 1.5-1.4 1.5m6.2 0c-.8 0-1.4-.7-1.4-1.5c0-.9.6-1.5 1.4-1.5c.8 0 1.4.7 1.4 1.5c0 .9-.6 1.5-1.4 1.5" />
@@ -37,7 +36,7 @@ const openCookieSettings = () => {
       <RouterLink to="/code-of-conduct">Codice di condotta</RouterLink>
       <RouterLink to="/privacy">Informativa sulla privacy</RouterLink>
       <RouterLink to="/contact">Contatti</RouterLink>
-      <a href="#" @click.prevent="openCookieSettings" aria-label="Impostazioni Sensori e Cookie">Impostazioni Cookie</a>
+      <a href="#" aria-label="Impostazioni Sensori e Cookie" @click.prevent="openCookieSettings">Impostazioni Cookie</a>
     </div>
     <div class="footer-divider footer-divider--secondary"></div>
     <div class="footer-copyright">

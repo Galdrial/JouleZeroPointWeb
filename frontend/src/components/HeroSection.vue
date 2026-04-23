@@ -81,9 +81,7 @@ onMounted(() => {
           </a>
         </div>
         <div class="hero-meta">
-          <span class="hero-status"
-            >⚡ BETA SU TABLETOP SIMULATOR + CANALE DISCORD DEDICATO</span
-          >
+          <span class="hero-status">⚡ BETA SU TABLETOP SIMULATOR + CANALE DISCORD DEDICATO</span>
         </div>
       </div>
     </div>

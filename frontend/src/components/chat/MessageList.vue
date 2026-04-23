@@ -78,7 +78,7 @@ const handleRetry = (input: string) => {
 </script>
 
 <template>
-  <div class="message-list-container" ref="listContainer">
+  <div ref="listContainer" class="message-list-container">
     <template v-for="(msg, index) in messages" :key="index">
       <!-- Skip rendering empty assistant messages (the streaming slot) while loading -->
       <MessageBubble

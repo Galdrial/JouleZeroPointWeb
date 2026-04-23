@@ -57,9 +57,9 @@ defineProps<Props>();
           Assembla i Frammenti per forgiare la tua strategia, condividi i tuoi
           mazzi con la community e ricorda: Il caos è un'arma. Usalo.
         </p>
-        <RouterLink to="/deckbuilder" class="cyber-btn btn-primary mini-btn"
-          >COSTRUISCI IL TUO MAZZO</RouterLink
-        >
+        <RouterLink to="/deckbuilder" class="cyber-btn btn-primary mini-btn">
+          COSTRUISCI IL TUO MAZZO
+        </RouterLink>
       </template>
       <template v-else>
         <h3>REGISTRATI AL PUNTO ZERO</h3>
@@ -67,9 +67,9 @@ defineProps<Props>();
           Crea un account per salvare i tuoi mazzi e iniziare a costruire la
           tua strategia nel Punto Zero.
         </p>
-        <RouterLink to="/login" class="cyber-btn btn-primary mini-btn"
-          >REGISTRATI ORA</RouterLink
-        >
+        <RouterLink to="/login" class="cyber-btn btn-primary mini-btn">
+          REGISTRATI ORA
+        </RouterLink>
       </template>
     </div>
   </div>

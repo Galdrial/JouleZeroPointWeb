@@ -158,12 +158,13 @@ onMounted(async () => {
           <RouterLink
             :to="isStoryCategory(news.category) ? { path: '/news', query: { category: 'storia' } } : '/news'"
             class="news-archive-link"
-            >{{
+          >
+            {{
               isStoryCategory(news.category)
                 ? "Archivio storia"
                 : "Archivio news"
-            }}</RouterLink
-          >
+            }}
+          </RouterLink>
         </div>
         <a
           v-if="news.sourceUrl"

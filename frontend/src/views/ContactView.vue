@@ -74,9 +74,7 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
             un'anomalia nel sistema? Il nostro nucleo operativo è pronto ad
             ascoltarti.
           </p>
-          <a href="mailto:info@joulezeropoint.com" class="email-link"
-            >info@joulezeropoint.com</a
-          >
+          <a href="mailto:info@joulezeropoint.com" class="email-link">info@joulezeropoint.com</a>
         </div>
 
         <div class="glass-panel info-card">
@@ -105,13 +103,13 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
             <h2>INVIA SEGNALE CRIPTATO</h2>
           </div>
 
-          <form @submit.prevent="handleSubmit" class="cyber-form">
+          <form class="cyber-form" @submit.prevent="handleSubmit">
             <div class="form-group">
               <label for="name">IDENTIFICATIVO (NOME)</label>
               <input
-                type="text"
                 id="name"
                 v-model="form.name"
+                type="text"
                 placeholder="Inserisci il tuo nome..."
                 required
               />
@@ -120,9 +118,9 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
             <div class="form-group">
               <label for="email">COORDINATE (EMAIL)</label>
               <input
-                type="email"
                 id="email"
                 v-model="form.email"
+                type="email"
                 placeholder="latua@email.com"
                 required
               />
@@ -131,9 +129,9 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
             <div class="form-group">
               <label for="subject">OGGETTO DEL MESSAGGIO</label>
               <input
-                type="text"
                 id="subject"
                 v-model="form.subject"
+                type="text"
                 placeholder="Supporto, Feedback, Altro..."
               />
             </div>
@@ -152,8 +150,8 @@ const discordInviteUrl = "https://discord.gg/kjFWC5Uj";
             <div class="form-group checkbox-group">
               <label class="privacy-label">
                 <input 
-                  type="checkbox" 
                   v-model="form.privacyConsent" 
+                  type="checkbox" 
                 />
                 <span class="checkbox-custom"></span>
                 <span>

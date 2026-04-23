@@ -29,8 +29,8 @@ const hideUI = computed(() => route.meta.hideUI === true);
     v-if="!hideUI"
     class="terminal-trigger"
     :class="{ active: isOpen }"
-    @click.stop="$emit('toggle')"
     title="Terminale Punto Zero"
+    @click.stop="$emit('toggle')"
   >
     <img
       :src="logo2"

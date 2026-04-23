@@ -91,33 +91,34 @@ const isNewsActive = computed(() => {
     <button
       class="hamburger"
       :class="{ open: isMenuOpen }"
-      @click="isMenuOpen = !isMenuOpen"
       aria-label="Menu"
+      @click="isMenuOpen = !isMenuOpen"
     >
       <span></span><span></span><span></span>
     </button>
 
     <!-- Desktop navigation -->
     <nav class="desktop-nav">
-      <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item"
-        >Database</RouterLink
-      >
-      <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item"
-        >Come iniziare</RouterLink
-      >
+      <RouterLink to="/cards" class="cyber-btn btn-secondary nav-item">
+        Database
+      </RouterLink>
+      <RouterLink to="/come-iniziare" class="cyber-btn btn-secondary nav-item">
+        Come iniziare
+      </RouterLink>
       <RouterLink
         to="/news"
         class="cyber-btn btn-secondary nav-item"
         active-class="_none"
         :class="{ 'router-link-active': isNewsActive }"
-        >News</RouterLink
       >
-      <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item"
-        >Mazzi pubblici</RouterLink
-      >
-      <RouterLink to="/contact" class="cyber-btn btn-secondary nav-item"
-        >Contatti</RouterLink
-      >
+        News
+      </RouterLink>
+      <RouterLink to="/public-decks" class="cyber-btn btn-secondary nav-item">
+        Mazzi pubblici
+      </RouterLink>
+      <RouterLink to="/contact" class="cyber-btn btn-secondary nav-item">
+        Contatti
+      </RouterLink>
 
       <template v-if="authStore.username">
         <RouterLink
@@ -127,16 +128,16 @@ const isNewsActive = computed(() => {
           {{ authStore.username }}
         </RouterLink>
         <button
-          @click="logout"
           class="cyber-btn btn-danger nav-item logout-btn"
+          @click="logout"
         >
           Logout
         </button>
       </template>
       <template v-else>
-        <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn"
-          >Accedi</RouterLink
-        >
+        <RouterLink to="/login" class="cyber-btn btn-primary nav-item auth-btn">
+          Accedi
+        </RouterLink>
       </template>
     </nav>
   </header>
@@ -163,34 +164,39 @@ const isNewsActive = computed(() => {
         to="/cards"
         class="mobile-nav-link"
         @click="isMenuOpen = false"
-        >Database</RouterLink
       >
+        Database
+      </RouterLink>
       <RouterLink
         to="/come-iniziare"
         class="mobile-nav-link"
         @click="isMenuOpen = false"
-        >Come iniziare</RouterLink
       >
+        Come iniziare
+      </RouterLink>
       <RouterLink
         to="/news"
         class="mobile-nav-link"
-        @click="isMenuOpen = false"
         active-class="_none"
         :class="{ 'router-link-active': isNewsActive }"
-        >News</RouterLink
+        @click="isMenuOpen = false"
       >
+        News
+      </RouterLink>
       <RouterLink
         to="/public-decks"
         class="mobile-nav-link"
         @click="isMenuOpen = false"
-        >Mazzi pubblici</RouterLink
       >
+        Mazzi pubblici
+      </RouterLink>
       <RouterLink
         to="/contact"
         class="mobile-nav-link"
         @click="isMenuOpen = false"
-        >Contatti</RouterLink
       >
+        Contatti
+      </RouterLink>
 
       <template v-if="authStore.username">
         <RouterLink
@@ -200,7 +206,7 @@ const isNewsActive = computed(() => {
         >
           {{ authStore.username }}
         </RouterLink>
-        <button @click="logout" class="mobile-nav-link logout-link">
+        <button class="mobile-nav-link logout-link" @click="logout">
           Logout
         </button>
       </template>
@@ -209,8 +215,9 @@ const isNewsActive = computed(() => {
           to="/login"
           class="mobile-nav-link auth-link"
           @click="isMenuOpen = false"
-          >Accedi</RouterLink
         >
+          Accedi
+        </RouterLink>
       </template>
     </nav>
   </Teleport>

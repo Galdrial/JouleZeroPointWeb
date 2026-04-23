@@ -37,7 +37,7 @@ onMounted(async () => {
       </p>
 
       <div class="action-box">
-        <button v-if="!isLoading" @click="router.push('/login')" class="cyber-btn btn-primary">
+        <button v-if="!isLoading" class="cyber-btn btn-primary" @click="router.push('/login')">
           Torna all'Autenticazione
         </button>
       </div>

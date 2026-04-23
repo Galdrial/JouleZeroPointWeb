@@ -105,8 +105,7 @@ const formatNewsDate = (value: string) =>
             class="news-source-link"
             target="_blank"
             rel="noopener noreferrer"
-            >Fonte esterna</a
-          >
+          >Fonte esterna</a>
         </div>
       </article>
     </div>
