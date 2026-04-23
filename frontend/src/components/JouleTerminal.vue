@@ -11,11 +11,11 @@ import InputBox from "./chat/InputBox.vue";
  * Component Props
  * @property {boolean} isOpen - Controls the visibility of the terminal drawer.
  */
-const props = defineProps<{
+defineProps<{
   isOpen: boolean;
 }>();
 
-const emit = defineEmits(["close"]);
+defineEmits(["close"]);
 
 // Global Orchestration: Identity & Conversation State
 const authStore = useAuthStore();
@@ -35,45 +35,47 @@ watch(
  * Custom Directive: Detect clicks outside the target element.
  */
 const vClickOutside = {
-  mounted(el: any, binding: any) {
-    el.clickOutsideEvent = (event: any) => {
-      if (!(el === event.target || el.contains(event.target))) {
+  mounted(el: HTMLElement & { clickOutsideEvent?: (event: MouseEvent) => void }, binding: any) {
+    el.clickOutsideEvent = (event: MouseEvent) => {
+      if (!(el === event.target || el.contains(event.target as Node))) {
         binding.value(event);
       }
     };
-    document.body.addEventListener("click", el.clickOutsideEvent);
+    document.body.addEventListener("click", el.clickOutsideEvent as any);
   },
-  unmounted(el: any) {
-    document.body.removeEventListener("click", el.clickOutsideEvent);
+  unmounted(el: HTMLElement & { clickOutsideEvent?: (event: MouseEvent) => void }) {
+    if (el.clickOutsideEvent) {
+      document.body.removeEventListener("click", el.clickOutsideEvent as any);
+    }
   },
 };
 </script>
 
 <template>
   <Transition name="terminal-slide">
-    <div
-      v-if="isOpen"
-      class="terminal-modal glass-panel"
-      v-click-outside="() => $emit('close')"
-    >
-      <header class="terminal-header">
-        <div class="terminal-title">
-          <span class="pulse-dot"></span>
-          TERMINALE PUNTO ZERO
-        </div>
-        <div class="terminal-actions">
-          <button
-            @click="chatStore.resetChat"
-            class="action-btn"
-            title="Reset Sincronizzazione"
-          >
-            ⟳
-          </button>
-          <button @click="$emit('close')" class="action-btn close-btn">
-            ✕
-          </button>
-        </div>
-      </header>
+      <div
+        v-if="isOpen"
+        v-click-outside="() => $emit('close')"
+        class="terminal-modal glass-panel"
+      >
+        <header class="terminal-header">
+          <div class="terminal-title">
+            <span class="pulse-dot"></span>
+            TERMINALE PUNTO ZERO
+          </div>
+          <div class="terminal-actions">
+            <button
+              class="action-btn"
+              title="Reset Sincronizzazione"
+              @click="chatStore.resetChat"
+            >
+              ⟳
+            </button>
+            <button class="action-btn close-btn" @click="$emit('close')">
+              ✕
+            </button>
+          </div>
+        </header>
 
       <!-- Central Dialogue Stream -->
       <MessageList 
