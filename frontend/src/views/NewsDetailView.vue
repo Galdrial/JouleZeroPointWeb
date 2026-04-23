@@ -97,7 +97,7 @@ onMounted(async () => {
   try {
     const response = await api.get(`/news/${slug}`);
     news.value = response.data;
-  } catch (_error) {
+  } catch {
     errorMessage.value = "The requested news entry is unavailable in the Matrix.";
   } finally {
     isLoading.value = false;

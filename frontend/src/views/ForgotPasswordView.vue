@@ -19,7 +19,7 @@ const submitRequest = async () => {
     setTimeout(() => {
       router.push("/login");
     }, 3000);
-  } catch (error: any) {
+  } catch {
     notifications.error("Si è verificato un errore durante la generazione della richiesta.");
   } finally {
     loading.value = false;

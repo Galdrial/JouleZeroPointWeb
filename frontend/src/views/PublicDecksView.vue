@@ -125,7 +125,7 @@ const previewCards = computed(() => {
         type: card?.type || "Unknown",
       };
     })
-    .sort((a: any, b: any) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.name.localeCompare(b.name));
 });
 
 /**
@@ -163,7 +163,7 @@ const voteDeck = async (deck: PublicDeck) => {
     notifications.success(
       deck.userVoted ? "Voto registrato nella Matrice!" : "Voto rimosso.",
     );
-  } catch (e: any) {
+  } catch {
     // Managed via global notification infrastructure
   }
 };
@@ -195,7 +195,7 @@ const importDeck = async (deck: PublicDeck) => {
     const importedDeckName =
       response?.data?.importedDeck?.name || "Imported Deck";
     notifications.success(`Importazione riuscita: ${importedDeckName}`);
-  } catch (e: any) {
+  } catch {
     // Managed via global notification infrastructure
   }
 };

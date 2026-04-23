@@ -62,12 +62,12 @@ onMounted(async () => {
     try {
       const response = await api.get("/cards");
       fragmentCount.value = response.data.length;
-    } catch {}
+    } catch { /* non-critical: fragment count falls back to default */ }
 
     try {
       const response = await api.get("/news", { params: { limit: 6 } });
       latestNews.value = response.data;
-    } catch {}
+    } catch { /* non-critical: news grid stays empty */ }
   }, 800);
 
   const isMobile = window.innerWidth < 768;

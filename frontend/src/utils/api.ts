@@ -1,4 +1,4 @@
-import axios, { type InternalAxiosRequestConfig } from 'axios';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
 import { useAuthStore } from '../stores/auth';
 import { useNotificationStore } from '../stores/notificationStore';
 
@@ -34,7 +34,7 @@ export function applyAuthHeaders(
 }
 
 export function handleApiError(
-  error: any,
+  error: AxiosError<{ error?: string }>,
   authStore: AuthStoreLike,
   notifications: NotificationStoreLike,
   locationLike: LocationLike = window.location,
@@ -96,7 +96,7 @@ api.interceptors.request.use(
  */
 api.interceptors.response.use(
   ( response ) => response,
-  ( error ) => {
+  ( error: AxiosError<{ error?: string }> ) => {
     const authStore = useAuthStore();
     const notifications = useNotificationStore();
     return handleApiError( error, authStore, notifications );

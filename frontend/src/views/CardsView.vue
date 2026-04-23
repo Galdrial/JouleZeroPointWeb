@@ -169,7 +169,7 @@ onMounted(async () => {
   // Initialization Sequence: Synchronize card repository
   try {
     await cardStore.fetchCards();
-  } catch (err) {
+  } catch {
     // Managed via global notification infrastructure
   }
 });

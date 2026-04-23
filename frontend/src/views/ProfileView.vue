@@ -78,7 +78,7 @@ const fetchProfileData = async () => {
     ]);
     userDecks.value = decksRes.data.decks;
     allCards.value = cardsRes.data;
-  } catch (error) {
+  } catch {
     // Managed via global notification infrastructure
   } finally {
     loading.value = false;
@@ -98,7 +98,7 @@ const deleteAccount = async () => {
     notifications.success("Account terminato. Tutti i dati epurati dai database Atlas.");
     authStore.logout();
     router.push("/login");
-  } catch (error) {
+  } catch {
     // Managed via global error handlers
   }
 };
@@ -128,7 +128,7 @@ const confirmUpdateIdentity = async () => {
     notifications.success("Protocollo di identità aggiornato con successo.");
     username.value = authStore.username; // Synchronize header display
     showAliasConfirm.value = false;
-  } catch (error) {
+  } catch {
     // Managed via notification infrastructure
   } finally {
     isUpdating.value = false;
@@ -150,7 +150,7 @@ const triggerPassphraseReset = async () => {
     notifications.info("Inizializzazione reset passphrase...");
     await authStore.requestPasswordReset(authStore.email);
     notifications.success(`Link di sincronizzazione inviato a: ${authStore.email}`);
-  } catch (error) {
+  } catch {
     notifications.error("Errore nel dispacciamento del link di reset.");
   } finally {
     isSendingReset.value = false;
@@ -176,7 +176,7 @@ const handleDataExport = async () => {
     link.remove();
     
     notifications.success("Archivio dati scaricato con successo.");
-  } catch (error) {
+  } catch {
     notifications.error("Errore durante l'esportazione dei dati.");
   }
 };

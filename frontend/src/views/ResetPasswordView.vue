@@ -39,8 +39,9 @@ const submitReset = async () => {
     setTimeout(() => {
       router.push("/login");
     }, 2000);
-  } catch (error: any) {
-    notifications.error(error.response?.data?.error || "Gettone temporale scaduto o inesistente.");
+  } catch (error: unknown) {
+    const axiosErr = error as { response?: { data?: { error?: string } } };
+    notifications.error(axiosErr.response?.data?.error || "Gettone temporale scaduto o inesistente.");
   } finally {
     loading.value = false;
   }

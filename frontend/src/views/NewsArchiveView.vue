@@ -52,13 +52,13 @@ const fetchNews = async (filter: string) => {
   isLoading.value = true;
   activeFilter.value = filter;
   try {
-    const params: any = {};
+    const params: Record<string, string> = {};
     if (filter !== "all") {
       params.category = filter;
     }
     const response = await api.get("/news", { params });
     newsItems.value = response.data;
-  } catch (_error) {
+  } catch {
     errorMessage.value = "Impossibile sincronizzare l'archivio centrale.";
   } finally {
     isLoading.value = false;

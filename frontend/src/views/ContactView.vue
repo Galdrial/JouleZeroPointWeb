@@ -46,11 +46,9 @@ const handleSubmit = async () => {
 
     // Reset form
     form.value = { name: "", email: "", subject: "", message: "", privacyConsent: false };
-  } catch (error: any) {
-    console.error("Contact Form Error:", error);
-    notificationStore.error(
-      error.response?.data?.error || "Interferenza durante la trasmissione. Riprovare."
-    );
+  } catch (error: unknown) {
+    const msg = (error as { response?: { data?: { error?: string } } })?.response?.data?.error;
+    notificationStore.error(msg || "Interferenza durante la trasmissione. Riprovare.");
   } finally {
     isSubmitting.value = false;
   }

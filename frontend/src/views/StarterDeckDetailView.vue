@@ -53,8 +53,9 @@ const handleImport = async () => {
     notifications.success(`Mazzo "${deck.value.name}" sincronizzato con successo nella tua collezione!`);
     router.push({ name: 'deckbuilder' });
     
-  } catch (error: any) {
-    const errorMsg = error.response?.data?.error || "Errore durante l'interfacciamento con la Matrice Joule.";
+  } catch (error: unknown) {
+    const axiosErr = error as { response?: { data?: { error?: string } } };
+    const errorMsg = axiosErr.response?.data?.error || "Errore durante l'interfacciamento con la Matrice Joule.";
     notifications.error(errorMsg);
   } finally {
     isImporting.value = false;

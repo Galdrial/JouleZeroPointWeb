@@ -107,7 +107,7 @@ const submitForm = async () => {
         acceptedTerms.value = false;
       }, 2800);
     }
-  } catch (err: any) {
+  } catch {
     // Structural errors are managed by the global API interceptor.
   } finally {
     loading.value = false;

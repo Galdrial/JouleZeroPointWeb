@@ -16,8 +16,9 @@ onMounted(async () => {
     const res = await api.get(`/auth/verify/${token}`);
     statusMsg.value = res.data.message || "Frequenza attivata con successo.";
     isSuccess.value = true;
-  } catch (error: any) {
-    statusMsg.value = error.response?.data?.error || "Connessione corrotta. Gettone non valido.";
+  } catch (error: unknown) {
+    const axiosErr = error as { response?: { data?: { error?: string } } };
+    statusMsg.value = axiosErr.response?.data?.error || "Connessione corrotta. Gettone non valido.";
     isSuccess.value = false;
   } finally {
     isLoading.value = false;
