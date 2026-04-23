@@ -114,7 +114,7 @@ describe( 'chatStore — Zero Point Terminal', () => {
     store.resetChat()
 
     expect( store.messages ).toHaveLength( 1 )
-    expect( store.messages[0].content ).toContain( 'MEMORIA PURGATA' )
+    expect( store.messages[0].content ).toContain( 'PROTOCOLLO DI ACCESSO DIRETTO ATTIVATO' )
     expect( store.threadId ).toBeNull()
     expect( store.isLoading ).toBe( false )
     expect( store.isStreaming ).toBe( false )

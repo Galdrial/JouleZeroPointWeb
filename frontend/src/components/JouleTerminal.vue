@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { watch, type DirectiveBinding } from "vue";
+import { watch } from "vue";
 import { useAuthStore } from "../stores/auth";
 import { useChatStore } from "../stores/chatStore";
+import { vClickOutside } from "../utils/directives";
 
 // Components: Modular AI Interface
 import MessageList from "./chat/MessageList.vue";
@@ -31,24 +32,6 @@ watch(
   }
 );
 
-/**
- * Custom Directive: Detect clicks outside the target element.
- */
-const vClickOutside = {
-  mounted(el: HTMLElement & { clickOutsideEvent?: (event: Event) => void }, binding: DirectiveBinding) {
-    el.clickOutsideEvent = (event: Event) => {
-      if (!(el === event.target || el.contains(event.target as Node))) {
-        binding.value(event);
-      }
-    };
-    document.body.addEventListener("click", el.clickOutsideEvent);
-  },
-  unmounted(el: HTMLElement & { clickOutsideEvent?: (event: Event) => void }) {
-    if (el.clickOutsideEvent) {
-      document.body.removeEventListener("click", el.clickOutsideEvent);
-    }
-  },
-};
 </script>
 
 <template>
