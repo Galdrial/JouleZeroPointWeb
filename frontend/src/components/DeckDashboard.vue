@@ -54,7 +54,7 @@ const getCostruttoreImg = (id: number | string | null): string =>
     <h1 class="main-title">I MIEI MAZZI</h1>
 
     <div class="top-actions">
-      <button @click="emit('create')" class="cyber-btn btn-primary huge">
+      <button class="cyber-btn btn-primary huge" @click="emit('create')">
         NUOVO MAZZO
       </button>
     </div>
@@ -62,16 +62,16 @@ const getCostruttoreImg = (id: number | string | null): string =>
     <div class="search-container">
       <div class="search-box">
         <input
+          class="glass-input search-input"
+          placeholder="Cerca mazzo..."
           :value="search"
           @input="emit('update:search', ($event.target as HTMLInputElement).value)"
-          placeholder="Cerca mazzo..."
-          class="glass-input search-input"
         />
       </div>
 
       <div
-        class="custom-dropdown"
         v-click-outside="() => (isCostruttoreDropdownOpen = false)"
+        class="custom-dropdown"
       >
         <div
           class="dropdown-trigger"
@@ -79,7 +79,7 @@ const getCostruttoreImg = (id: number | string | null): string =>
         >
           {{
             costruttori.find((c) => c.id === filterCostruttore)?.name.split(",")[0] ||
-            "Costruttore"
+              "Costruttore"
           }}
           <span class="arrow" :class="{ open: isCostruttoreDropdownOpen }">▼</span>
         </div>
@@ -129,9 +129,9 @@ const getCostruttoreImg = (id: number | string | null): string =>
             <h3>{{ d.name }}</h3>
           </div>
           <button
+            title="Elimina Mazzo"
             class="small-delete cyber-btn btn-danger mini"
             @click.stop="emit('delete', d.id!)"
-            title="Elimina Mazzo"
           >
             <span class="trash-icon">×</span>
           </button>
@@ -140,18 +140,18 @@ const getCostruttoreImg = (id: number | string | null): string =>
         <!-- ACTIONS ROW: PDF and TTS above image -->
         <div class="deck-actions-row">
           <button
-            @click.stop="emit('export', d.id!, 'pdf')"
             class="cyber-export-btn pdf"
             :disabled="isExporting"
             title="Scarica PDF Decklist"
+            @click.stop="emit('export', d.id!, 'pdf')"
           >
             {{ exportingId === d.id && exportingFormat === "pdf" ? "GENERAZIONE..." : "PDF" }}
           </button>
           <button
-            @click.stop="emit('export', d.id!, 'tts')"
             class="cyber-export-btn tts"
             :disabled="isExporting"
             title="Esporta per Tabletop Simulator"
+            @click.stop="emit('export', d.id!, 'tts')"
           >
             {{ exportingId === d.id && exportingFormat === "tts" ? "GENERAZIONE..." : "TTS" }}
           </button>
@@ -189,15 +189,19 @@ const getCostruttoreImg = (id: number | string | null): string =>
     <div v-if="totalPages() > 1" class="pagination">
       <button
         :disabled="currentPage === 1"
-        @click="emit('update:currentPage', currentPage - 1)"
         class="page-btn"
-      >PREV</button>
+        @click="emit('update:currentPage', currentPage - 1)"
+      >
+        PREV
+      </button>
       <span class="page-info">LINEA {{ currentPage }} / {{ totalPages() }}</span>
       <button
         :disabled="currentPage === totalPages()"
-        @click="emit('update:currentPage', currentPage + 1)"
         class="page-btn"
-      >NEXT</button>
+        @click="emit('update:currentPage', currentPage + 1)"
+      >
+        NEXT
+      </button>
     </div>
   </div>
 </template>

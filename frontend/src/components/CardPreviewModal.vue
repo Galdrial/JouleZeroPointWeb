@@ -44,12 +44,16 @@ defineEmits(["close", "add", "remove"]);
                   <button
                     class="cyber-btn btn-danger small red-bg"
                     @click="$emit('remove', card)"
-                  >-</button>
+                  >
+                    -
+                  </button>
                   <span class="current-count">{{ currentCount }}</span>
                   <button
                     class="cyber-btn btn-primary small cyan-bg"
                     @click="$emit('add', card)"
-                  >+</button>
+                  >
+                    +
+                  </button>
                 </div>
               </div>
             </div>
