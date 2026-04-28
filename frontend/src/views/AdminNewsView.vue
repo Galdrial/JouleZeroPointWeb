@@ -191,10 +191,26 @@ async function uploadImageFile() {
   data.append("image", selectedImageFile.value);
   isUploadingImage.value = true;
   try {
-    const response = await api.post("/news/admin/upload-image", data);
-    form.imageUrl = response.data.imageUrl;
+    const baseUrl = (import.meta.env.VITE_API_URL as string | undefined) || "/api/v1";
+    const res = await fetch(`${baseUrl}/news/admin/upload-image`, {
+      method: "POST",
+      headers: {
+        ...(authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}),
+        ...(authStore.username ? { "x-user": authStore.username } : {}),
+      },
+      body: data,
+      credentials: "include",
+    });
+    const json = await res.json();
+    if (!res.ok) {
+      notifications.warn(json.error || "Errore durante il caricamento.");
+      return;
+    }
+    form.imageUrl = json.imageUrl;
     notifications.success("Immagine caricata. URL sincronizzato.");
     selectedImageFile.value = null;
+  } catch {
+    notifications.error("Nessun segnale dal Backend Atlas. Controlla la connessione.");
   } finally {
     isUploadingImage.value = false;
   }
