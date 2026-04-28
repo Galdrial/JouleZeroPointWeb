@@ -246,8 +246,6 @@ onMounted(async () => {
 .rules-grid {
   display: grid;
   grid-template-columns: 1fr;
-  max-width: 960px;
-  margin: 0 auto;
   gap: 1.5rem;
 }
 
