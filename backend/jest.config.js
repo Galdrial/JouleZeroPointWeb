@@ -1,9 +1,8 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: '<rootDir>/tests/QuietNodeEnvironment.js',
   verbose: true,
-  forceExit: true,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },

@@ -34,9 +34,9 @@ describe('SEO API — Sitemap', () => {
         const res = await request(app).get('/api/v1/seo/sitemap.xml');
 
         expect(res.text).toContain('<urlset');
-        expect(res.text).toContain('joule-zeropoint.com');
+        expect(res.text).toContain('www.joulezeropoint.com');
         expect(res.text).toContain('/news');
-        expect(res.text).toContain('/rules');
+        expect(res.text).toContain('/regolamento');
     });
 
     test('Should include published news slugs in the sitemap', async () => {

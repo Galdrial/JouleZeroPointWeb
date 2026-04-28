@@ -9,6 +9,7 @@ import winston from 'winston';
  */
 
 const { combine, timestamp, printf, colorize, errors } = winston.format;
+const isTestEnv = process.env.NODE_ENV === 'test';
 
 // Standard Formatting Protocol: Timestamp | Level | Message
 const logFormat = printf(({ level, message, timestamp, stack }) => {
@@ -17,27 +18,31 @@ const logFormat = printf(({ level, message, timestamp, stack }) => {
 
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
-  silent: process.env.NODE_ENV === 'test',
+  silent: isTestEnv,
   format: combine(
     timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     errors({ stack: true }), // Capture stack traces for anomalies
     logFormat
   ),
-  transports: [
-    // Persistence Layer: Error logs are archived for post-mortem analysis
-    new winston.transports.File({ filename: 'logs/error.log', level: 'error', maxsize: 5 * 1024 * 1024, maxFiles: 5 }),
-    // Full Audit Layer: Combined logs for system state monitoring
-    new winston.transports.File({ filename: 'logs/combined.log', maxsize: 10 * 1024 * 1024, maxFiles: 7 }),
-  ],
+  transports: isTestEnv
+    ? []
+    : [
+        // Persistence Layer: Error logs are archived for post-mortem analysis
+        new winston.transports.File({ filename: 'logs/error.log', level: 'error', maxsize: 5 * 1024 * 1024, maxFiles: 5 }),
+        // Full Audit Layer: Combined logs for system state monitoring
+        new winston.transports.File({ filename: 'logs/combined.log', maxsize: 10 * 1024 * 1024, maxFiles: 7 }),
+      ],
 });
 
 // Console Logging: Mandatory for Docker/Containerized environments (stdout)
-logger.add(new winston.transports.Console({
-  format: combine(
-    colorize(),
-    timestamp({ format: 'HH:mm:ss' }),
-    logFormat
-  ),
-}));
+if (!isTestEnv) {
+  logger.add(new winston.transports.Console({
+    format: combine(
+      colorize(),
+      timestamp({ format: 'HH:mm:ss' }),
+      logFormat
+    ),
+  }));
+}
 
 export default logger;

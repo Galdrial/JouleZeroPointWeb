@@ -3,9 +3,8 @@ import Card from '../models/Card';
 import { generateEmbedding, cosineSimilarity } from './embeddingService';
 import logger from '../config/logger';
 import { escapeRegex } from '../utils/escapeRegex';
-import * as fs from 'fs';
-import * as path from 'path';
 import type { SortOrder } from 'mongoose';
+import { getAiRuleDirectives } from './rulebookService';
 
 /**
  * AI Service: Joule Zero Point — Cognitive Engine (TypeScript Edition).
@@ -33,36 +32,7 @@ const FALLBACK_MODEL = 'gpt-4o-mini';
 const MAX_RETRIES = 2;
 const MAX_CONTEXT_CHARS = 8000;
 
-// --- Rules Externalization & Fallback ---
-interface Rulebook {
-    safety: string;
-    hierarchy: string;
-    rulebook: string;
-}
-
-const DEFAULT_RULES: Rulebook = {
-    safety: "Sei un arbitro esperto di Joule: Zero Point. Rispondi in italiano.",
-    hierarchy: "Il testo della carta vince sempre.",
-    rulebook: "Regole base: IT 20, ET 3, TP 0."
-};
-
-/**
- * Loads rules from the external JSON file with a robust fallback mechanism.
- */
-function loadRules(): Rulebook {
-    try {
-        const rulesPath = path.join(process.cwd(), 'config/rules.json');
-        if (fs.existsSync(rulesPath)) {
-            const content = fs.readFileSync(rulesPath, 'utf8');
-            return JSON.parse(content);
-        }
-    } catch (error) {
-        logger.error(`RULES_LOAD_FAILURE: ${(error as Error).message}. Using internal fallback.`);
-    }
-    return DEFAULT_RULES;
-}
-
-const loadedRules = loadRules();
+const loadedRules = getAiRuleDirectives();
 
 const PRIVACY_DIRECTIVE = `
 # DIRETTIVA DI PRIVACY ED ETICA (EU AI Act Compliance)
@@ -151,7 +121,7 @@ export async function searchCards(params: any = {}) {
 
         if (type) {
             if (type.toLowerCase() === 'frammento') {
-                mongoQuery.type = { $in: [/Solido/i, /Liquido/i, /Gas/i, /Plasma/i] };
+                mongoQuery.type = { $in: [/Solido/i, /Liquido/i, /Gas/i, /Plasma/i, /Materia Oscura/i] };
             } else {
                 mongoQuery.type = { $regex: new RegExp(`^${escapeRegex(type)}$`, 'i') };
             }
@@ -264,7 +234,7 @@ export async function streamChat(
                             type: "object",
                             properties: {
                                 query: { type: "string", description: "Termine di ricerca o descrizione dell'effetto." },
-                                type: { type: "string", enum: ["Frammento", "Evento", "Anomalia", "Costruttore"] },
+                                type: { type: "string", enum: ["Frammento", "Solido", "Liquido", "Gas", "Plasma", "Materia Oscura", "Evento", "Anomalia", "Costruttore"] },
                                 min_et: { type: "number", description: "Costo ET minimo." },
                                 max_et: { type: "number", description: "Costo ET massimo." },
                                 min_pep: { type: "number", description: "PEP minimo." },

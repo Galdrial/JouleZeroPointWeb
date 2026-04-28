@@ -20,6 +20,7 @@ import cardRoutes from './routes/cardRoutes';
 import terminalRoutes from './routes/terminalRoutes';
 import seoRoutes from './routes/seoRoutes';
 import contactRoutes from './routes/contactRoutes';
+import rulebookRoutes from './routes/rulebookRoutes';
 
 const app = express();
 
@@ -174,6 +175,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/news', newsRoutes);
 app.use('/api/v1/decks', deckRoutes);
 app.use('/api/v1/cards', cardRoutes);
+app.use('/api/v1/rules', rulebookRoutes);
 app.use('/api/v1/terminal', terminalRoutes);
 app.use('/api/v1/seo', seoRoutes);
 app.use('/api/v1/contact', contactRoutes);

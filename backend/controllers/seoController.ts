@@ -12,13 +12,13 @@ export const getSitemap = async ( req: Request, res: Response ) => {
       .select( 'slug updatedAt' )
       .lean();
 
-    const baseUrl = 'https://joule-zeropoint.com';
+    const baseUrl = 'https://www.joulezeropoint.com';
 
     // 2. Define static core pages
     const staticPages = [
       '',             // Home
       '/news',        // Hub News
-      '/rules',       // Joule Rules
+      '/regolamento', // Joule Rules
       '/privacy',     // Privacy Policy
     ];
 
