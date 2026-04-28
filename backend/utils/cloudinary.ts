@@ -50,22 +50,38 @@ if (isCloudEnabled) {
     }
 }
 
+export const isCloudinaryEnabled = (): boolean => {
+    return isCloudEnabled && Boolean(process.env.CLOUDINARY_URL);
+};
+
 /**
- * Utility to upload a local file to Cloudinary and return the public URL.
+ * Utility to upload an in-memory file buffer to Cloudinary and return the public URL.
  * 
- * @param filePath - Absolute path to the local file to be uploaded.
+ * @param fileBuffer - Raw file buffer received from Multer memory storage.
  * @returns The secure URL of the uploaded image, or null if the upload fails.
  */
-export const uploadToCloudinary = async (filePath: string): Promise<string | null> => {
-    if (!isCloudEnabled || !process.env.CLOUDINARY_URL) {
+export const uploadBufferToCloudinary = async (fileBuffer: Buffer): Promise<string | null> => {
+    if (!isCloudinaryEnabled()) {
         return null;
     }
 
     try {
-        const result = await cloudinary.uploader.upload(filePath, {
-            folder: 'joule_news',
-            resource_type: 'image'
+        const result = await new Promise<any>((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream({
+                folder: 'joule_news',
+                resource_type: 'image'
+            }, (error, uploadResult) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+
+                resolve(uploadResult);
+            });
+
+            stream.end(fileBuffer);
         });
+
         return result.secure_url;
     } catch (error) {
         logger.error(`CLOUDINARY_UPLOAD_ERROR: ${(error as Error).message}`);

@@ -1,5 +1,6 @@
 import multer, { FileFilterCallback } from 'multer';
 import { Request } from 'express';
+import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 
@@ -11,17 +12,21 @@ import crypto from 'crypto';
  * before cloud synchronization (Cloudinary).
  */
 
-const storage = multer.diskStorage({
-  destination: (req: Request, file: Express.Multer.File, cb: (error: Error | null, destination: string) => void) => {
-    // Files are initially captured in the public news matrix
-    cb(null, 'public/news');
-  },
-  filename: (req: Request, file: Express.Multer.File, cb: (error: Error | null, filename: string) => void) => {
-    // Cryptographic Naming: Prevents collisions and obscures original metadata
-    const uniqueSuffix = crypto.randomBytes(8).toString('hex');
-    cb(null, `${Date.now()}-${uniqueSuffix}${path.extname(file.originalname)}`);
-  },
-});
+export const NEWS_UPLOAD_DIR = path.resolve(__dirname, '..', 'public', 'news');
+
+fs.mkdirSync(NEWS_UPLOAD_DIR, { recursive: true });
+
+export const buildNewsImageFilename = (originalname: string): string => {
+  const uniqueSuffix = crypto.randomBytes(8).toString('hex');
+  return `${Date.now()}-${uniqueSuffix}${path.extname(originalname)}`;
+};
+
+export const persistNewsImageLocally = (file: Pick<Express.Multer.File, 'buffer' | 'originalname'>): string => {
+  const filename = buildNewsImageFilename(file.originalname);
+  const filePath = path.join(NEWS_UPLOAD_DIR, filename);
+  fs.writeFileSync(filePath, file.buffer);
+  return filename;
+};
 
 const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
   // Integrity Protocol: Only allows visual assets (images)
@@ -37,7 +42,7 @@ const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallb
  * Constraints: 4MB limit per asset node.
  */
 export const uploadNewsImage = multer({
-  storage: storage,
+  storage: multer.memoryStorage(),
   fileFilter: fileFilter,
   limits: { fileSize: 4 * 1024 * 1024 }, // 4MB threshold
 });
