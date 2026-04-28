@@ -36,6 +36,8 @@ RUN npm ci --legacy-peer-deps --omit=dev
 # Copy compiled code and assets from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/public ./public
+# Ensure upload directory exists (empty dirs are not guaranteed to survive COPY)
+RUN mkdir -p ./public/news
 # Copy config files if any were not in dist (just in case they were modified)
 COPY --from=builder /app/config ./config
 COPY --from=builder /app/scripts ./scripts

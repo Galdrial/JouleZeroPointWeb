@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import * as fs from 'fs';
+import logger from '../config/logger';
 import { 
   getNews, 
   getNewsBySlug, 
@@ -72,6 +73,7 @@ router.delete('/:slug', adminProtect, deleteNews);
 router.post('/admin/upload-image', adminProtect, (req: Request, res: Response) => {
     uploadNewsImage.single('image')(req, res, async (error: any) => {
         if (error) {
+            logger.error(`UPLOAD_ERROR: multer error — ${error.message}`);
             const message = error.message === 'File too large'
                 ? 'Image asset exceeds maximum scale threshold (4MB limit).'
                 : error.message || 'Error occurred during image asset transmission.';
@@ -79,6 +81,7 @@ router.post('/admin/upload-image', adminProtect, (req: Request, res: Response) =
         }
 
         if (!req.file) {
+            logger.warn('UPLOAD_ERROR: req.file is undefined after multer processing');
             return res.status(400).json({ error: 'Null payload detected: No asset file received.' });
         }
 
@@ -92,8 +95,9 @@ router.post('/admin/upload-image', adminProtect, (req: Request, res: Response) =
         }
 
         // LOCAL FALLBACK (Ephemeral: will be lost on redeploy)
+        const backendOrigin = process.env.BACKEND_URL || '';
         return res.status(201).json({
-            imageUrl: `/news/${req.file.filename}`
+            imageUrl: `${backendOrigin}/news/${req.file.filename}`
         });
     });
 });
