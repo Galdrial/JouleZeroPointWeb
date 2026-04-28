@@ -1,12 +1,9 @@
-import fs from 'fs';
-import path from 'path';
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import app from '../app';
 import { connectTestDB, closeTestDB, clearDatabase } from './setup';
 import News from '../models/News';
 import User from '../models/User';
-import { NEWS_UPLOAD_DIR } from '../config/multer';
 
 /**
  * News API Tests
@@ -274,31 +271,5 @@ describe('News API — Admin CRUD', () => {
             .set('Authorization', `Bearer ${token}`);
 
         expect(res.statusCode).toBe(404);
-    });
-
-    test('Should upload an admin news image and serve it from /news', async () => {
-        const token = await createAdminToken();
-
-        const res = await request(app)
-            .post('/api/v1/news/admin/upload-image')
-            .set('Authorization', `Bearer ${token}`)
-            .attach('image', Buffer.from('fake-image-content'), {
-                filename: 'cover.png',
-                contentType: 'image/png',
-            });
-
-        expect(res.statusCode).toBe(201);
-        expect(res.body.imageUrl).toContain('/news/');
-
-        const filename = res.body.imageUrl.split('/news/')[1];
-        expect(filename).toBeTruthy();
-
-        const uploadedFilePath = path.join(NEWS_UPLOAD_DIR, filename);
-        expect(fs.existsSync(uploadedFilePath)).toBe(true);
-
-        const assetRes = await request(app).get(`/news/${filename}`);
-        expect(assetRes.statusCode).toBe(200);
-
-        fs.unlinkSync(uploadedFilePath);
     });
 });

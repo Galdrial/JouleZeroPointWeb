@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import * as fs from 'fs';
 import logger from '../config/logger';
 import { 
   getNews, 
@@ -9,8 +10,8 @@ import {
   getAdminNews
 } from '../controllers/newsController';
 import { adminProtect } from '../middleware/adminMiddleware';
-import { persistNewsImageLocally, uploadNewsImage } from '../config/multer';
-import { isCloudinaryEnabled, uploadBufferToCloudinary } from '../utils/cloudinary';
+import { uploadNewsImage } from '../config/multer';
+import { uploadToCloudinary } from '../utils/cloudinary';
 
 /**
  * News Routes (TypeScript).
@@ -84,24 +85,19 @@ router.post('/admin/upload-image', adminProtect, (req: Request, res: Response) =
             return res.status(400).json({ error: 'Null payload detected: No asset file received.' });
         }
 
-        if (isCloudinaryEnabled()) {
-            const cloudUrl = await uploadBufferToCloudinary(req.file.buffer);
-
-            if (cloudUrl) {
-                return res.status(201).json({ imageUrl: cloudUrl });
-            }
-
-            logger.error('UPLOAD_ERROR: Cloudinary upload failed while cloud storage is enabled.');
-            return res.status(502).json({
-                error: 'Cloudinary upload failed. Verify production credentials and backend logs.'
-            });
+        // --- CLOUDINARY PERSISTENCE LAYER ---
+        const cloudUrl = await uploadToCloudinary(req.file.path);
+        
+        if (cloudUrl) {
+            // Cleanup temporary local file
+            try { fs.unlinkSync(req.file.path); } catch (e) { /* silent cleanup error */ }
+            return res.status(201).json({ imageUrl: cloudUrl });
         }
 
         // LOCAL FALLBACK (Ephemeral: will be lost on redeploy)
-        const filename = persistNewsImageLocally(req.file);
         const backendOrigin = process.env.BACKEND_URL || '';
         return res.status(201).json({
-            imageUrl: `${backendOrigin}/news/${filename}`
+            imageUrl: `${backendOrigin}/news/${req.file.filename}`
         });
     });
 });

@@ -1,3 +1,4 @@
+import path from 'path';
 import dotenv from 'dotenv';
 // Load environment variables before any other imports that might depend on them
 dotenv.config({ quiet: true });
@@ -20,7 +21,6 @@ import terminalRoutes from './routes/terminalRoutes';
 import seoRoutes from './routes/seoRoutes';
 import contactRoutes from './routes/contactRoutes';
 import rulebookRoutes from './routes/rulebookRoutes';
-import { NEWS_UPLOAD_DIR } from './config/multer';
 
 const app = express();
 
@@ -186,7 +186,7 @@ app.use('/api/v1/contact', contactRoutes);
 app.use('/news', (req: Request, res: Response, next: NextFunction) => {
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
   next();
-}, express.static(NEWS_UPLOAD_DIR));
+}, express.static(path.join(__dirname, 'public/news')));
 
 /**
  * --- 404 HANDLER ---
