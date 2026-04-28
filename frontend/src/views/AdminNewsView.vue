@@ -199,7 +199,6 @@ async function uploadImageFile() {
         ...(authStore.username ? { "x-user": authStore.username } : {}),
       },
       body: data,
-      credentials: "include",
     });
     const json = await res.json();
     if (!res.ok) {
@@ -209,8 +208,9 @@ async function uploadImageFile() {
     form.imageUrl = json.imageUrl;
     notifications.success("Immagine caricata. URL sincronizzato.");
     selectedImageFile.value = null;
-  } catch {
-    notifications.error("Nessun segnale dal Backend Atlas. Controlla la connessione.");
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    notifications.error(`Upload fallito: ${msg}`);
   } finally {
     isUploadingImage.value = false;
   }
