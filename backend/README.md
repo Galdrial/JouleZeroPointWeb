@@ -4,6 +4,8 @@ High-performance Express + MongoDB API layer for authentication, deck management
 
 ## Quick Start (Local)
 
+Prerequisites: Node.js 24.x with npm 10+.
+
 1. Create your environment file:
 
 ```bash

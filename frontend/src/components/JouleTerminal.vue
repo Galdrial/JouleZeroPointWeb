@@ -54,6 +54,15 @@ watch(
           >
             ⟳
           </button>
+          <a
+            href="/terminale-punto-zero"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="action-btn expand-btn"
+            title="Apri in pagina dedicata"
+          >
+            ⤢
+          </a>
           <button class="action-btn close-btn" @click="$emit('close')">
             ✕
           </button>
@@ -155,6 +164,18 @@ watch(
 }
 
 .action-btn:hover {
+  color: var(--accent-gold);
+  transform: scale(1.1);
+}
+
+.expand-btn {
+  text-decoration: none;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.expand-btn:hover {
   color: var(--accent-gold);
   transform: scale(1.1);
 }

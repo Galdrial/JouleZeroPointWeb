@@ -51,6 +51,7 @@ export const useAuthStore = defineStore( 'auth', () => {
       localStorage.removeItem( 'username' )
       localStorage.removeItem( 'email' )
       localStorage.removeItem( 'isAdmin' )
+      localStorage.removeItem( 'joule-terminal-session' )
     }
   }
 
