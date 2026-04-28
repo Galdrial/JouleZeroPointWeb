@@ -191,12 +191,8 @@ async function uploadImageFile() {
   data.append("image", selectedImageFile.value);
   isUploadingImage.value = true;
   try {
-    const uploadBaseUrl =
-      (import.meta.env.VITE_UPLOAD_API_URL as string | undefined) ||
-      (import.meta.env.VITE_API_URL as string | undefined) ||
-      "/api/v1";
-    const normalizedUploadBaseUrl = uploadBaseUrl.replace(/\/+$/, "");
-    const res = await fetch(`${normalizedUploadBaseUrl}/news/admin/upload-image`, {
+    const baseUrl = (import.meta.env.VITE_API_URL as string | undefined) || "/api/v1";
+    const res = await fetch(`${baseUrl}/news/admin/upload-image`, {
       method: "POST",
       headers: {
         ...(authStore.token ? { Authorization: `Bearer ${authStore.token}` } : {}),
@@ -204,29 +200,11 @@ async function uploadImageFile() {
       },
       body: data,
     });
-
-    const rawBody = await res.text();
-    let json: { error?: string; imageUrl?: string } = {};
-
-    try {
-      json = rawBody ? JSON.parse(rawBody) : {};
-    } catch {
-      json = {};
-    }
-
+    const json = await res.json();
     if (!res.ok) {
-      const fallbackError = rawBody
-        ? `Errore upload (${res.status}): ${rawBody.slice(0, 180)}`
-        : `Errore upload (${res.status}).`;
-      notifications.warn(json.error || fallbackError);
+      notifications.warn(json.error || "Errore durante il caricamento.");
       return;
     }
-
-    if (!json.imageUrl) {
-      notifications.warn("Upload completato ma senza imageUrl valido in risposta.");
-      return;
-    }
-
     form.imageUrl = json.imageUrl;
     notifications.success("Immagine caricata. URL sincronizzato.");
     selectedImageFile.value = null;
