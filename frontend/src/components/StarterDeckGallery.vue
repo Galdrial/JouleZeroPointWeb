@@ -46,7 +46,7 @@ onMounted(() => {
       <div class="starter-header">
         <h2>SCEGLI IL TUO PILASTRO</h2>
         <p>
-          Quattro mazzi competitivi pre-assemblati, senza carte in comune, per
+          Tre mazzi competitivi pre-assemblati, senza carte in comune, per
           iniziare subito la tua scalata nel Punto Zero.
         </p>
       </div>
@@ -133,7 +133,7 @@ onMounted(() => {
 .deck-visual {
   position: relative;
   width: 100%;
-  height: 240px;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
   border-bottom: 2px solid var(--deck-color);
 }
@@ -296,12 +296,12 @@ onMounted(() => {
 
 .starter-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: clamp(1rem, 2vw, 2rem);
 }
 
-@media (max-width: 1300px) {
-  .starter-grid { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 900px) and (min-width: 769px) {
+  .starter-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; }
 }
 
 @media (max-width: 768px) {

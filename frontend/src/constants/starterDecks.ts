@@ -23,35 +23,13 @@ export interface StarterDeck {
 
 export const STARTER_DECKS: StarterDeck[] = [
   {
-    id: 'pyros',
-    name: 'Pyros, Punto di Fusione',
-    style: 'Aggro / Danno Diretto',
-    desc: 'Affidati a Gas elusivi e Plasmi letali per spingere ossessivamente la Temperatura (TP) verso il Surriscaldamento. Innesca catastrofiche Inversioni Temporali per incenerire e aggirare le difese nemiche.',
-    longDesc: "Pyros è l'incarnazione del caos puro e del Surriscaldamento. Questo mazzo è l'esatto opposto di Chronos: non cerca di difendere il Presente, ma di bruciarlo. La tua strategia si affida alla letale combinazione di Gas e Plasmi, carte intrinsecamente \"Calde\" che alzano costantemente la Temperatura del Presente (TP). I Gas possiedono la proprietà \"Pressione\", che permette loro di infliggere danni diretti all'Integrità Temporale avversaria anche se il tuo attacco viene bloccato dallo scudo. I Plasmi scatenano la \"Scarica\", infliggendo danni aggiuntivi devastanti a patto di rischiare l'autodistruzione. Il tuo obiettivo è giocare in modo aggressivo per spingere di proposito la TP al limite critico (+4) e innescare Inversioni Temporali che inceneriscono i piani a lungo termine del tuo avversario. La tua mossa finale è la Tempesta di Collasso, una carta Critica che dimezza la Resistenza avversaria se l'arena è in Surriscaldamento.",
-    difficulty: 2,
-    difficultyLabel: 'Bassa',
-    color: '#ff4d00',
-    glow: 'rgba(255, 69, 0, 0.4)',
-    imageUrl: '/images/pyros-builder.webp',
-    objectPosition: 'center bottom',
-    costruttoreId: '262',
-    stats: { attacco: 10, difesa: 3, velocita: 9, controllo: 4, interferenza: 4 },
-    cards: [
-      { id: '8', count: 3 }, { id: '9', count: 3 }, { id: '30', count: 3 },
-      { id: '57', count: 3 }, { id: '190', count: 3 }, { id: '13', count: 3 },
-      { id: '156', count: 3 }, { id: '63', count: 3 }, { id: '64', count: 3 },
-      { id: '15', count: 3 }, { id: '6', count: 3 }, { id: '19', count: 3 },
-      { id: '128', count: 3 }, { id: '239', count: 1 }
-    ]
-  },
-  {
     id: 'chronos',
     name: 'Chronos, Custode del Presente',
-    style: 'Controllo / Assorbimento',
-    desc: 'Domina l\'istante della Collisione innalzando insormontabili muri di Solidi. Congela l\'arena per azzerare i danni avversari, accumulare Energia Temporale (ET) e ottenere il controllo assoluto del campo di battaglia.',
-    longDesc: "Se scegli Chronos, il tuo obiettivo non è vincere velocemente, ma dominare l'arena attraverso la stabilità assoluta. Il mazzo si basa quasi interamente sui Solidi, frammenti geologici di ghiaccio e roccia che possiedono la proprietà \"Assorbimento\": riducono sempre di 1 i danni inflitti alla tua Integrità Temporale (IT). Innalzando insormontabili muri nel Presente, congelerai il campo di battaglia, bloccando l'offensiva nemica e accumulando al contempo Energia Temporale (ET) bonus. Mentre l'avversario si sfinirà cercando di scalfire le tue difese, tu potrai usare carte Materia Oscura per neutralizzare i suoi vantaggi ed Eventi per rallentare il gioco. La tua chiusura ideale è la carta Critica Ancora di Tempo, un colossale monolite a costo 7 che impedisce fisicamente il verificarsi delle Inversioni Temporali e previene il primo danno che dovresti subire.",
+    style: 'Sincronia Architettonica (Controllo Spaziale / Difesa)',
+    desc: 'Erigi muri impenetrabili, controlla il campo e chiudi la partita raggiungendo la Sincronia.',
+    longDesc: "Chronos domina il Presente. Sfrutta i Solidi inamovibili per difendere strenuamente la tua linea temporale e Plasma letali per fare piazza pulita delle minacce avversarie. Questo mazzo punisce i tentativi di Inversione nemici usando la Materia Oscura come Jolly per colmare gli stati mancanti. Mette inoltre in luce il vero potere necromantico del nuovo Orizzonte degli Eventi, usando il Vortice di Ripristino per recuperare gli scarti quando tutto sembra perduto.",
     difficulty: 3,
-    difficultyLabel: 'Media',
+    difficultyLabel: 'Intermedio',
     color: '#00a2ff',
     glow: 'rgba(0, 242, 255, 0.4)',
     imageUrl: '/images/chronos-builder.webp',
@@ -59,22 +37,21 @@ export const STARTER_DECKS: StarterDeck[] = [
     costruttoreId: '254',
     stats: { attacco: 4, difesa: 10, velocita: 3, controllo: 9, interferenza: 6 },
     cards: [
-      { id: '2', count: 3 }, { id: '23', count: 3 }, { id: '180', count: 3 },
-      { id: '215', count: 3 }, { id: '24', count: 2 }, { id: '138', count: 2 },
-      { id: '50', count: 2 }, { id: '134', count: 2 }, { id: '165', count: 3 },
-      { id: '66', count: 2 }, { id: '130', count: 3 }, { id: '248', count: 3 },
-      { id: '90', count: 3 }, { id: '46', count: 2 }, { id: '209', count: 2 },
-      { id: '210', count: 1 }, { id: '139', count: 1 }
+      { id: '23', count: 3 }, { id: '180', count: 3 }, { id: '24', count: 2 }, { id: '138', count: 2 },
+      { id: '13', count: 3 }, { id: '156', count: 3 }, { id: '63', count: 3 }, { id: '15', count: 3 },
+      { id: '74', count: 3 }, { id: '224', count: 3 },
+      { id: '41', count: 3 }, { id: '42', count: 3 },
+      { id: '169', count: 3 }, { id: '246', count: 2 }, { id: '139', count: 1 }
     ]
   },
   {
     id: 'khepri',
     name: 'Khepri, Ricorsione Fluida',
-    style: 'Mobilità / Evasione',
-    desc: 'Sfuggi agli scontri frontali sfruttando l\'inesorabile persistenza dei Liquidi. Danza tra le pieghe del Passato e del Futuro, riposizionando i tuoi Frammenti per mandare a vuoto i colpi nemici in un logoramento continuo.',
-    longDesc: "Khepri rifiuta lo scontro frontale e trasforma l'arena in un labirinto. L'esercito di questo mazzo è composto al 100% da frammenti allo stato Liquido. La forza dei Liquidi risiede nella loro \"Persistenza\": quando vengono distrutti, invece di finire negli scarti (Orizzonte degli Eventi), possono scivolare all'indietro nel Passato per salvaguardarsi e tornare in gioco. Guidare Khepri richiede calcolo e previsione: grazie all'abilità passiva del tuo Costruttore e agli Eventi di deviazione, potrai spostare volontariamente i tuoi Frammenti tra Passato, Presente e Futuro. Mentre l'avversario colpirà a vuoto, tu lo logorerai lentamente, riposizionando di continuo le tue truppe. L'asso nella manica è la carta Critica Mare di Assestamento, che ti permette di innescare Inversioni Temporali volontarie aggirando il normale tributo in punti vita richiesto dalle regole.",
+    style: 'Sincronia Fluida (Mobilità / Evasione)',
+    desc: 'Danza tra le linee temporali evadendo gli attacchi e manipola a tuo favore le memorie del Passato.',
+    longDesc: "Un inno all'adattabilità. Khepri guida Liquidi e Gas sfuggendo alla distruzione frontale per sfruttare appieno la nuova meccanica della \"Memoria\". Quando le tue carte eludono il Presente e scivolano fuori dal tabellone, si salvano in cima al tuo mazzetto del Passato. Grazie a questa formidabile fluidità, puoi innescare Inversioni Temporali mirate per dictare le regole della tua prossima pescata e incastrare con facilità i cinque stati per la Vittoria per Sincronia.",
     difficulty: 4,
-    difficultyLabel: 'Alta',
+    difficultyLabel: 'Avanzato',
     color: '#00ff4d',
     glow: 'rgba(0, 255, 170, 0.4)',
     imageUrl: '/images/khepri-builder.webp',
@@ -82,21 +59,21 @@ export const STARTER_DECKS: StarterDeck[] = [
     costruttoreId: '259',
     stats: { attacco: 6, difesa: 6, velocita: 10, controllo: 7, interferenza: 5 },
     cards: [
-      { id: '4', count: 3 }, { id: '26', count: 3 }, { id: '74', count: 3 },
-      { id: '141', count: 3 }, { id: '145', count: 3 }, { id: '224', count: 3 },
-      { id: '223', count: 2 }, { id: '17', count: 3 }, { id: '124', count: 3 },
-      { id: '127', count: 3 }, { id: '168', count: 3 }, { id: '208', count: 3 },
-      { id: '213', count: 2 }, { id: '252', count: 2 }, { id: '76', count: 1 }
+      { id: '4', count: 3 }, { id: '141', count: 3 }, { id: '26', count: 3 }, { id: '6', count: 3 },
+      { id: '8', count: 3 }, { id: '190', count: 3 }, { id: '30', count: 3 },
+      { id: '2', count: 3 }, { id: '215', count: 3 },
+      { id: '203', count: 3 }, { id: '17', count: 3 },
+      { id: '208', count: 3 }, { id: '209', count: 2 }, { id: '252', count: 2 }
     ]
   },
   {
     id: 'umbra',
     name: 'Umbra, Voce del Vuoto',
-    style: 'Punisher / Disruption',
-    desc: 'Non cercare l\'equilibrio, ma sabota le fondamenta stesse del tempo. Sfrutta l\'oscura letalità della Materia Oscura per infliggere danni simmetrici e punire severamente chiunque osi innescare un\'Inversione Temporale.',
-    longDesc: "Umbra non è qui per bilanciare l'universo, ma per spezzarlo definitivamente. Questo mazzo è la vera \"nemesi\" del tempo, composto per oltre la metà da Materia Oscura. La Materia Oscura è una forza che non altera la temperatura globale, ma colpisce il sistema alla radice con effetti brutali, spesso simmetrici. Il tuo stile di gioco ruota attorno al concetto di \"Punisher\": tu non impedisci all'avversario di agire, ma lo punisci severamente ogni volta che lo fa. La tua intera strategia punisce pesantemente chiunque osi innescare un'Inversioni Temporale, infliggendo danni diretti a entrambi i giocatori, facendo scartare risorse e distruggendo frammenti in gioco. Per trionfare con Umbra dovrai gestire i tuoi stessi punti vita come una risorsa. Il culmine dell'entropia arriva con Nullità Assoluta, un'Anomalia devastante che annulla del tutto le variazioni termiche, forzando l'avversario a giocare secondo le tue spietate condizioni.",
+    style: 'L\'Orizzonte Ineluttabile (Punisher / Logoramento Entropico)',
+    desc: 'Condanna l\'avversario a subire danni irreversibili ogni volta che tenta di salvarsi esorendo il mazzo.',
+    longDesc: "Il mazzo di controllo definitivo forgiato per esaltare le leggi del nuovo timer entropico. Sfruttando la meccanica del deckout (il mazzo che si svuota obbligando a cambiare flusso), Umbra trasforma la necessità in una condanna a morte. Ogni volta che l'avversario innesca un'Inversione per non morire di inedia, la fitta rete di Anomalie e Materia Oscura di questo mazzo lo punirà con pesantissimi danni diretti ineluttabili. Blocca i danni fisici con le Stasi e osserva l'arena che lo consuma.",
     difficulty: 5,
-    difficultyLabel: 'Alta',
+    difficultyLabel: 'Esperto',
     color: '#a200ff',
     glow: 'rgba(180, 0, 255, 0.5)',
     imageUrl: '/images/umbra-builder.webp',
@@ -104,12 +81,13 @@ export const STARTER_DECKS: StarterDeck[] = [
     costruttoreId: '260',
     stats: { attacco: 7, difesa: 5, velocita: 5, controllo: 6, interferenza: 10 },
     cards: [
-      { id: '41', count: 3 }, { id: '42', count: 3 }, { id: '89', count: 3 },
-      { id: '162', count: 3 }, { id: '203', count: 3 }, { id: '243', count: 3 },
-      { id: '18', count: 2 }, { id: '67', count: 2 }, { id: '166', count: 2 },
-      { id: '244', count: 2 }, { id: '173', count: 3 }, { id: '169', count: 3 },
-      { id: '170', count: 3 }, { id: '175', count: 2 }, { id: '246', count: 2 },
-      { id: '253', count: 1 }
+      { id: '18', count: 2 }, { id: '244', count: 2 }, { id: '166', count: 2 }, { id: '67', count: 2 },
+      { id: '66', count: 2 }, { id: '162', count: 2 },
+      { id: '175', count: 2 }, { id: '128', count: 3 }, { id: '19', count: 3 }, { id: '46', count: 2 },
+      { id: '90', count: 3 }, { id: '253', count: 1 },
+      { id: '9', count: 3 }, { id: '57', count: 3 },
+      { id: '64', count: 3 }, { id: '239', count: 1 },
+      { id: '145', count: 3 }, { id: '76', count: 1 }
     ]
   }
 ];
