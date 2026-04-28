@@ -191,9 +191,7 @@ async function uploadImageFile() {
   data.append("image", selectedImageFile.value);
   isUploadingImage.value = true;
   try {
-    const response = await api.post("/news/admin/upload-image", data, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await api.post("/news/admin/upload-image", data);
     form.imageUrl = response.data.imageUrl;
     notifications.success("Immagine caricata. URL sincronizzato.");
     selectedImageFile.value = null;
