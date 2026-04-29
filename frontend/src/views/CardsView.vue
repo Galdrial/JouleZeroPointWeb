@@ -512,7 +512,7 @@ watch(error, (newError) => {
 }
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
   gap: clamp(1rem, 2vw, 1.5rem);
   width: 100%;
   max-width: 1400px;
