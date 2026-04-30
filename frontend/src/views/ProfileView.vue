@@ -250,7 +250,7 @@ const editDeck = (deck: SavedDeck) => {
         <RouterLink
           v-if="isOwnProfile"
           to="/deckbuilder"
-          class="cyber-btn btn-secondary deckbuilder-dashboard-link"
+          class="cyber-btn btn-primary deckbuilder-dashboard-link"
         >
           DASHBOARD DECKBUILDER
         </RouterLink>

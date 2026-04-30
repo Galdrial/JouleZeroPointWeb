@@ -123,7 +123,7 @@ const isNewsActive = computed(() => {
       <template v-if="authStore.username">
         <RouterLink
           to="/deckbuilder"
-          class="cyber-btn btn-secondary nav-item deckbuilder-btn"
+          class="cyber-btn btn-secondary nav-item"
         >
           Deckbuilder
         </RouterLink>
@@ -259,11 +259,6 @@ const isNewsActive = computed(() => {
 
 .user-btn {
   border-color: var(--accent-gold) !important;
-  color: var(--accent-gold) !important;
-}
-
-.deckbuilder-btn {
-  border-color: rgba(212, 175, 55, 0.65) !important;
   color: var(--accent-gold) !important;
 }
 
