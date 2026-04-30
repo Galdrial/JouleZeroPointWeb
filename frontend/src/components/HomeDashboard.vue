@@ -41,11 +41,11 @@ defineProps<Props>();
         </div>
         <div class="stat-item">
           <span class="label">Stabilità Sistema:</span>
-          <span class="value cyan">88%</span>
+          <span class="value cyan">100%</span>
         </div>
         <div class="stat-item">
-          <span class="label">Anomalie Attive:</span>
-          <span class="value magenta">4</span>
+          <span class="label">Anomalie Rilevate:</span>
+          <span class="value magenta">10</span>
         </div>
       </div>
     </div>
@@ -89,13 +89,6 @@ defineProps<Props>();
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  transition: all 0.3s ease;
-}
-
-.info-card:hover {
-  border-color: var(--accent-gold);
-  background: rgba(255, 255, 255, 0.03);
-  transform: translateY(-5px);
 }
 
 .info-card h3 {

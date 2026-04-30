@@ -24,6 +24,14 @@ export function useDeckExport(
     });
   };
 
+  const toSafeFileName = (name: string) =>
+    name
+      .trim()
+      .replace(/[<>:"/\\|?*]/g, "")
+      .replace(/\s+/g, "_")
+      .replace(/\.+$/g, "")
+      .slice(0, 80) || "Mazzo";
+
   const handleExport = async (deckId: string | number, format: "pdf" | "tts") => {
     if (isExporting.value) return;
     isExporting.value = true;
@@ -168,7 +176,7 @@ export function useDeckExport(
         const zipBlob = await zip.generateAsync({ type: "blob" });
         const link = document.createElement("a");
         link.href = window.URL.createObjectURL(zipBlob);
-        link.download = `Joule_TTS_Kit_${deckId}.zip`;
+        link.download = `Joule_TTS_Kit_${toSafeFileName(deckInfo.name)}.zip`;
         link.click();
         window.URL.revokeObjectURL(link.href);
       }
