@@ -37,9 +37,9 @@ const saveDeckValidation = [
 /**
  * @route   GET /api/v1/decks
  * @desc    Fetch decks with optional ownership filtering
- * @access  Mixed (Optional Protection)
+ * @access  Private/Protected
  */
-router.get('/', optionalProtect, getDecks);
+router.get('/', protect, getDecks);
 
 /**
  * @route   GET /api/v1/decks/public

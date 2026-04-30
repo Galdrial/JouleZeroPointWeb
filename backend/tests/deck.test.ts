@@ -24,6 +24,25 @@ beforeEach(async () => {
     await clearDatabase();
 });
 
+const createUserWithToken = async (username: string) => {
+    const user = await User.create({
+        username: username.toLowerCase(),
+        usernameDisplay: username,
+        email: `${username.toLowerCase()}@example.com`,
+        password: 'hashed-password',
+        isVerified: true,
+        privacyAccepted: true,
+        privacyAcceptedAt: new Date(),
+    });
+
+    const token = jwt.sign(
+        { id: user._id },
+        process.env.JWT_SECRET || 'test-secret-at-least-thirty-two-chars-long'
+    );
+
+    return { user, token };
+};
+
 describe('Deck Search API — Regex Shield', () => {
     const maliciousInputs = [
         '*?+',
@@ -35,11 +54,19 @@ describe('Deck Search API — Regex Shield', () => {
         '^${}()|',
     ];
 
+    test('Should reject personal deck listing without authentication', async () => {
+        const res = await request(app).get('/api/v1/decks');
+
+        expect(res.statusCode).toBe(401);
+    });
+
     test.each(maliciousInputs)(
         'Should not crash with regex-special input: "%s"',
         async (input) => {
+            const { token } = await createUserWithToken('Owner');
             const res = await request(app)
                 .get('/api/v1/decks')
+                .set('Authorization', `Bearer ${token}`)
                 .query({ q: input });
 
             expect(res.statusCode).not.toBe(500);
@@ -48,8 +75,10 @@ describe('Deck Search API — Regex Shield', () => {
     );
 
     test('Should return empty results for non-matching escaped input', async () => {
+        const { token } = await createUserWithToken('Owner');
         const res = await request(app)
             .get('/api/v1/decks')
+            .set('Authorization', `Bearer ${token}`)
             .query({ q: '*?+' });
 
         expect(res.statusCode).toBe(200);
@@ -59,25 +88,6 @@ describe('Deck Search API — Regex Shield', () => {
 });
 
 describe('Deck Detail API — Privacy Shield', () => {
-    const createUserWithToken = async (username: string) => {
-        const user = await User.create({
-            username: username.toLowerCase(),
-            usernameDisplay: username,
-            email: `${username.toLowerCase()}@example.com`,
-            password: 'hashed-password',
-            isVerified: true,
-            privacyAccepted: true,
-            privacyAcceptedAt: new Date(),
-        });
-
-        const token = jwt.sign(
-            { id: user._id },
-            process.env.JWT_SECRET || 'test-secret-at-least-thirty-two-chars-long'
-        );
-
-        return { user, token };
-    };
-
     test('Should hide a private deck from anonymous users', async () => {
         await createUserWithToken('Owner');
         const deck = await Deck.create({

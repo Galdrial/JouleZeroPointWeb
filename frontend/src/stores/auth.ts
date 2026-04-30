@@ -2,26 +2,130 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import api from '../utils/api'
 
+const AUTH_STORAGE_KEYS = ['token', 'username', 'email', 'isAdmin', 'joule-terminal-session']
+
+type PersistedAuth = {
+  token: string | null
+  username: string
+  email: string
+  isAdmin: boolean
+}
+
+function decodeJwtPayload( token: string ) {
+  const payload = token.split( '.' )[1]
+  const normalizedPayload = payload.replace( /-/g, '+' ).replace( /_/g, '/' )
+  const paddedPayload = normalizedPayload.padEnd( normalizedPayload.length + ( 4 - normalizedPayload.length % 4 ) % 4, '=' )
+  return JSON.parse( atob( paddedPayload ) ) as { exp?: number }
+}
+
+export function isJwtExpired( token: string | null, now = Date.now() ) {
+  if ( !token ) return false
+
+  const parts = token.split( '.' )
+  if ( parts.length !== 3 ) return true
+
+  try {
+    const payload = decodeJwtPayload( token )
+    return typeof payload.exp !== 'number' || payload.exp * 1000 <= now
+  } catch {
+    return true
+  }
+}
+
+function clearAuthPersistence() {
+  AUTH_STORAGE_KEYS.forEach( ( key ) => localStorage.removeItem( key ) )
+}
+
+function readPersistedAuth(): PersistedAuth {
+  const persistedToken = localStorage.getItem( 'token' )
+
+  if ( isJwtExpired( persistedToken ) ) {
+    clearAuthPersistence()
+    return { token: null, username: '', email: '', isAdmin: false }
+  }
+
+  return {
+    token: persistedToken,
+    username: localStorage.getItem( 'username' ) || '',
+    email: localStorage.getItem( 'email' ) || '',
+    isAdmin: localStorage.getItem( 'isAdmin' ) === 'true',
+  }
+}
+
+function isProtectedPath() {
+  if ( typeof window === 'undefined' ) return false
+
+  return ['/admin', '/deckbuilder', '/profile'].some( ( path ) => window.location.pathname.startsWith( path ) )
+}
+
 /**
  * Authentication Store for Joule: Zero Point.
  * Handles user session state, token persistence, and login/logout logic.
  */
 export const useAuthStore = defineStore( 'auth', () => {
+  const persistedAuth = readPersistedAuth()
+  let expiryTimer: ReturnType<typeof setTimeout> | null = null
+
   // State: Initialized from localStorage to maintain session across refreshes
-  const token = ref( localStorage.getItem( 'token' ) || null )
-  const username = ref( localStorage.getItem( 'username' ) || '' )
-  const email = ref( localStorage.getItem( 'email' ) || '' )
-  const isAdmin = ref( localStorage.getItem( 'isAdmin' ) === 'true' )
+  const token = ref( persistedAuth.token )
+  const username = ref( persistedAuth.username )
+  const email = ref( persistedAuth.email )
+  const isAdmin = ref( persistedAuth.isAdmin )
 
   /**
    * Computed property to check if a user is currently authenticated.
    */
   const isLoggedIn = computed( () => !!token.value )
 
+  function clearSession() {
+    token.value = null
+    username.value = ''
+    email.value = ''
+    isAdmin.value = false
+    clearAuthPersistence()
+
+    if ( expiryTimer ) {
+      clearTimeout( expiryTimer )
+      expiryTimer = null
+    }
+  }
+
+  function scheduleTokenExpiry( currentToken: string | null ) {
+    if ( expiryTimer ) {
+      clearTimeout( expiryTimer )
+      expiryTimer = null
+    }
+
+    if ( !currentToken || isJwtExpired( currentToken ) ) return
+
+    try {
+      const payload = decodeJwtPayload( currentToken )
+      if ( typeof payload.exp !== 'number' ) return
+
+      const delay = payload.exp * 1000 - Date.now()
+      if ( delay > 0 ) {
+        expiryTimer = setTimeout( () => {
+          clearSession()
+
+          if ( isProtectedPath() ) {
+            window.location.href = '/login?session_expired=1'
+          }
+        }, delay )
+      }
+    } catch {
+      clearSession()
+    }
+  }
+
   /**
    * Updates the authentication state and persists credentials to localStorage.
    */
   function setAuth( newToken: string, newUsername: string, newIsAdmin: boolean = false, newEmail: string = '' ) {
+    if ( isJwtExpired( newToken ) ) {
+      clearSession()
+      return
+    }
+
     token.value = newToken
     username.value = newUsername
     email.value = newEmail
@@ -30,6 +134,7 @@ export const useAuthStore = defineStore( 'auth', () => {
     localStorage.setItem( 'username', newUsername )
     localStorage.setItem( 'email', newEmail )
     localStorage.setItem( 'isAdmin', String( newIsAdmin ) )
+    scheduleTokenExpiry( newToken )
   }
 
   /**
@@ -43,15 +148,7 @@ export const useAuthStore = defineStore( 'auth', () => {
     } catch ( error ) {
       console.warn( 'Logout protocol dissonance (Backend already cleared or unreachable):', error )
     } finally {
-      token.value = null
-      username.value = ''
-      email.value = ''
-      isAdmin.value = false
-      localStorage.removeItem( 'token' )
-      localStorage.removeItem( 'username' )
-      localStorage.removeItem( 'email' )
-      localStorage.removeItem( 'isAdmin' )
-      localStorage.removeItem( 'joule-terminal-session' )
+      clearSession()
     }
   }
 
@@ -78,11 +175,15 @@ export const useAuthStore = defineStore( 'auth', () => {
    * Synchronizes the internal state with the browser's persistent storage.
    */
   function initialize() {
-    token.value = localStorage.getItem( 'token' ) || null
-    username.value = localStorage.getItem( 'username' ) || ''
-    email.value = localStorage.getItem( 'email' ) || ''
-    isAdmin.value = localStorage.getItem( 'isAdmin' ) === 'true'
+    const nextAuth = readPersistedAuth()
+    token.value = nextAuth.token
+    username.value = nextAuth.username
+    email.value = nextAuth.email
+    isAdmin.value = nextAuth.isAdmin
+    scheduleTokenExpiry( nextAuth.token )
   }
 
-  return { token, username, email, isLoggedIn, isAdmin, setAuth, logout, updateProfile, requestPasswordReset, initialize }
+  scheduleTokenExpiry( token.value )
+
+  return { token, username, email, isLoggedIn, isAdmin, setAuth, logout, updateProfile, requestPasswordReset, initialize, clearSession }
 } )

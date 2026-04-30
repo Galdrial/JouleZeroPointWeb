@@ -56,8 +56,10 @@ export default defineConfig( {
         ],
       },
       workbox: {
+        cleanupOutdatedCaches: true,
+        navigateFallback: null,
         // Cache static assets aggressively
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webp,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,ico,png,svg,webp,woff,woff2}'],
         // Runtime caching for API calls — network first, fallback to cache
         runtimeCaching: [
           {
