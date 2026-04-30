@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { computed, onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "../stores/auth";
 import { useCardStore } from "../stores/cardStore";
 import { useDeckStore, type SavedDeck } from "../stores/deckStore";
@@ -14,6 +15,8 @@ const authStore = useAuthStore();
 const cardStore = useCardStore();
 const deckStore = useDeckStore();
 const notifications = useNotificationStore();
+const route = useRoute();
+const router = useRouter();
 
 const { cards: allCards } = storeToRefs(cardStore);
 const {
@@ -102,6 +105,15 @@ const createNewDeck = () => {
   viewMode.value = "editor";
 };
 
+const showDashboard = () => {
+  editingDeck.value = null;
+  viewMode.value = "dashboard";
+
+  if (route.query.edit) {
+    router.replace({ name: "deckbuilder", query: {} });
+  }
+};
+
 const handleSave = async (payload: SavedDeck) => {
   isSaving.value = true;
   try {
@@ -109,7 +121,7 @@ const handleSave = async (payload: SavedDeck) => {
     notifications.success(
       "Mazzo sincronizzato correttamente con la Matrice Joule!",
     );
-    viewMode.value = "dashboard";
+    showDashboard();
     loadDecks();
   } catch (e: unknown) {
     const msg = (e as { response?: { data?: { error?: string } } })?.response
@@ -132,7 +144,7 @@ onMounted(async () => {
   loading.value = true;
   await cardStore.fetchCards();
 
-  const editId = new URLSearchParams(window.location.search).get("edit");
+  const editId = route.query.edit?.toString();
   if (editId) {
     try {
       const deckData = await deckStore.fetchDeckById(editId);
@@ -183,7 +195,7 @@ onMounted(async () => {
       :initial-deck="editingDeck"
       :is-saving="isSaving"
       @save="handleSave"
-      @back="viewMode = 'dashboard'"
+      @back="showDashboard"
     />
 
     <!-- EXPORT LOADER OVERLAY -->

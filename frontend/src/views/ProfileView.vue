@@ -209,10 +209,11 @@ const getCostruttoreName = (deck: SavedDeck) => {
 };
 
 /**
- * Viewport Bridge: Navigate to Deckbuilder terminal
+ * Viewport Bridge: Navigate to Deckbuilder dashboard or direct deck editing.
  */
-const goToDeck = () => {
-  router.push("/deckbuilder");
+const editDeck = (deck: SavedDeck) => {
+  if (!isOwnProfile.value) return;
+  router.push({ name: "deckbuilder", query: { edit: deck.id } });
 };
 </script>
 
@@ -246,6 +247,13 @@ const goToDeck = () => {
       <div class="section-header">
         <h2 class="cyber-subtitle">I TUOI MAZZI SINCRONIZZATI</h2>
         <div class="header-line"></div>
+        <RouterLink
+          v-if="isOwnProfile"
+          to="/deckbuilder"
+          class="cyber-btn btn-secondary deckbuilder-dashboard-link"
+        >
+          DASHBOARD DECKBUILDER
+        </RouterLink>
       </div>
 
       <div v-if="loading" class="loading-state">
@@ -263,7 +271,7 @@ const goToDeck = () => {
           v-for="deck in userDecks"
           :key="deck.id"
           class="deck-card glass-panel hover-glow"
-          @click="goToDeck()"
+          @click="editDeck(deck)"
         >
           <div class="deck-header">
             <span class="deck-name">{{ deck.name }}</span>
@@ -594,6 +602,13 @@ const goToDeck = () => {
   background: linear-gradient(90deg, var(--accent-magenta), transparent);
 }
 
+.deckbuilder-dashboard-link {
+  flex-shrink: 0;
+  font-size: 0.75rem !important;
+  padding: 0.65rem 1rem !important;
+  white-space: nowrap;
+}
+
 .decks-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
@@ -850,6 +865,12 @@ const goToDeck = () => {
 
   .header-line {
     width: 100%;
+  }
+
+  .deckbuilder-dashboard-link {
+    width: 100%;
+    justify-content: center;
+    white-space: normal;
   }
 
   .deck-name {
